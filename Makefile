@@ -46,8 +46,6 @@ $(OBJ): $(OBJDIR)/%.o :$(SRCDIR)/%.cpp
 
 clean:
 	$(RM) $(OBJDIR) $(BINDIR)
-	$(RM) logs
-
 
 #To compile mvIMPACTacquire SDK with c++11 find the file:
 #/op/mvIMPACT_acquire/mvPropHandling/include/mvPropHandlingDatatypes.h
