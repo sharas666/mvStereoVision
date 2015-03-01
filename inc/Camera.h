@@ -6,6 +6,8 @@
 
 #include <mvIMPACT_CPP/mvIMPACT_acquire.h>
 
+#include "easylogging++.h"
+
 class Camera
 {
 	public:
@@ -19,7 +21,10 @@ class Camera
 		//TODO setter for exposure, gain....
 
 	private:
-		mvIMPACT::acquire::Device* mDevice;
+		mvIMPACT::acquire::Device* 				mDevice;
+		mvIMPACT::acquire::FunctionInterface	mFunctionInterface;
+		mvIMPACT::acquire::Request*				mRequest;
+		int 									mTimeout;
 		//TODO member
 };
 
