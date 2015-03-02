@@ -24,7 +24,7 @@ class Stereosystem
 		double calibrate(std::vector<cv::Mat> const&, std::vector<cv::Mat> const&);
 
 		bool loadExtrinisic(std::string);
-		bool loadIntrinsic(std::string, int );
+		bool loadIntrinsic(std::string);
 
 		Stereopair getImagepair();
 		Stereopair getUndistortedImagpair();

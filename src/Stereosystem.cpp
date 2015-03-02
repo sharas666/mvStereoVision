@@ -8,8 +8,8 @@ Stereosystem::Stereosystem(Camera& l, Camera& r):
 	mLeft(l),
 	mRight(r),
 	mR(),
-	mE(),
 	mT(),
+	mE(),
 	mF(),
 	mIntrinsicLeft(),
 	mIntrinsicRight(),
@@ -48,10 +48,10 @@ bool Stereosystem::loadExtrinisic(std::string file)
   fs["F"] >> mF;
   fs.release();
 
-	return true;
+	return success;
 }
 
-bool Stereosystem::loadIntrinsic(std::string file, int cam)
+bool Stereosystem::loadIntrinsic(std::string file)
 {
 	cv::FileStorage fs;
 	bool success = fs.open(file, cv::FileStorage::READ);
