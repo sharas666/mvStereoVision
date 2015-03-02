@@ -21,10 +21,10 @@ class Camera
 		void setExposure(unsigned int);
 		void setGain(float);
 		void setPixelFormat(int);
+
 		float getFramerate() const;
-		
-		//TODO getter for exposure, gain....
-		//TODO setter for exposure, gain....
+		int getExposure() const;
+		float getGain() const;
 
 	private:
 		mvIMPACT::acquire::Device* 								mDevice;
@@ -37,8 +37,6 @@ class Camera
 		mvIMPACT::acquire::Request*								mRequest;
 		int 																			mTimeout;
 		std::string																mTag;
-
-
 
 		//TODO member
 };

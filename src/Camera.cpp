@@ -96,6 +96,17 @@ void Camera::setPixelFormat(int option)
 	}
 }
 
-float Camera::getFramerate() const {
+float Camera::getFramerate() const
+{
 	return mStatistics.framesPerSecond.read();
+}
+
+int Camera::getExposure() const
+{
+	return mCameraSettingsBlueFOX.expose_us.read();
+}
+
+float Camera::getGain() const
+{
+	return mCameraSettingsBlueFOX.gain_dB.read();
 }
