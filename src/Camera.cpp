@@ -96,6 +96,11 @@ void Camera::setPixelFormat(int option)
 	}
 }
 
+void Camera::setBinning() 
+{
+	mCameraSettingsBlueFOX.binningMode.write(mvIMPACT::acquire::cbmBinningHV);
+}
+
 float Camera::getFramerate() const
 {
 	return mStatistics.framesPerSecond.read();
@@ -110,4 +115,3 @@ float Camera::getGain() const
 {
 	return mCameraSettingsBlueFOX.gain_dB.read();
 }
-`

@@ -21,10 +21,12 @@ class Camera
 		void setExposure(unsigned int);
 		void setGain(float);
 		void setPixelFormat(int);
+		void setBinning();
 
 		float getFramerate() const;
 		int getExposure() const;
 		float getGain() const;
+
 
 	private:
 		mvIMPACT::acquire::Device* 								mDevice;
