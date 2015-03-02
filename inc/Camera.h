@@ -22,6 +22,9 @@ class Camera
 		void setGain(float);
 		void setPixelFormat(int);
 		
+		unsigned int getImageWidth();
+		unsigned int getImageHeight();
+
 		//TODO getter for exposure, gain....
 		//TODO setter for exposure, gain....
 
@@ -38,6 +41,9 @@ class Camera
 		std::string																mTag;
 
 
+
+		unsigned int 							mWidth;
+		unsigned int 							mHeight;
 
 		//TODO member
 };

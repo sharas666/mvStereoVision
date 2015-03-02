@@ -9,7 +9,9 @@ Camera::Camera():
   mCameraSettingsBlueFOX(NULL),
   mImageDestinaton(NULL),
 	mTimeout(1000),
-	mTag(" CAMERA ")
+	mTag(" CAMERA "),
+	mWidth(0),
+	mHeight(0)
 	{}
 
 Camera::Camera(mvIMPACT::acquire::Device* dev):
@@ -21,7 +23,9 @@ Camera::Camera(mvIMPACT::acquire::Device* dev):
   mCameraSettingsBlueFOX(dev),
   mImageDestinaton(dev),
 	mTimeout(1000),
-	mTag("CAMERA\t")
+	mTag("CAMERA\t"),
+	mWidth(0),
+	mHeight(0)
 {
 	std::cout<<"Camera created\n";
 	//driver stuff
@@ -36,7 +40,7 @@ Camera::~Camera()
 
 std::vector<char> Camera::getImage()
 {
-	std::cout<<"Image requested\n";
+	//std::cout<<"Image requested\n";
 
 	int result = DMR_NO_ERROR;
 	//request an image
@@ -50,7 +54,6 @@ std::vector<char> Camera::getImage()
 		LOG(ERROR)<< mTag << "Error while requesting for image: "<<\
 		mvIMPACT::acquire::ImpactAcquireException::getErrorCodeAsString(result)<<\
 		std::endl;
-
 	}
 
 	int requestNr = mFunctionInterface.imageRequestWaitFor(mTimeout);
@@ -64,14 +67,18 @@ std::vector<char> Camera::getImage()
 			std::vector<char> image(static_cast<char*>(mRequest->imageData.read()),
 									static_cast<char*>(mRequest->imageData.read()) +\
 															mRequest->imageSize.read());
+			mWidth = mRequest->imageWidth.read();
+			mHeight = mRequest->imageHeight.read();
+			mFunctionInterface.imageRequestUnlock(requestNr);
 			return image;
 
 		}
-		mFunctionInterface.imageRequestUnlock(requestNr);
 		std::cerr << "Error, request not OK!" <<std::endl;
+
 	}
 
 	std::cerr << "Error, invalid requestnumber!" << std::endl;
+	mFunctionInterface.imageRequestUnlock(requestNr);
 	return std::vector<char>(0,0);
 }
 
@@ -89,9 +96,21 @@ void Camera::setPixelFormat(int option)
 {
 	switch(option)
 	{
-		case 0: mImageDestinaton.pixelFormat.write(mvIMPACT::acquire::idpfMono8);
-						break;
-		case 1: mImageDestinaton.pixelFormat.write(mvIMPACT::acquire::idpfMono16);
-						break;
+		case 0: 
+			mImageDestinaton.pixelFormat.write(mvIMPACT::acquire::idpfMono8);
+			break;
+		case 1: 
+			mImageDestinaton.pixelFormat.write(mvIMPACT::acquire::idpfMono16);
+			break;
 	}
+}
+
+unsigned int Camera::getImageWidth()
+{
+	return mWidth;
+}
+
+unsigned int Camera::getImageHeight()
+{
+	return mHeight;
 }

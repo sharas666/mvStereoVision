@@ -36,9 +36,17 @@ int main(int argc, char* argv[])
 	
 	Stereosystem stereo(*(left),*(right));
 
-	std::vector<char> test = left->getImage();
 
+	while(true)
+	{
+			std::vector<char> test = left->getImage();
+			cv::Mat image(left->getImageHeight(),left->getImageWidth(), CV_8UC1, &test[0]);
+			cv::imshow("TEST", image);
+			cv::waitKey(100);
 
+	}
+
+	
 	std::cout<<"Test"<<std::endl;
 	return 0;
 }
