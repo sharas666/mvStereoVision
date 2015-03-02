@@ -33,17 +33,16 @@ int main(int argc, char* argv[])
 		left = new Camera(devMgr[1]);
 		right = new Camera(devMgr[0]);
 	}
+	else
+	{
+		std::cerr << "Wrong camera order. Exit" << std::endl;
+		LOG(ERROR) << tag << "Wrong camera order. Exit" << std::endl;
+	}
 	
 	Stereosystem stereo(*(left),*(right));
 
-	left->setPixelFormat(0);
-	right->setPixelFormat(0);
-
-	left->setExposure(12000);
-	right->setExposure(12000);
-	left->setGain(4);
-	right->setGain(4);
-
+	left->setBinning(BINNING_HV);
+	right->setBinning(BINNING_HV);
 	int key = 0;
 	int frame = 0;
 

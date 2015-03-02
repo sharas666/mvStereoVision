@@ -9,6 +9,17 @@
 
 #include "easylogging++.h"
 
+//Pixelformat
+#define MONO8 0
+#define MONO16 1
+
+//Binning
+#define BINNING_V 0 
+#define BINNING_H 1 
+#define BINNING_HV 2 
+
+
+
 class Camera
 {
 	public:
@@ -21,7 +32,7 @@ class Camera
 		void setExposure(unsigned int);
 		void setGain(float);
 		void setPixelFormat(int);
-		void setBinning();
+		void setBinning(unsigned int);
 
 		float getFramerate() const;
 		
@@ -37,11 +48,11 @@ class Camera
 	private:
 		mvIMPACT::acquire::Device* 								mDevice;
 		mvIMPACT::acquire::FunctionInterface			mFunctionInterface;
-	  mvIMPACT::acquire::Statistics 						mStatistics;
-  	mvIMPACT::acquire::SystemSettings 				mSystemSettings;
-  	mvIMPACT::acquire::CameraSettingsBase 		mCameraSettingsBase;
-  	mvIMPACT::acquire::CameraSettingsBlueFOX 	mCameraSettingsBlueFOX;
-  	mvIMPACT::acquire::ImageDestination 			mImageDestinaton;
+	 	mvIMPACT::acquire::Statistics 						mStatistics;
+  		mvIMPACT::acquire::SystemSettings 				mSystemSettings;
+  		mvIMPACT::acquire::CameraSettingsBase 		mCameraSettingsBase;
+  		mvIMPACT::acquire::CameraSettingsBlueFOX 	mCameraSettingsBlueFOX;
+  		mvIMPACT::acquire::ImageDestination 			mImageDestinaton;
 		mvIMPACT::acquire::Request*								mRequest;
 		int 																			mTimeout;
 		std::string																mTag;
