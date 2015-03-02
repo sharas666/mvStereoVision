@@ -3,13 +3,23 @@
 Camera::Camera():
 	mDevice(NULL),
 	mFunctionInterface(NULL),
+	mStatistics(NULL),
+  mSystemSettings(NULL),
+  mCameraSettingsBase(NULL),
+  mCameraSettingsBlueFOX(NULL),
+  mImageDestinaton(NULL),
 	mTimeout(1000),
 	mTag(" CAMERA ")
 	{}
 
 Camera::Camera(mvIMPACT::acquire::Device* dev):
 	mDevice(dev),
-	mFunctionInterface(mvIMPACT::acquire::FunctionInterface(dev)),
+	mFunctionInterface(dev),
+	mStatistics(dev),
+  mSystemSettings(dev),
+  mCameraSettingsBase(dev),
+  mCameraSettingsBlueFOX(dev),
+  mImageDestinaton(dev),
 	mTimeout(1000),
 	mTag("CAMERA\t")
 {
@@ -65,14 +75,23 @@ std::vector<char> Camera::getImage()
 	return std::vector<char>(0,0);
 }
 
-void Camera::setExposure() {
-
+void Camera::setExposure(unsigned int exposure)
+{
+	mCameraSettingsBlueFOX.expose_us.write(exposure);
 }
 
-void Camera::setGain() {
-
+void Camera::setGain(float gain)
+{
+	mCameraSettingsBlueFOX.gain_dB.write(gain);
 }
 
-void Camera::setPixelFormat() {
-	
+void Camera::setPixelFormat(int option)
+{
+	switch(option)
+	{
+		case 0: mImageDestinaton.pixelFormat.write(mvIMPACT::acquire::idpfMono8);
+						break;
+		case 1: mImageDestinaton.pixelFormat.write(mvIMPACT::acquire::idpfMono16);
+						break;
+	}
 }

@@ -18,19 +18,26 @@ class Camera
 
 		std::vector<char> getImage();
 
-		void setExposure();
-		void setGain();
-		void setPixelFormat();
+		void setExposure(unsigned int);
+		void setGain(float);
+		void setPixelFormat(int);
 		
 		//TODO getter for exposure, gain....
 		//TODO setter for exposure, gain....
 
 	private:
-		mvIMPACT::acquire::Device* 				mDevice;
-		mvIMPACT::acquire::FunctionInterface	mFunctionInterface;
-		mvIMPACT::acquire::Request*				mRequest;
-		int 									mTimeout;
-		std::string								mTag;
+		mvIMPACT::acquire::Device* 								mDevice;
+		mvIMPACT::acquire::FunctionInterface			mFunctionInterface;
+	  mvIMPACT::acquire::Statistics 						mStatistics;
+  	mvIMPACT::acquire::SystemSettings 				mSystemSettings;
+  	mvIMPACT::acquire::CameraSettingsBase 		mCameraSettingsBase;
+  	mvIMPACT::acquire::CameraSettingsBlueFOX 	mCameraSettingsBlueFOX;
+  	mvIMPACT::acquire::ImageDestination 			mImageDestinaton;
+		mvIMPACT::acquire::Request*								mRequest;
+		int 																			mTimeout;
+		std::string																mTag;
+
+
 
 		//TODO member
 };
