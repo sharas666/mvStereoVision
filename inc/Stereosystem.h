@@ -24,18 +24,25 @@ class Stereosystem
 		double calibrate(std::vector<cv::Mat> const&, std::vector<cv::Mat> const&);
 
 		bool loadExtrinisic(std::string);
-		bool loadIntrinsic(std::string);
+		bool loadIntrinsic(std::string, int );
 
 		Stereopair getImagepair();
 		Stereopair getUndistortedImagpair();
 		Stereopair getRectifiedImagepair();
 
-
-
 	private:
 		//TODO Memberstuff R,T,E,F......
 		Camera 			mLeft;
 		Camera 			mRight;
+		cv::Mat			mR;
+		cv::Mat			mT;
+		cv::Mat			mE;
+		cv::Mat			mF;
+
+		cv::Mat 		mIntrinsicLeft;
+		cv::Mat 		mIntrinsicRight;
+		cv::Mat 		mDistCoeffsLeft;
+		cv::Mat 		mDistCoeffsRight;
 
 		std::string		mTag;
 };

@@ -1,8 +1,20 @@
 #include "Stereosystem.h"
 
+#include "opencv2/opencv.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/calib3d/calib3d.hpp"
+
 Stereosystem::Stereosystem(Camera& l, Camera& r):
 	mLeft(l),
 	mRight(r),
+	mR(),
+	mE(),
+	mT(),
+	mF(),
+	mIntrinsicLeft(),
+	mIntrinsicRight(),
+	mDistCoeffsLeft(),
+	mDistCoeffsRight(),
 	mTag("STEREOSYSTEM\t")
 {
 	std::cout<<"Stereosystem created\n";
@@ -28,14 +40,28 @@ double Stereosystem::calibrate(std::vector<cv::Mat> const& leftImages, std::vect
 
 bool Stereosystem::loadExtrinisic(std::string file)
 {
-	std::cout<<"Load extrinsic from file\n";
+ 	cv::FileStorage fs;
+ 	bool success = fs.open(file, cv::FileStorage::READ);
+  fs["R"] >> mR;
+  fs["T"] >> mT;
+  fs["E"] >> mE;
+  fs["F"] >> mF;
+  fs.release();
+
 	return true;
 }
 
-bool Stereosystem::loadIntrinsic(std::string file)
+bool Stereosystem::loadIntrinsic(std::string file, int cam)
 {
-	std::cout<<"load intrinsic from file \n";
-	return true;
+	cv::FileStorage fs;
+	bool success = fs.open(file, cv::FileStorage::READ);
+  fs["cameraMatrixLeft"] >> mIntrinsicLeft;
+  fs["cameraMatrixRight"] >> mIntrinsicLeft;
+  fs["distCoeffsLeft"] >> mDistCoeffsLeft;
+  fs["distCoeffsRight"] >> mDistCoeffsRight;
+  fs.release();
+
+	return success;
 }
 
 Stereopair Stereosystem::getImagepair()
