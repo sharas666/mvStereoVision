@@ -1,5 +1,6 @@
 #include "utility.h"
 
+std::string mTag = "UTILITY\t";
 
 Stereopair::Stereopair(cv::Mat const& l , cv::Mat const& r):
 	mLeft(l),
@@ -63,4 +64,53 @@ bool Utility::createDirectory(std::string const& dirPath)
   		} 
 	}
   	return true;
+}
+
+int Utility::initCameras(mvIMPACT::acquire::DeviceManager &devMgr)
+{
+    const unsigned int devCnt = devMgr.deviceCount();
+
+    if(devCnt != 2)
+    {
+        std::cerr << "Invalid numver of cameras detected! Number of detected cameras: " <<\
+        devCnt << std::endl;
+        LOG(ERROR)<< mTag <<"Invalid numver of cameras detected! Number of detected cameras: " <<\
+        devCnt << std::endl;
+        return -1;
+    }
+
+    mvIMPACT::acquire::Device* tmpDev_1 = devMgr[0];
+    mvIMPACT::acquire::Device* tmpDev_2 = devMgr[1];
+
+    if(tmpDev_1->serial.read() == "26803878")
+    {
+        if(tmpDev_2->serial.read() == "26803881")
+        {
+            std::cout<<"Successfully initilized both camers" <<std::endl;
+            LOG(INFO)<< mTag << "Successfully initilized both camers" <<std::endl;
+            return 0;
+        }
+        std::cerr << "Error in camera initialization, got Serials:" <<\
+        tmpDev_1->serial.read()<< " " <<tmpDev_2->serial.read()<<std::endl;
+        LOG(ERROR)<< mTag << "Error in camera initialization, got Serials:" <<\
+        tmpDev_1->serial.read()<< " " <<tmpDev_2->serial.read()<<std::endl;
+        return -1;
+    }
+
+    if(tmpDev_1->serial.read() == "26803881")
+    {
+        if(tmpDev_2->serial.read() == "26803878")
+        {
+            std::cout<<"Successfully initilized both camers" <<std::endl;
+            LOG(INFO)<< mTag << "Successfully initilized both camers" <<std::endl;
+            return 1;
+        }
+        std::cerr << "Error in camera initialization, got Serials:" <<\
+        tmpDev_1->serial.read()<< " " <<tmpDev_2->serial.read()<<std::endl;
+        LOG(ERROR)<< mTag << "Error in camera initialization, got Serials:" <<\
+        tmpDev_1->serial.read()<< " " <<tmpDev_2->serial.read()<<std::endl;
+        return -1;
+    }
+
+    return -1;
 }

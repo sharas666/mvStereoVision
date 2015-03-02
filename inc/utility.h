@@ -17,6 +17,12 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/features2d/features2d.hpp"
 
+//Camera stuff
+#include <mvIMPACT_CPP/mvIMPACT_acquire.h>
+
+//Logging stuff
+#include "easylogging++.h"
+
 
 
 struct Stereopair
@@ -32,6 +38,8 @@ namespace Utility
 	int getFiles (std::string const& dir, std::vector<std::string> &files);
 	bool directoyExist(std::string const& dirPath);
 	bool createDirectory(std::string const& dirPath);
+
+	int initCameras(mvIMPACT::acquire::DeviceManager&);
 }
 
 
