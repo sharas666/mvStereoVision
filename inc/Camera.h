@@ -16,7 +16,7 @@ class Camera
 		Camera(mvIMPACT::acquire::Device*);
 		~Camera();
 
-		std::vector<char> getImage();
+		void getImage(std::vector<char>&);
 
 		void setExposure(unsigned int);
 		void setGain(float);
@@ -24,6 +24,12 @@ class Camera
 		void setBinning();
 
 		float getFramerate() const;
+		
+		unsigned int getImageWidth();
+		unsigned int getImageHeight();
+
+		//TODO getter for exposure, gain....
+		//TODO setter for exposure, gain....
 		int getExposure() const;
 		float getGain() const;
 
@@ -39,6 +45,11 @@ class Camera
 		mvIMPACT::acquire::Request*								mRequest;
 		int 																			mTimeout;
 		std::string																mTag;
+
+
+
+		unsigned int 							mWidth;
+		unsigned int 							mHeight;
 
 		//TODO member
 };
