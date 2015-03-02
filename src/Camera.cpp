@@ -3,17 +3,18 @@
 Camera::Camera():
 	mDevice(NULL),
 	mFunctionInterface(NULL),
-	mTimeout(1000)
+	mTimeout(1000),
+	mTag(" CAMERA ")
 	{}
 
 Camera::Camera(mvIMPACT::acquire::Device* dev):
 	mDevice(dev),
-	mFunctionInterface(NULL),
-	mTimeout(1000)
+	mFunctionInterface(mvIMPACT::acquire::FunctionInterface(dev)),
+	mTimeout(1000),
+	mTag("CAMERA\t")
 {
 	std::cout<<"Camera created\n";
 	//driver stuff
-	mFunctionInterface = FunctionInterface(dev);
 }
 
 Camera::~Camera()
@@ -36,7 +37,7 @@ std::vector<char> Camera::getImage()
 		std::cerr << "Error while requesting for image: "<<\
 		mvIMPACT::acquire::ImpactAcquireException::getErrorCodeAsString(result)<<\
 		std::endl;
-		CLOG(ERROR,"camera") << "Error while requesting for image: "<<\
+		LOG(ERROR)<< mTag << "Error while requesting for image: "<<\
 		mvIMPACT::acquire::ImpactAcquireException::getErrorCodeAsString(result)<<\
 		std::endl;
 
@@ -50,8 +51,8 @@ std::vector<char> Camera::getImage()
 		if(mRequest->isOK())
 		{
 			//create vector with image data from request
-			std::vector<char> image(reinterpret_cast<char*>(mRequest->imageData.read()),
-									reinterpret_cast<char*>(mRequest->imageData.read()) +\
+			std::vector<char> image(static_cast<char*>(mRequest->imageData.read()),
+									static_cast<char*>(mRequest->imageData.read()) +\
 															mRequest->imageSize.read());
 			return image;
 

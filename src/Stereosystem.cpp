@@ -2,7 +2,8 @@
 
 Stereosystem::Stereosystem(Camera& l, Camera& r):
 	mLeft(l),
-	mRight(r)
+	mRight(r),
+	mTag("STEREOSYSTEM\t")
 {
 	std::cout<<"Stereosystem created\n";
 }
