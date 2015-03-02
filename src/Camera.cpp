@@ -95,3 +95,7 @@ void Camera::setPixelFormat(int option)
 						break;
 	}
 }
+
+float Camera::getFramerate() const {
+	return mStatistics.framesPerSecond.read();
+}
