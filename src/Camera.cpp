@@ -38,7 +38,7 @@ Camera::~Camera()
 }
 
 
-std::vector<char> Camera::getImage()
+void Camera::getImage(std::vector<char> &imageToReturn)
 {
 	//std::cout<<"Image requested\n";
 
@@ -64,22 +64,24 @@ std::vector<char> Camera::getImage()
 		if(mRequest->isOK())
 		{
 			//create vector with image data from request
-			std::vector<char> image(static_cast<char*>(mRequest->imageData.read()),
+			imageToReturn= std::vector<char>(static_cast<char*>(mRequest->imageData.read()),
 									static_cast<char*>(mRequest->imageData.read()) +\
 															mRequest->imageSize.read());
 			mWidth = mRequest->imageWidth.read();
 			mHeight = mRequest->imageHeight.read();
 			mFunctionInterface.imageRequestUnlock(requestNr);
-			return image;
+			return;
 
 		}
-		std::cerr << "Error, request not OK!" <<std::endl;
-
+		else
+		{
+			std::cerr << "Error, request not OK!" <<std::endl;
+			return;
+		}
 	}
 
 	std::cerr << "Error, invalid requestnumber!" << std::endl;
 	mFunctionInterface.imageRequestUnlock(requestNr);
-	return std::vector<char>(0,0);
 }
 
 void Camera::setExposure(unsigned int exposure)

@@ -16,7 +16,7 @@ class Camera
 		Camera(mvIMPACT::acquire::Device*);
 		~Camera();
 
-		std::vector<char> getImage();
+		void getImage(std::vector<char>&);
 
 		void setExposure(unsigned int);
 		void setGain(float);
