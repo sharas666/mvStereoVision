@@ -114,3 +114,6 @@ unsigned int Camera::getImageHeight()
 {
 	return mHeight;
 }
+float Camera::getFramerate() const {
+	return mStatistics.framesPerSecond.read();
+}

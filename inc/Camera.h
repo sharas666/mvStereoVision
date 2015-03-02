@@ -21,6 +21,7 @@ class Camera
 		void setExposure(unsigned int);
 		void setGain(float);
 		void setPixelFormat(int);
+		float getFramerate() const;
 		
 		unsigned int getImageWidth();
 		unsigned int getImageHeight();
