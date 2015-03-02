@@ -36,13 +36,34 @@ int main(int argc, char* argv[])
 	
 	Stereosystem stereo(*(left),*(right));
 
+	left->setPixelFormat(0);
+	right->setPixelFormat(0);
+
+	left->setExposure(12000);
+	right->setExposure(12000);
+	left->setGain(4);
+	right->setGain(4);
+
+	int key = 0;
+	int frame = 0;
 
 	while(true)
 	{
-			std::vector<char> test = left->getImage();
-			cv::Mat image(left->getImageHeight(),left->getImageWidth(), CV_8UC1, &test[0]);
-			cv::imshow("TEST", image);
-			cv::waitKey(100);
+			std::vector<char> leftImage;
+			left->getImage(leftImage);
+			std::vector<char> rightImage;
+			right->getImage(rightImage);
+			cv::Mat leftMat(left->getImageHeight(),left->getImageWidth(), CV_8UC1, &leftImage[0]);
+			cv::Mat rightMat(right->getImageHeight(),right->getImageWidth(), CV_8UC1, &rightImage[0]);
+			cv::imshow("Left", leftMat);
+			cv::imshow("Right", rightMat);
+			key = cv::waitKey(1);
+			if(char(key) == 'q')
+				break;
+			if(frame % 100 == 0)
+				std::cout<<left->getFramerate()<<" "<<right->getFramerate()<<std::endl;
+
+			++frame;
 
 	}
 
