@@ -107,6 +107,7 @@ void Camera::setPixelFormat(int option)
 	}
 }
 
+
 unsigned int Camera::getImageWidth()
 {
 	return mWidth;
@@ -118,4 +119,19 @@ unsigned int Camera::getImageHeight()
 }
 float Camera::getFramerate() const {
 	return mStatistics.framesPerSecond.read();
+}
+
+float Camera::getFramerate() const
+{
+	return mStatistics.framesPerSecond.read();
+}
+
+int Camera::getExposure() const
+{
+	return mCameraSettingsBlueFOX.expose_us.read();
+}
+
+float Camera::getGain() const
+{
+	return mCameraSettingsBlueFOX.gain_dB.read();
 }

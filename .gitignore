@@ -1,0 +1,9 @@
+#object files
+*.o
+#images
+*.jpg
+*.png
+#executable
+./bin/main
+#logiles
+logs/
