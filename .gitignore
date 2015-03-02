@@ -4,6 +4,6 @@
 *.jpg
 *.png
 #executable
-./bin/main
+bin/
 #logiles
 logs/

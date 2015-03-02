@@ -148,12 +148,13 @@ void Camera::setBinning(unsigned int option)
 			break;
 	}
 }
-unsigned int Camera::getImageWidth()
+
+unsigned int Camera::getImageWidth() const
 {
 	return mWidth;
 }
 
-unsigned int Camera::getImageHeight()
+unsigned int Camera::getImageHeight() const
 {
 	return mHeight;
 }

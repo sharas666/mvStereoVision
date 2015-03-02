@@ -45,8 +45,6 @@ int main(int argc, char* argv[])
 	int frame = 0;
  	int binning = 0;
 
-	if(stereo.loadIntrinsic("parameters/intrinsic.yml"));
-	if(stereo.loadExtrinisic("parameters/extrinsic.yml"));
 	while(true)
 	{
 			std::vector<char> leftImage;
@@ -78,7 +76,6 @@ int main(int argc, char* argv[])
 			++frame;
 
 	}
-
 	
 	std::cout<<"Test"<<std::endl;
 	return 0;

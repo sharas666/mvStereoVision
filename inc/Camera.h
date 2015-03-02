@@ -36,11 +36,9 @@ class Camera
 
 		float getFramerate() const;
 		
-		unsigned int getImageWidth();
-		unsigned int getImageHeight();
+		unsigned int getImageWidth() const;
+		unsigned int getImageHeight() const;
 
-		//TODO getter for exposure, gain....
-		//TODO setter for exposure, gain....
 		int getExposure() const;
 		float getGain() const;
 
@@ -56,8 +54,6 @@ class Camera
 		mvIMPACT::acquire::Request*								mRequest;
 		int 																			mTimeout;
 		std::string																mTag;
-
-
 
 		unsigned int 							mWidth;
 		unsigned int 							mHeight;
