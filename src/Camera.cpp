@@ -109,12 +109,15 @@ void Camera::setPixelFormat(int option)
 	{
 		case MONO8: 
 			mImageDestinaton.pixelFormat.write(mvIMPACT::acquire::idpfMono8);
+			mCameraSettingsBase.pixelFormat.write(mvIMPACT::acquire::ibpfMono8);
 			LOG(INFO) << mTag << "Set Pixelformat to Mono8" << std::endl;
 			break;
-		case MONO16: 
+		//doesnt work
+		/*case MONO16: 
 			mImageDestinaton.pixelFormat.write(mvIMPACT::acquire::idpfMono16);
+			mCameraSettingsBase.pixelFormat.write(mvIMPACT::acquire::ibpfMono16);
 			LOG(INFO) << mTag << "Set Pixelformat to Mono16" << std::endl;
-			break;
+			break;*/
 	}
 }
 
@@ -122,6 +125,10 @@ void Camera::setBinning(unsigned int option)
 {
 	switch(option)
 	{
+		case BINNING_OFF:
+			mCameraSettingsBlueFOX.binningMode.write(mvIMPACT::acquire::cbmOff);
+			LOG(INFO) << mTag << "Set binning mode off." <<std::endl;
+			break;
 		case BINNING_V:
 			mCameraSettingsBlueFOX.binningMode.write(mvIMPACT::acquire::cbmBinningV);
 			LOG(INFO) << mTag << "Set vertical binning mode." <<std::endl;
@@ -151,6 +158,10 @@ unsigned int Camera::getImageHeight()
 	return mHeight;
 }
 
+float Camera::getFramerate() const
+{
+	return mStatistics.framesPerSecond.read();
+}
 
 int Camera::getExposure() const
 {

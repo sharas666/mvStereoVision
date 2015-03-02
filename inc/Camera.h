@@ -14,10 +14,10 @@
 #define MONO16 1
 
 //Binning
-#define BINNING_V 0 
-#define BINNING_H 1 
-#define BINNING_HV 2 
-
+#define BINNING_OFF 0
+#define BINNING_V 1 
+#define BINNING_H 2 
+#define BINNING_HV 3
 
 
 class Camera
