@@ -7,3 +7,5 @@
 ./bin/main
 #logiles
 logs/
+#directories
+bin/
