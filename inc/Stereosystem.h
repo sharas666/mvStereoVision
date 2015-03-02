@@ -34,8 +34,10 @@ class Stereosystem
 
 	private:
 		//TODO Memberstuff R,T,E,F......
-		Camera mLeft;
-		Camera mRight;
+		Camera 			mLeft;
+		Camera 			mRight;
+
+		std::string		mTag;
 };
 
 #endif
