@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <string>
 
 #include <mvIMPACT_CPP/mvIMPACT_acquire.h>
 
@@ -25,6 +26,8 @@ class Camera
 		mvIMPACT::acquire::FunctionInterface	mFunctionInterface;
 		mvIMPACT::acquire::Request*				mRequest;
 		int 									mTimeout;
+		std::string								mTag;
+
 		//TODO member
 };
 
