@@ -48,7 +48,7 @@ clean:
 	$(RM) $(OBJDIR) $(BINDIR)
 
 #To compile mvIMPACTacquire SDK with c++11 find the file:
-#/op/mvIMPACT_acquire/mvPropHandling/include/mvPropHandlingDatatypes.h
+#/opt/mvIMPACT_acquire/mvPropHandling/include/mvPropHandlingDatatypes.h
 #and change the line (near line 27)
 #   elif defined(linux)
 #to
