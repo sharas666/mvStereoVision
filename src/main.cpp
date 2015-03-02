@@ -47,6 +47,9 @@ int main(int argc, char* argv[])
 	int key = 0;
 	int frame = 0;
 
+	if(stereo.loadIntrinsic("parameters/intrinsic.yml"));
+	if(stereo.loadExtrinisic("parameters/extrinsic.yml"));
+
 	while(true)
 	{
 			std::vector<char> leftImage;
