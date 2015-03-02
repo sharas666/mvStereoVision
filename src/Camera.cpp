@@ -110,3 +110,4 @@ float Camera::getGain() const
 {
 	return mCameraSettingsBlueFOX.gain_dB.read();
 }
+`
