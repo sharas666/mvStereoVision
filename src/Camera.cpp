@@ -110,6 +110,7 @@ void Camera::setPixelFormat(int option)
 void Camera::setBinning() 
 {
 	mCameraSettingsBlueFOX.binningMode.write(mvIMPACT::acquire::cbmBinningHV);
+}
 
 unsigned int Camera::getImageWidth()
 {
@@ -119,9 +120,6 @@ unsigned int Camera::getImageWidth()
 unsigned int Camera::getImageHeight()
 {
 	return mHeight;
-}
-float Camera::getFramerate() const {
-	return mStatistics.framesPerSecond.read();
 }
 
 float Camera::getFramerate() const
