@@ -17,6 +17,10 @@ class Camera
 
 		std::vector<char> getImage();
 
+		void setExposure();
+		void setGain();
+		void setPixelFormat();
+		
 		//TODO getter for exposure, gain....
 		//TODO setter for exposure, gain....
 

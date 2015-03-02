@@ -63,3 +63,15 @@ std::vector<char> Camera::getImage()
 	std::cerr << "Error, invalid requestnumber!" << std::endl;
 	return std::vector<char>(0,0);
 }
+
+void Camera::setExposure() {
+
+}
+
+void Camera::setGain() {
+
+}
+
+void Camera::setPixelFormat() {
+	
+}
