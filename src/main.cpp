@@ -41,14 +41,12 @@ int main(int argc, char* argv[])
 	
 	Stereosystem stereo(*(left),*(right));
 
-	left->setBinning(BINNING_HV);
-	right->setBinning(BINNING_HV);
 	int key = 0;
 	int frame = 0;
+ 	int binning = 0;
 
 	if(stereo.loadIntrinsic("parameters/intrinsic.yml"));
 	if(stereo.loadExtrinisic("parameters/extrinsic.yml"));
-
 	while(true)
 	{
 			std::vector<char> leftImage;
@@ -60,8 +58,20 @@ int main(int argc, char* argv[])
 			cv::imshow("Left", leftMat);
 			cv::imshow("Right", rightMat);
 			key = cv::waitKey(1);
+			leftMat.release();
+			rightMat.release();
 			if(char(key) == 'q')
 				break;
+			else if(char(key) == 'b')
+			{
+				if (binning == 0)
+					binning = 3;
+				else
+					binning =0;
+
+				left->setBinning(binning);
+				right->setBinning(binning);
+			}
 			if(frame % 100 == 0)
 				std::cout<<left->getFramerate()<<" "<<right->getFramerate()<<std::endl;
 
