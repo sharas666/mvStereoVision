@@ -2,10 +2,53 @@
 #include <string>
 
 #include "Stereosystem.h"
-
+#include "disparity.h"
 #include "easylogging++.h"
 
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+
 INITIALIZE_EASYLOGGINGPP
+
+//Thread stuff
+std::mutex m;
+std::condition_variable condvar;
+bool newImage1 = false;
+bool newImage2 = false;
+bool running = true;
+
+void disparityView(Stereopair const& s)
+{
+	cv::StereoSGBM disparity(0,128,7,8*49,32*49);
+	cv::Mat dispMap;
+
+	while(running)	
+	{
+		std::unique_lock<std::mutex> lck(m);
+		while(!newImage1)
+			condvar.wait(lck);
+		Disparity::sgbm(s, dispMap, disparity);
+		cv::normalize(dispMap,dispMap,0,255,cv::NORM_MINMAX, CV_8U);
+		cv::imshow("Disparity",dispMap);		
+		newImage1=false;
+	}
+
+}
+
+void liveView(Stereopair const& s)
+{
+	while(running)	
+	{
+		std::unique_lock<std::mutex> lck(m);
+		while(!newImage2)
+			condvar.wait(lck);
+		
+		cv::imshow("Left", s.mLeft);
+		cv::imshow("Right", s.mRight);
+		newImage2=false;
+	}
+}
 
 int main(int argc, char* argv[])
 {
@@ -51,40 +94,48 @@ int main(int argc, char* argv[])
 		return 0;
 
 	Stereopair s;
+
+	std::thread disp(disparityView,std::ref(s));
+	std::thread live(liveView,std::ref(s));
+
+	left->setExposure(24000);
+	right->setExposure(24000);
+
 	while(true)
 	{
-			//std::vector<char> leftImage;
-			//std::vector<char> rightImage;
-		 //stereo.getImagepair(s);
-			stereo.getRectifiedImagepair(s);
-		//stereo.getUndistortedImagepair(s);
-			//cv::Mat leftMat(left->getImageHeight(),left->getImageWidth(), CV_8UC1, &leftImage[0]);
-			//cv::Mat rightMat(right->getImageHeight(),right->getImageWidth(), CV_8UC1, &rightImage[0]);
+	
+		stereo.getRectifiedImagepair(s);
+		newImage1 = true;
+		newImage2 = true;
+		condvar.notify_all();		
 
-			cv::imshow("Left", s.mLeft);
-			cv::imshow("Right", s.mRight);
-			key = cv::waitKey(1);
-			
-			if(char(key) == 'q')
-				break;
-			else if(char(key) == 'b')
-			{
-				if (binning == 0)
-					binning = 1;
-				else
-					binning =0;
+		key = cv::waitKey(10);
+		
+		if(char(key) == 'q')
+		{
+			running = false;
+			break;
+		}
+		else if(char(key) == 'b')
+		{
+			if (binning == 0)
+				binning = 1;
+			else
+				binning =0;
 
-				left->setBinning(binning);
-				right->setBinning(binning);
-				stereo.resetRectification();
-			}
-			if(frame % 100 == 0)
-				std::cout<<left->getFramerate()<<" "<<right->getFramerate()<<std::endl;
+			left->setBinning(binning);
+			right->setBinning(binning);
+			stereo.resetRectification();
+		}
+		if(frame % 100 == 0)
+			std::cout<<left->getFramerate()<<" "<<right->getFramerate()<<std::endl;
 
-			++frame;
+		++frame;
 
 	}
 	
-	std::cout<<"Test"<<std::endl;
+	live.join();
+	disp.join();
+
 	return 0;
 }
