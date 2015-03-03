@@ -6,12 +6,10 @@
 #include <vector>
 #include <thread>
 
-
 //OPENCV Stuff
 #include "opencv2/opencv.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/features2d/features2d.hpp"
-
 
 #include "Camera.h"
 #include "utility.h"
@@ -37,7 +35,6 @@ class Stereosystem
 		void resetRectification();
 
 	private:
-		//TODO Memberstuff R,T,E,F......
 		Camera 			*mLeft;
 		Camera 			*mRight;
 		cv::Mat			mR;

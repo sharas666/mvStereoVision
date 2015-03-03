@@ -90,7 +90,6 @@ void Stereosystem::getUndistortedImagepair(Stereopair& sip)
 
 bool Stereosystem::initRectification()
 {
-
 	LOG(INFO) << mTag << "Called initRectifiaction()" << std::endl;
 
 	cv::Size imagesizeL(mLeft->getImageWidth(), mLeft->getImageHeight());
@@ -101,7 +100,6 @@ bool Stereosystem::initRectification()
 	{
 		if(mLeft->getBinningMode() && mRight->getBinningMode())
 		{
-			std::cout<<"Binningmode active\n";
 			mIntrinsicLeft /=2;
 			mIntrinsicRight/=2;
 		}
