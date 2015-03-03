@@ -5,13 +5,22 @@ std::string mTag = "UTILITY\t";
 
 Stereopair::Stereopair():
     mLeft(),
-    mRight()
+    mRight(),
+    mTag("STEREOPAIR\t")
 {}
 
 Stereopair::Stereopair(cv::Mat &l , cv::Mat &r):
 	mLeft(l),
-	mRight(r)
+	mRight(r),
+    mTag("STEREOPAIR\t")
+
 {}
+Stereopair::~Stereopair()
+{
+    mLeft.release();
+    mRight.release();
+    LOG(INFO) << mTag << "Stereopair destroyed" << std::endl;
+}
 
 
 int Utility::getFiles (std::string const& dir, std::vector<std::string> &files)

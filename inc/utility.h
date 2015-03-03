@@ -29,7 +29,9 @@ struct Stereopair
 {
 	Stereopair();
 	Stereopair(cv::Mat &, cv::Mat &);
-		
+	~Stereopair();
+	
+	std::string mTag;
 	cv::Mat mLeft;
 	cv::Mat mRight;
 

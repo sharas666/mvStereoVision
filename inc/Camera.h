@@ -15,50 +15,54 @@
 
 //Binning
 #define BINNING_OFF 0
-#define BINNING_V 1 
-#define BINNING_H 2 
-#define BINNING_HV 3
+#define BINNING_HV 1
 
 
 class Camera
 {
 	public:
-		Camera();
-		Camera(mvIMPACT::acquire::Device*);
-		~Camera();
+		//Constructor, Destructor
+						Camera();
+						Camera(mvIMPACT::acquire::Device*);
+						~Camera();
 
-		void getImage(std::vector<char>&);
+		//Functions
+		void 			getImage(std::vector<char>&);
 
-		void setExposure(unsigned int);
-		void setGain(float);
-		void setPixelFormat(int);
-		void setBinning(unsigned int);
+		//Setter
+		void 			setExposure(unsigned int);
+		void 			setGain(float);
+		void 			setPixelFormat(int);
+		void 			setBinning(unsigned int);
 
-		float getFramerate() const;
-		
-		unsigned int getImageWidth() const;
-		unsigned int getImageHeight() const;
-
-		int getExposure() const;
-		float getGain() const;
+		//Getter
+		float 			getFramerate() 		const;
+		unsigned int 	getImageWidth() 	const;
+		unsigned int 	getImageHeight() 	const;
+		int 			getExposure() 		const;
+		float 			getGain() 			const;
+		int 			getBinningMode()	const;
 
 
 	private:
-		mvIMPACT::acquire::Device* 								mDevice;
-		mvIMPACT::acquire::FunctionInterface			mFunctionInterface;
-	 	mvIMPACT::acquire::Statistics 						mStatistics;
-  		mvIMPACT::acquire::SystemSettings 				mSystemSettings;
+		//Camera settings
+		mvIMPACT::acquire::Device* 					mDevice;
+		mvIMPACT::acquire::FunctionInterface		mFunctionInterface;
+	 	mvIMPACT::acquire::Statistics 				mStatistics;
+  		mvIMPACT::acquire::SystemSettings 			mSystemSettings;
   		mvIMPACT::acquire::CameraSettingsBase 		mCameraSettingsBase;
   		mvIMPACT::acquire::CameraSettingsBlueFOX 	mCameraSettingsBlueFOX;
-  		mvIMPACT::acquire::ImageDestination 			mImageDestinaton;
-		mvIMPACT::acquire::Request*								mRequest;
-		int 																			mTimeout;
-		std::string																mTag;
+  		mvIMPACT::acquire::ImageDestination 		mImageDestinaton;
+		mvIMPACT::acquire::Request*					mRequest;
+		int 										mTimeout;
+		
+		//Log tag
+		std::string									mTag;
 
-		unsigned int 							mWidth;
-		unsigned int 							mHeight;
-
-		//TODO member
+		//image width and height
+		unsigned int 								mWidth;
+		unsigned int 								mHeight;
+		int 										mBinningMode;
 };
 
 

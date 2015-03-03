@@ -11,7 +11,8 @@ Camera::Camera():
 	mTimeout(1000),
 	mTag(" CAMERA "),
 	mWidth(0),
-	mHeight(0)
+	mHeight(0),
+	mBinningMode(0)
 	{}
 
 Camera::Camera(mvIMPACT::acquire::Device* dev):
@@ -26,27 +27,25 @@ Camera::Camera(mvIMPACT::acquire::Device* dev):
 	mTag("CAMERA\tSerial:"+mDevice->serial.read() +\
 		 " ID:" + std::to_string(mDevice->deviceID.read())+ "\t"),
 	mWidth(0),
-	mHeight(0)
+	mHeight(0),
+	mBinningMode(0)
 {
 	LOG(INFO)<< mTag <<"Camera created." << std::endl;
-
-	//driver stuff
 	this->setPixelFormat(MONO8);
 	this->setExposure(12000);
 	this->setGain(0);
+	std::vector<char> v;
+	this->getImage(v);
 }
 
 Camera::~Camera()
 {
 	LOG(INFO)<< mTag <<"Camera destroyed." << std::endl;
-	//clean up camera stuff
 }
 
 
 void Camera::getImage(std::vector<char> &imageToReturn)
 {
-	//std::cout<<"Image requested\n";
-
 	int result = DMR_NO_ERROR;
 	//request an image
 	result = mFunctionInterface.imageRequestSingle();
@@ -76,7 +75,6 @@ void Camera::getImage(std::vector<char> &imageToReturn)
 			mHeight = mRequest->imageHeight.read();
 			mFunctionInterface.imageRequestUnlock(requestNr);
 			return;
-
 		}
 		else
 		{
@@ -85,7 +83,6 @@ void Camera::getImage(std::vector<char> &imageToReturn)
 			return;
 		}
 	}
-
 	std::cerr << "Error, invalid requestnumber!" << std::endl;
 	LOG(ERROR) << mTag << "Error, invalid requestnumber!" << std::endl;
 	mFunctionInterface.imageRequestUnlock(requestNr);
@@ -112,6 +109,8 @@ void Camera::setPixelFormat(int option)
 			mCameraSettingsBase.pixelFormat.write(mvIMPACT::acquire::ibpfMono8);
 			LOG(INFO) << mTag << "Set Pixelformat to Mono8" << std::endl;
 			break;
+		default:
+			LOG(WARNING) << mTag << "Unknown Pixelformat" <<std::endl;
 		//doesnt work
 		/*case MONO16: 
 			mImageDestinaton.pixelFormat.write(mvIMPACT::acquire::idpfMono16);
@@ -128,18 +127,12 @@ void Camera::setBinning(unsigned int option)
 		case BINNING_OFF:
 			mCameraSettingsBlueFOX.binningMode.write(mvIMPACT::acquire::cbmOff);
 			LOG(INFO) << mTag << "Set binning mode off." <<std::endl;
-			break;
-		case BINNING_V:
-			mCameraSettingsBlueFOX.binningMode.write(mvIMPACT::acquire::cbmBinningV);
-			LOG(INFO) << mTag << "Set vertical binning mode." <<std::endl;
-			break;
-		case BINNING_H:
-			mCameraSettingsBlueFOX.binningMode.write(mvIMPACT::acquire::cbmBinningH);
-			LOG(INFO) << mTag << "Set horizontal binning mode." <<std::endl;
+			mBinningMode = BINNING_OFF;
 			break;
 		case BINNING_HV:
 			mCameraSettingsBlueFOX.binningMode.write(mvIMPACT::acquire::cbmBinningHV);
 			LOG(INFO) << mTag << "Set horizontal and vertical binning mode." <<std::endl;
+			mBinningMode = BINNING_HV;
 			break;
 		default:
 			std::cerr << "Unknown binning mode: " << option << std::endl;
@@ -147,6 +140,11 @@ void Camera::setBinning(unsigned int option)
 								 ". No binning performed." << std::endl;
 			break;
 	}
+}
+
+float Camera::getFramerate() const
+{
+	return mStatistics.framesPerSecond.read();
 }
 
 unsigned int Camera::getImageWidth() const
@@ -159,11 +157,6 @@ unsigned int Camera::getImageHeight() const
 	return mHeight;
 }
 
-float Camera::getFramerate() const
-{
-	return mStatistics.framesPerSecond.read();
-}
-
 int Camera::getExposure() const
 {
 	return mCameraSettingsBlueFOX.expose_us.read();
@@ -172,4 +165,9 @@ int Camera::getExposure() const
 float Camera::getGain() const
 {
 	return mCameraSettingsBlueFOX.gain_dB.read();
+}
+
+int Camera::getBinningMode() const
+{
+	return mBinningMode;
 }
