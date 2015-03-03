@@ -2,7 +2,13 @@
 
 std::string mTag = "UTILITY\t";
 
-Stereopair::Stereopair(cv::Mat const& l , cv::Mat const& r):
+
+Stereopair::Stereopair():
+    mLeft(),
+    mRight()
+{}
+
+Stereopair::Stereopair(cv::Mat &l , cv::Mat &r):
 	mLeft(l),
 	mRight(r)
 {}
