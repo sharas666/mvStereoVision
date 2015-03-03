@@ -39,25 +39,28 @@ int main(int argc, char* argv[])
 		LOG(ERROR) << tag << "Wrong camera order. Exit" << std::endl;
 	}
 	
-	Stereosystem stereo(*(left),*(right));
+	Stereosystem stereo(left,right);
 
 	int key = 0;
 	int frame = 0;
  	int binning = 0;
 
+	if(stereo.loadIntrinsic("parameters/intrinsic.yml"));
+	if(stereo.loadExtrinisic("parameters/extrinsic.yml"));
+
+	Stereopair s;
 	while(true)
 	{
-			std::vector<char> leftImage;
-			left->getImage(leftImage);
-			std::vector<char> rightImage;
-			right->getImage(rightImage);
-			cv::Mat leftMat(left->getImageHeight(),left->getImageWidth(), CV_8UC1, &leftImage[0]);
-			cv::Mat rightMat(right->getImageHeight(),right->getImageWidth(), CV_8UC1, &rightImage[0]);
-			cv::imshow("Left", leftMat);
-			cv::imshow("Right", rightMat);
+			//std::vector<char> leftImage;
+			//std::vector<char> rightImage;
+			stereo.getImagepair(s);
+			//cv::Mat leftMat(left->getImageHeight(),left->getImageWidth(), CV_8UC1, &leftImage[0]);
+			//cv::Mat rightMat(right->getImageHeight(),right->getImageWidth(), CV_8UC1, &rightImage[0]);
+
+			cv::imshow("Left", s.mLeft);
+			cv::imshow("Right", s.mRight);
 			key = cv::waitKey(1);
-			leftMat.release();
-			rightMat.release();
+			
 			if(char(key) == 'q')
 				break;
 			else if(char(key) == 'b')

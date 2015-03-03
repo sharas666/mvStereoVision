@@ -4,7 +4,7 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/calib3d/calib3d.hpp"
 
-Stereosystem::Stereosystem(Camera& l, Camera& r):
+Stereosystem::Stereosystem(Camera* l, Camera* r):
 	mLeft(l),
 	mRight(r),
 	mR(),
@@ -64,20 +64,28 @@ bool Stereosystem::loadIntrinsic(std::string file)
 	return success;
 }
 
-Stereopair Stereosystem::getImagepair()
+void Stereosystem::getImagepair(Stereopair& stereoimagepair)
 {
-	std::cout<<"Stereoimagepair requested\n";
-	return Stereopair(cv::Mat(),cv::Mat());
+	std::vector<char> leftImage;
+	//mLeft->getImage(leftImage);
+	std::vector<char> rightImage;
+	//mRight->getImage(rightImage);
+	std::thread l(&Camera::getImage,mLeft,std::ref(leftImage));
+	std::thread r(&Camera::getImage,mRight,std::ref(rightImage));
+	l.join();
+	r.join();
+	cv::Mat(mLeft->getImageHeight(),mLeft->getImageWidth(), CV_8UC1, &leftImage[0]).copyTo(stereoimagepair.mLeft);
+	cv::Mat(mRight->getImageHeight(),mRight->getImageWidth(), CV_8UC1, &rightImage[0]).copyTo(stereoimagepair.mRight);
 }
 
 Stereopair Stereosystem::getUndistortedImagpair()
 {
 	std::cout<<"Undistorted Stereoimagepair requested\n";
-	return Stereopair(cv::Mat(),cv::Mat());
+	return Stereopair();
 }
 
 Stereopair Stereosystem::getRectifiedImagepair()
 {
 	std::cout<<"Rectified Stereoimagepair requested\n";
-	return Stereopair(cv::Mat(),cv::Mat());
+	return Stereopair();
 }
