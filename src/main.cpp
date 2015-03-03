@@ -55,9 +55,9 @@ int main(int argc, char* argv[])
 	{
 			//std::vector<char> leftImage;
 			//std::vector<char> rightImage;
-		// stereo.getImagepair(s);
-			// stereo.getRectifiedImagepair(s);
-		stereo.getUndistortedImagepair(s);
+		 //stereo.getImagepair(s);
+			stereo.getRectifiedImagepair(s);
+		//stereo.getUndistortedImagepair(s);
 			//cv::Mat leftMat(left->getImageHeight(),left->getImageWidth(), CV_8UC1, &leftImage[0]);
 			//cv::Mat rightMat(right->getImageHeight(),right->getImageWidth(), CV_8UC1, &rightImage[0]);
 
@@ -70,12 +70,13 @@ int main(int argc, char* argv[])
 			else if(char(key) == 'b')
 			{
 				if (binning == 0)
-					binning = 3;
+					binning = 1;
 				else
 					binning =0;
 
 				left->setBinning(binning);
 				right->setBinning(binning);
+				stereo.resetRectification();
 			}
 			if(frame % 100 == 0)
 				std::cout<<left->getFramerate()<<" "<<right->getFramerate()<<std::endl;
