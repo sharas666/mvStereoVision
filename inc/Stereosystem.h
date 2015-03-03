@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <thread>
+
 
 //OPENCV Stuff
 #include "opencv2/opencv.hpp"
@@ -17,7 +19,7 @@
 class Stereosystem
 {
 	public:
-		Stereosystem(Camera&, Camera&);
+		Stereosystem(Camera*, Camera*);
 		~Stereosystem();
 
 		double calibrate(std::string);
@@ -26,14 +28,14 @@ class Stereosystem
 		bool loadExtrinisic(std::string);
 		bool loadIntrinsic(std::string);
 
-		Stereopair getImagepair();
+		void getImagepair(Stereopair&);
 		Stereopair getUndistortedImagpair();
 		Stereopair getRectifiedImagepair();
 
 	private:
 		//TODO Memberstuff R,T,E,F......
-		Camera 			mLeft;
-		Camera 			mRight;
+		Camera 			*mLeft;
+		Camera 			*mRight;
 		cv::Mat			mR;
 		cv::Mat			mT;
 		cv::Mat			mE;
