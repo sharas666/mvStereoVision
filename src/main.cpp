@@ -45,15 +45,19 @@ int main(int argc, char* argv[])
 	int frame = 0;
  	int binning = 0;
 
-	if(stereo.loadIntrinsic("parameters/intrinsic.yml"));
-	if(stereo.loadExtrinisic("parameters/extrinsic.yml"));
+	if(!stereo.loadIntrinsic("parameter/intrinsic.yml"))
+		return 0;
+	if(!stereo.loadExtrinisic("parameter/extrinsic.yml"))
+		return 0;
 
 	Stereopair s;
 	while(true)
 	{
 			//std::vector<char> leftImage;
 			//std::vector<char> rightImage;
-			stereo.getImagepair(s);
+		// stereo.getImagepair(s);
+			// stereo.getRectifiedImagepair(s);
+		stereo.getUndistortedImagepair(s);
 			//cv::Mat leftMat(left->getImageHeight(),left->getImageWidth(), CV_8UC1, &leftImage[0]);
 			//cv::Mat rightMat(right->getImageHeight(),right->getImageWidth(), CV_8UC1, &rightImage[0]);
 
