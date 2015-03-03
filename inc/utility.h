@@ -27,9 +27,12 @@
 
 struct Stereopair
 {
-	Stereopair(cv::Mat const&, cv::Mat const&);
+	Stereopair();
+	Stereopair(cv::Mat &, cv::Mat &);
+		
 	cv::Mat mLeft;
 	cv::Mat mRight;
+
 };
 
 
