@@ -29,8 +29,10 @@ class Stereosystem
 		bool loadIntrinsic(std::string);
 
 		void getImagepair(Stereopair&);
-		Stereopair getUndistortedImagpair();
-		Stereopair getRectifiedImagepair();
+		void getUndistortedImagepair(Stereopair&);
+
+		bool initRectification();
+		void getRectifiedImagepair(Stereopair&);
 
 	private:
 		//TODO Memberstuff R,T,E,F......
@@ -40,6 +42,17 @@ class Stereosystem
 		cv::Mat			mT;
 		cv::Mat			mE;
 		cv::Mat			mF;
+		
+		bool				mIsInit;
+		cv::Mat			mMap1[2];
+		cv::Mat			mMap2[2];
+		cv::Mat 		mR0;
+		cv::Mat			mR1; 
+		cv::Mat 		mP0; 
+		cv::Mat 		mP1; 
+		cv::Mat 		mQ;
+		cv::Rect 		mValidROI[2];
+		cv::Rect    mDisplayROI;
 
 		cv::Mat 		mIntrinsicLeft;
 		cv::Mat 		mIntrinsicRight;
