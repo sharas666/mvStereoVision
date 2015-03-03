@@ -34,6 +34,8 @@ class Stereosystem
 		bool initRectification();
 		void getRectifiedImagepair(Stereopair&);
 
+		void resetRectification();
+
 	private:
 		//TODO Memberstuff R,T,E,F......
 		Camera 			*mLeft;
@@ -43,7 +45,7 @@ class Stereosystem
 		cv::Mat			mE;
 		cv::Mat			mF;
 		
-		bool				mIsInit;
+		bool			mIsInit;
 		cv::Mat			mMap1[2];
 		cv::Mat			mMap2[2];
 		cv::Mat 		mR0;
