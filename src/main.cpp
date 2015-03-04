@@ -18,9 +18,41 @@ bool newImage1 = false;
 bool newImage2 = false;
 bool running = true;
 
+//settings
+int minDISP, numDISP, SADWindowSize, smoothnessFactor1, smoothnessFactor2;
+
+bool loadSettings(std::string file)
+{
+	cv::FileStorage fs;
+ 	bool success = fs.open(file, cv::FileStorage::READ);
+  fs["minDisparity"] >> minDISP;
+  fs["numDisparities"] >> numDISP;
+  fs["SADWindowSize"] >> SADWindowSize;
+  fs["smoothnessFactor1"] >> smoothnessFactor1;
+  fs["smoothnessFactor2"] >> smoothnessFactor2; 
+  fs.release();
+  return success;
+}
+
 void disparityView(Stereopair const& s)
 {
-	cv::StereoSGBM disparity(0,128,7,8*49,32*49);
+
+
+	if(!loadSettings("settings.yml"))
+	{
+		std::cout << "failed loading settings" << std::endl;
+		return;
+	}
+
+	std::cout << SADWindowSize << std::endl;
+	std::cout << minDISP << std::endl;
+	std::cout << numDISP << std::endl;
+
+	int dispSmoothness1 = smoothnessFactor1*SADWindowSize*SADWindowSize;
+	int dispSmoothness2 = smoothnessFactor2*SADWindowSize*SADWindowSize;
+
+	cv::StereoSGBM disparity(minDISP,numDISP,SADWindowSize,dispSmoothness1,dispSmoothness2);
+	// cv::StereoSGBM disparity(10,144,11,8*121, 32*121);
 	cv::Mat dispMap;
 
 	while(running)	
@@ -89,9 +121,15 @@ int main(int argc, char* argv[])
  	int binning = 0;
 
 	if(!stereo.loadIntrinsic("parameter/intrinsic.yml"))
+	{
+		std::cout << "failed loading intrinsics" << std::endl;
 		return 0;
+	}
 	if(!stereo.loadExtrinisic("parameter/extrinsic.yml"))
+	{
+		std::cout << "faile loading extrinsic" << std::endl;
 		return 0;
+	}
 
 	Stereopair s;
 

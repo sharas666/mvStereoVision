@@ -9,3 +9,5 @@ bin/
 logs/
 #directories
 bin/
+#fileadding script
+addfiles
