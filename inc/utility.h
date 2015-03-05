@@ -23,6 +23,8 @@
 //Logging stuff
 #include "easylogging++.h"
 
+#include "Camera.h"
+
 
 
 struct Stereopair
@@ -38,14 +40,21 @@ struct Stereopair
 
 };
 
+struct CameraInit
+{
+	Camera* left;
+	Camera* right;
+	bool init;
+};
+
 
 namespace Utility
 {
 	int getFiles (std::string const& dir, std::vector<std::string> &files);
-	bool directoyExist(std::string const& dirPath);
+	bool directoryExist(std::string const& dirPath);
 	bool createDirectory(std::string const& dirPath);
 
-	int initCameras(mvIMPACT::acquire::DeviceManager&);
+	bool initCameras(mvIMPACT::acquire::DeviceManager&,Camera*&,Camera*&);
 }
 
 

@@ -9,5 +9,7 @@ bin/
 logs/
 #directories
 bin/
+obj/
+trgt_obj/
 #fileadding script
 addfiles

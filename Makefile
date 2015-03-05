@@ -1,6 +1,6 @@
 # name of program
-PROG = main
-
+TARGETDIR = trgt
+TARGETOBJDIR = trgt_obj
 #compiler flags
 CC = g++
 CFLAGS  = -c -g -fPIC -Wall -fdiagnostics-color=auto -std=c++11
@@ -32,20 +32,36 @@ LIB_PATH = -L/opt/mvIMPACT_acquire/lib/x86_64/
 OPENCV = `pkg-config opencv --cflags --libs`
 LIBS = -lmvDeviceManager -lpthread $(OPENCV)
 
-all: directories $(OBJ)
-	@$(CC) $(OBJ) -o $(BINDIR)/$(PROG) $(LIB_PATH) $(LIBS)
+
+capture: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/capture.cpp -o $(TARGETOBJDIR)/capture.o
+	@echo Compiled capture.cpp successfully!
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/capture.o -o $(BINDIR)/capture $(LIB_PATH) $(LIBS)
+	@echo Linking complete!
+
+epipoles: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/epipolarLines.cpp -o $(TARGETOBJDIR)/epipolarLines.o
+	@echo Compiled epipolarLines.cpp successfully!
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/epipolarLines.o -o $(BINDIR)/epipolarLines $(LIB_PATH) $(LIBS)
+	@echo Linking complete!
+
+disparity: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/liveDisparity.cpp -o $(TARGETOBJDIR)/liveDisparity.o
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/liveDisparity.o -o $(BINDIR)/liveDisparity $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
 directories:
 	${MKDIR_P} ${OBJDIR}
 	${MKDIR_P} ${BINDIR}
+	${MKDIR_P} ${TARGETOBJDIR}
+
 	
 $(OBJ): $(OBJDIR)/%.o :$(SRCDIR)/%.cpp
 	@$(CC) $(CFLAGS) $(INC_PATH) $< -o $@
 	@echo Compiled $< $ successfully!
 
 clean:
-	$(RM) $(OBJDIR) $(BINDIR)
+	$(RM) $(OBJDIR) $(BINDIR) $(TARGETOBJDIR)
 
 #To compile mvIMPACTacquire SDK with c++11 find the file:
 #/opt/mvIMPACT_acquire/mvPropHandling/include/mvPropHandlingDatatypes.h

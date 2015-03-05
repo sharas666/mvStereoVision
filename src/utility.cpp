@@ -54,7 +54,7 @@ int Utility::getFiles (std::string const& dir, std::vector<std::string> &files)
 
 
 
-bool Utility::directoyExist(std::string const& dirPath)
+bool Utility::directoryExist(std::string const& dirPath)
 {
 	struct stat st = {0};
 	if(stat(dirPath.c_str(),&st) == -1)
@@ -74,14 +74,14 @@ bool Utility::createDirectory(std::string const& dirPath)
 		pos = dirPath.find("/",pos+1);
 		if(mkdir(dirPath.substr(0,pos).c_str(), 0777) == -1) 
   		{ 
-			std::cerr << "Error("<< errno <<"): could not create: " << dirPath.substr(0,pos) << std::endl;
+			LOG(ERROR)<< mTag << "Error("<< errno <<"): could not create: " << dirPath.substr(0,pos) << std::endl;
 			return false;
   		} 
 	}
   	return true;
 }
 
-int Utility::initCameras(mvIMPACT::acquire::DeviceManager &devMgr)
+bool Utility::initCameras(mvIMPACT::acquire::DeviceManager &devMgr, Camera *&left, Camera *&right)
 {
     const unsigned int devCnt = devMgr.deviceCount();
 
@@ -91,41 +91,45 @@ int Utility::initCameras(mvIMPACT::acquire::DeviceManager &devMgr)
         devCnt << std::endl;
         LOG(ERROR)<< mTag <<"Invalid numver of cameras detected! Number of detected cameras: " <<\
         devCnt << std::endl;
-        return -1;
+        return false;
     }
 
-    mvIMPACT::acquire::Device* tmpDev_1 = devMgr[0];
-    mvIMPACT::acquire::Device* tmpDev_2 = devMgr[1];
-
-    if(tmpDev_1->serial.read() == "26803878")
+   
+    if(devMgr[0]->serial.read() == "26803878")
     {
-        if(tmpDev_2->serial.read() == "26803881")
+        if(devMgr[1]->serial.read() == "26803881")
         {
             std::cout<<"Successfully initilized both camers" <<std::endl;
             LOG(INFO)<< mTag << "Successfully initilized both camers" <<std::endl;
-            return 0;
+
+            left = new Camera(devMgr[0]);
+            right= new Camera(devMgr[1]);   
+            return true;
         }
         std::cerr << "Error in camera initialization, got Serials:" <<\
-        tmpDev_1->serial.read()<< " " <<tmpDev_2->serial.read()<<std::endl;
+        devMgr[0]->serial.read()<< " " <<devMgr[1]->serial.read()<<std::endl;
         LOG(ERROR)<< mTag << "Error in camera initialization, got Serials:" <<\
-        tmpDev_1->serial.read()<< " " <<tmpDev_2->serial.read()<<std::endl;
-        return -1;
+        devMgr[0]->serial.read()<< " " <<devMgr[1]->serial.read()<<std::endl;
+        return false;
     }
 
-    if(tmpDev_1->serial.read() == "26803881")
+    if(devMgr[0]->serial.read() == "26803881")
     {
-        if(tmpDev_2->serial.read() == "26803878")
+        if(devMgr[1]->serial.read() == "26803878")
         {
             std::cout<<"Successfully initilized both camers" <<std::endl;
             LOG(INFO)<< mTag << "Successfully initilized both camers" <<std::endl;
-            return 1;
+            
+            left = new Camera(devMgr[1]);
+            right = new Camera(devMgr[0]);
+            return true;
         }
         std::cerr << "Error in camera initialization, got Serials:" <<\
-        tmpDev_1->serial.read()<< " " <<tmpDev_2->serial.read()<<std::endl;
+        devMgr[0]->serial.read()<< " " <<devMgr[1]->serial.read()<<std::endl;
         LOG(ERROR)<< mTag << "Error in camera initialization, got Serials:" <<\
-        tmpDev_1->serial.read()<< " " <<tmpDev_2->serial.read()<<std::endl;
-        return -1;
+        devMgr[0]->serial.read()<< " " <<devMgr[1]->serial.read()<<std::endl;
+        return false;
     }
 
-    return -1;
+    return false;
 }
