@@ -23,6 +23,23 @@ Stereosystem::Stereosystem(Camera* l, Camera* r):
 
 Stereosystem::~Stereosystem()
 {
+	mR.release();
+	mT.release();
+	mE.release();
+	mF.release();
+	
+	mMap1[0].release();
+	mMap2[1].release();
+	mR0.release();
+	mR1.release(); 
+	mP0.release(); 
+	mP1.release(); 
+	mQ.release();
+	mIntrinsicLeft.release();
+	mIntrinsicRight.release();
+	mDistCoeffsLeft.release();
+	mDistCoeffsRight.release();
+	
 	LOG(INFO)<< mTag <<"Stereosystem destroyed\n";
 }
 
