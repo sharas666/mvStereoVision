@@ -187,8 +187,8 @@ bool Stereosystem::getImagepair(Stereopair& stereoimagepair)
 	//mLeft->getImage(leftImage);
 	std::vector<char> rightImage;
 	//mRight->getImage(rightImage);
-	std::future<bool> l = std::async(&Camera::getImage,mLeft,std::ref(leftImage));
-	std::future<bool> r = std::async(&Camera::getImage,mRight,std::ref(rightImage));
+	std::future<bool> l = std::async(std::launch::async,&Camera::getImage,mLeft,std::ref(leftImage));
+	std::future<bool> r = std::async(std::launch::async,&Camera::getImage,mRight,std::ref(rightImage));
 
 	if(l.get() && r.get())
 	{
