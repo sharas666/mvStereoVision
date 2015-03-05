@@ -28,15 +28,13 @@ int main(int argc, char* argv[])
 	{
 		return 0;
 	}
-	
-	
+		
 	Stereosystem stereo(left,right);
 
-
-	if(!stereo.loadIntrinsic("parameter/intrinsic.yml"))
-		return 0;
-	if(!stereo.loadExtrinisic("parameter/extrinsic.yml"))
-		return 0;
+	// if(!stereo.loadIntrinsic("parameter/intrinsic.yml"))
+	// 	return 0;
+	// if(!stereo.loadExtrinisic("parameter/extrinsic.yml"))
+	// 	return 0;
 
 	Stereopair s;
 
@@ -59,8 +57,8 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
-	left->setExposure(18000);
-	right->setExposure(18000);
+	left->setExposure(24000);
+	right->setExposure(24000);
 
 	char key = 0;
  	int binning = 0;
@@ -74,6 +72,7 @@ int main(int argc, char* argv[])
 	
 		if(!stereo.getImagepair(s))
 		{
+			std::cout << "foo" << std::endl;
 			break;
 		}
 		cv::imshow("Left", s.mLeft);

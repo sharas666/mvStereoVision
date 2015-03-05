@@ -142,19 +142,6 @@ bool Stereosystem::loadExtrinisic(std::string const& file )
 	return success;
 }
 
-bool Stereosystem::saveExtrinsic(std::string const& file)
-{
-	cv::FileStorage fs;
- 	bool success = fs.open(file, cv::FileStorage::WRITE);
-  	fs << "R" << mR;
-  	fs << "T" << mT;
-  	fs << "E" << mE;
-  	fs << "F" << mF;
-  	fs.release();
-  	LOG(INFO) << mTag <<"saved Extrinsics.\n";
-	return success;
-}
-
 bool Stereosystem::loadIntrinsic(std::string const& file)
 {
 	cv::FileStorage fs;
@@ -165,6 +152,19 @@ bool Stereosystem::loadIntrinsic(std::string const& file)
   	fs["distCoeffsRight"] >> mDistCoeffsRight;
   	fs.release();
   	LOG(INFO) << mTag <<"loaded Intrinsics.\n";
+	return success;
+}
+
+bool Stereosystem::saveExtrinsic(std::string const& file)
+{
+	cv::FileStorage fs;
+ 	bool success = fs.open(file, cv::FileStorage::WRITE);
+  	fs << "R" << mR;
+  	fs << "T" << mT;
+  	fs << "E" << mE;
+  	fs << "F" << mF;
+  	fs.release();
+  	LOG(INFO) << mTag <<"saved Extrinsics.\n";
 	return success;
 }
 
@@ -201,10 +201,13 @@ bool Stereosystem::getImagepair(Stereopair& stereoimagepair)
 
 bool Stereosystem::getUndistortedImagepair(Stereopair& sip)
 {
+	cv::Mat tmpLeft, tmpRight;
 	if(this->getImagepair(sip))
 	{
-		cv::undistort(sip.mLeft, sip.mLeft, mIntrinsicLeft, mDistCoeffsLeft);
-		cv::undistort(sip.mRight, sip.mRight, mIntrinsicRight, mDistCoeffsRight);
+		cv::undistort(sip.mLeft, tmpLeft, mIntrinsicLeft, mDistCoeffsLeft);
+		cv::undistort(sip.mRight, tmpRight, mIntrinsicRight, mDistCoeffsRight);
+		tmpLeft.copyTo(sip.mLeft);
+		tmpRight.copyTo(sip.mRight);
 		return true;
 	}
 
@@ -226,14 +229,14 @@ bool Stereosystem::initRectification()
 			mIntrinsicLeft /=2;
 			mIntrinsicRight/=2;
 		}
-		
+
 		cv::stereoRectify(mIntrinsicLeft, mDistCoeffsLeft, mIntrinsicRight, mDistCoeffsRight,
 		                      imagesizeL, mR, mT, mR0, mR1, mP0, mP1, mQ, CV_CALIB_ZERO_DISPARITY, 0, 
 		                      imagesizeL, &mValidROI[0], &mValidROI[1]);
 		
 		cv::initUndistortRectifyMap(mIntrinsicLeft, mDistCoeffsLeft, mR0, mP0, imagesizeL, CV_32FC1, mMap1[0], mMap2[0]);
 		cv::initUndistortRectifyMap(mIntrinsicRight, mDistCoeffsRight, mR1, mP1, imagesizeL, CV_32FC1, mMap1[1], mMap2[1]);
-		
+
 		mDisplayROI = mValidROI[0] & mValidROI[1];
 		
 		LOG(INFO) << mTag << "Rectification successfully initialized!" <<std::endl;
@@ -261,11 +264,11 @@ bool Stereosystem::getRectifiedImagepair(Stereopair& sip)
 	if(mIsInit)
 	{
 		cv::remap(sip.mLeft, sip.mLeft, mMap1[0], mMap2[0], cv::INTER_LINEAR);
-    	cv::remap(sip.mRight, sip.mRight, mMap1[1], mMap2[1], cv::INTER_LINEAR);
+    cv::remap(sip.mRight, sip.mRight, mMap1[1], mMap2[1], cv::INTER_LINEAR);
 
-   		sip.mLeft = sip.mLeft(mDisplayROI);
-   		sip.mLeft = sip.mLeft(mDisplayROI);
-   		return true;
+   	sip.mLeft = sip.mLeft(mDisplayROI);
+   	sip.mLeft = sip.mLeft(mDisplayROI);
+   	return true;
 
 	}
 	else
