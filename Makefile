@@ -50,6 +50,18 @@ disparity: directories $(OBJ)
 	@$(CC) $(OBJ) $(TARGETOBJDIR)/liveDisparity.o -o $(BINDIR)/liveDisparity $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
+calibrate-single: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/calibrate-single.cpp -o $(TARGETOBJDIR)/calibrate-single.o
+	@echo Compiled calibrate-single.cpp successfully!
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/calibrate-single.o -o $(BINDIR)/calibrate-single $(LIB_PATH) $(LIBS)
+	@echo Linking complete!
+
+calibrate-stereo: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/calibrate-stereo.cpp -o $(TARGETOBJDIR)/calibrate-stereo.o
+	@echo Compiled calibrate-stereo.cpp successfully!
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/calibrate-stereo.o -o $(BINDIR)/calibrate-stereo $(LIB_PATH) $(LIBS)
+	@echo Linking complete!
+
 directories:
 	${MKDIR_P} ${OBJDIR}
 	${MKDIR_P} ${BINDIR}
