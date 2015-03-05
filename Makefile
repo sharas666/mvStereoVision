@@ -62,6 +62,12 @@ calibrate-stereo: directories $(OBJ)
 	@$(CC) $(OBJ) $(TARGETOBJDIR)/calibrate-stereo.o -o $(BINDIR)/calibrate-stereo $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
+show-rectified: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/show-rectified.cpp -o $(TARGETOBJDIR)/show-rectified.o
+	@echo Compiled show-rectified.cpp successfully!
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/show-rectified.o -o $(BINDIR)/show-rectified $(LIB_PATH) $(LIBS)
+	@echo Linking complete!
+
 directories:
 	${MKDIR_P} ${OBJDIR}
 	${MKDIR_P} ${BINDIR}
