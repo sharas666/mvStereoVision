@@ -9,6 +9,8 @@
 
 #include "easylogging++.h"
 
+#include "opencv2/opencv.hpp"
+
 //Pixelformat
 #define MONO8 0
 #define MONO16 1
@@ -28,6 +30,7 @@ class Camera
 
 		//Functions
 		void 			getImage(std::vector<char>&);
+		void 			calibrate(std::vector<cv::Mat> const&);
 
 		//Setter
 		void 			setExposure(unsigned int);
@@ -42,6 +45,8 @@ class Camera
 		int 			getExposure() 		const;
 		float 			getGain() 			const;
 		int 			getBinningMode()	const;
+		cv::Mat getIntrinsic() const;
+		cv::Mat getDistCoeffs() const;
 
 
 	private:
@@ -63,6 +68,9 @@ class Camera
 		unsigned int 								mWidth;
 		unsigned int 								mHeight;
 		int 										mBinningMode;
+
+		cv::Mat mIntrinsic;
+		cv::Mat mDistCoeffs;
 };
 
 

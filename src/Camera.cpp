@@ -12,7 +12,9 @@ Camera::Camera():
 	mTag(" CAMERA "),
 	mWidth(0),
 	mHeight(0),
-	mBinningMode(0)
+	mBinningMode(0),
+	mIntrinsic(),
+	mDistCoeffs()
 	{}
 
 Camera::Camera(mvIMPACT::acquire::Device* dev):
@@ -86,6 +88,64 @@ void Camera::getImage(std::vector<char> &imageToReturn)
 	std::cerr << "Error, invalid requestnumber!" << std::endl;
 	LOG(ERROR) << mTag << "Error, invalid requestnumber!" << std::endl;
 	mFunctionInterface.imageRequestUnlock(requestNr);
+}
+
+void Camera::calibrate(std::vector<cv::Mat> const& images)
+{
+	int hCorners = 9;
+	int vCorners = 6;
+
+	cv::Size boardSize = cv::Size(hCorners, vCorners);
+
+	std::vector<cv::Mat> rvecs,tvecs;
+	std::vector<std::vector<cv::Point3f> > objectPoints;
+  std::vector<std::vector<cv::Point2f> > imagePoints;
+  std::vector<cv::Point2f> corners;
+  std::vector<cv::Point3f> obj;
+
+  // camera matrices
+  cv::Mat intrinsic, distCoeffs;
+  
+  // size of calibration patteren squares
+  float squaresize = 27.5;
+  for(int y=0; y<vCorners; ++y) {
+    for(int x=0; x<hCorners; ++x) {
+      obj.push_back(cv::Point3f((float(x)*squaresize),(float(y)*squaresize),0));
+    }
+  }
+
+	for(unsigned int i = 0; i < images.size(); ++i) {
+		cv::Mat grayImage;
+
+  	cv::cvtColor(images[i], grayImage, CV_BGR2GRAY);
+
+    bool found = cv::findChessboardCorners( grayImage, boardSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+
+		if(found) {
+      cv::cornerSubPix(grayImage, corners, cv::Size(5,5), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 300, 0.1));
+
+      imagePoints.push_back(corners);
+      objectPoints.push_back(obj);
+
+      std::cout << "Found " << i << std::endl;
+
+      grayImage.release();
+		}
+		else
+		{
+			std::cout << "Unable to find Corners in image " << i << ". Image ignored" << std::endl;
+			continue;
+		}
+  }
+
+  cv::Size imagesize = cv::Size(images[0].size());
+
+  // calibrate the camera	
+  cv::calibrateCamera(objectPoints, imagePoints, imagesize, intrinsic, distCoeffs, rvecs, tvecs);
+
+  // assign intrinsic and extrinsic to camera
+  mIntrinsic = intrinsic;
+  mDistCoeffs = distCoeffs;
 }
 
 void Camera::setExposure(unsigned int exposure)
@@ -170,4 +230,14 @@ float Camera::getGain() const
 int Camera::getBinningMode() const
 {
 	return mBinningMode;
+}
+
+cv::Mat Camera::getIntrinsic() const
+{
+	return mIntrinsic;
+}
+
+cv::Mat Camera::getDistCoeffs() const
+{
+	return mDistCoeffs;
 }
