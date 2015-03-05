@@ -54,12 +54,82 @@ double Stereosystem::calibrate(std::vector<cv::Mat> const& leftImages,
 															 std::vector<cv::Mat> const& rightImages)
 
 {
-	
-	return 0.0;
+
+	if(leftImages.size() == rightImages.size())
+	{
+		mLeft->calibrate(leftImages);
+		mRight->calibrate(rightImages);
+
+		mIntrinsicLeft = mLeft->getIntrinsic();
+		mIntrinsicRight = mRight->getIntrinsic();
+		mDistCoeffsLeft = mLeft->getDistCoeffs();
+		mDistCoeffsRight = mRight->getDistCoeffs();
+
+		int hCorners = 9;
+		int vCorners = 6;
+
+		cv::Size boardSize = cv::Size(hCorners, vCorners);
+
+		std::vector<std::vector<cv::Point3f> > objectPoints;
+	  std::vector<std::vector<cv::Point2f> > imagePointsLeft;
+	  std::vector<std::vector<cv::Point2f> > imagePointsRight;
+	  std::vector<cv::Point2f> cornersLeft;
+	  std::vector<cv::Point2f> cornersRight;
+	  std::vector<cv::Point3f> obj;
+
+	  // size of calibration patteren squares
+	  float squaresize = 27.5;
+	  for(int y=0; y<vCorners; ++y) {
+	    for(int x=0; x<hCorners; ++x) {
+	      obj.push_back(cv::Point3f((float(x)*squaresize),(float(y)*squaresize),0));
+	    }
+	  }
+
+		for(unsigned int i = 0; i < leftImages.size(); ++i) {
+			cv::Mat grayImageLeft;
+			cv::Mat grayImageRight;
+
+	  	cv::cvtColor(leftImages[i], grayImageLeft, CV_BGR2GRAY);
+	  	cv::cvtColor(rightImages[i], grayImageRight, CV_BGR2GRAY);
+
+	    bool foundL = cv::findChessboardCorners( grayImageLeft, boardSize, cornersLeft, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+	    bool foundR = cv::findChessboardCorners( grayImageRight, boardSize, cornersRight, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+
+			if(foundL && foundR) {
+	      cv::cornerSubPix(grayImageLeft, cornersLeft, cv::Size(5,5), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 300, 0.1));
+	      cv::cornerSubPix(grayImageRight, cornersRight, cv::Size(5,5), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 300, 0.1));
+
+	      imagePointsLeft.push_back(cornersLeft);
+	      imagePointsRight.push_back(cornersRight);
+
+	      objectPoints.push_back(obj);
+
+	      std::cout << "Found " << i << std::endl;
+
+	      grayImageLeft.release();
+	      grayImageRight.release();
+			}
+			else
+			{
+				std::cout << "Unable to find Corners in image " << i << ". Image ignored" << std::endl;
+				continue;
+			}
+	  }
+
+	  cv::Size imagesize = cv::Size(leftImages[0].size());
+		double stereoRMS = cv::stereoCalibrate(objectPoints,imagePointsLeft,imagePointsRight,
+                                           mIntrinsicLeft,mDistCoeffsLeft,mIntrinsicRight,mDistCoeffsRight,
+                                           imagesize,mR,mT,mE,mF,
+                                           cv::TermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 300, 1e-7));
+
+		return stereoRMS;
+	}
+
+	return -1.0;
 
 }
 
-bool Stereosystem::loadExtrinisic(std::string file)
+bool Stereosystem::loadExtrinisic(std::string const& file )
 {
 	cv::FileStorage fs;
  	bool success = fs.open(file, cv::FileStorage::READ);
@@ -68,11 +138,24 @@ bool Stereosystem::loadExtrinisic(std::string file)
   	fs["E"] >> mE;
   	fs["F"] >> mF;
   	fs.release();
-
+  	LOG(INFO) << mTag <<"loaded Extrinsics.\n";
 	return success;
 }
 
-bool Stereosystem::loadIntrinsic(std::string file)
+bool Stereosystem::saveExtrinsic(std::string const& file)
+{
+	cv::FileStorage fs;
+ 	bool success = fs.open(file, cv::FileStorage::WRITE);
+  	fs << "R" << mR;
+  	fs << "T" << mT;
+  	fs << "E" << mE;
+  	fs << "F" << mF;
+  	fs.release();
+  	LOG(INFO) << mTag <<"saved Extrinsics.\n";
+	return success;
+}
+
+bool Stereosystem::loadIntrinsic(std::string const& file)
 {
 	cv::FileStorage fs;
 	bool success = fs.open(file, cv::FileStorage::READ);
@@ -81,31 +164,51 @@ bool Stereosystem::loadIntrinsic(std::string file)
   	fs["distCoeffsLeft"] >> mDistCoeffsLeft;
   	fs["distCoeffsRight"] >> mDistCoeffsRight;
   	fs.release();
-
+  	LOG(INFO) << mTag <<"loaded Intrinsics.\n";
 	return success;
 }
 
-void Stereosystem::getImagepair(Stereopair& stereoimagepair)
+bool Stereosystem::saveIntrinsic(std::string const& file)
+{
+	cv::FileStorage fs;
+	bool success = fs.open(file, cv::FileStorage::WRITE);
+  	fs << "cameraMatrixLeft" << mIntrinsicLeft;
+  	fs << "cameraMatrixRight" << mIntrinsicRight;
+  	fs << "distCoeffsLeft" << mDistCoeffsLeft;
+  	fs << "distCoeffsRight" << mDistCoeffsRight;
+  	fs.release();
+  	LOG(INFO) << mTag <<"saved Intrinsics.\n";
+	return success;
+}
+
+bool Stereosystem::getImagepair(Stereopair& stereoimagepair)
 {
 	std::vector<char> leftImage;
 	//mLeft->getImage(leftImage);
 	std::vector<char> rightImage;
 	//mRight->getImage(rightImage);
-	std::thread l(&Camera::getImage,mLeft,std::ref(leftImage));
-	std::thread r(&Camera::getImage,mRight,std::ref(rightImage));
-	l.join();
-	r.join();
+	std::future<bool> l = std::async(&Camera::getImage,mLeft,std::ref(leftImage));
+	std::future<bool> r = std::async(&Camera::getImage,mRight,std::ref(rightImage));
 
-	cv::Mat(mLeft->getImageHeight(),mLeft->getImageWidth(), CV_8UC1, &leftImage[0]).copyTo(stereoimagepair.mLeft);
-	cv::Mat(mRight->getImageHeight(),mRight->getImageWidth(), CV_8UC1, &rightImage[0]).copyTo(stereoimagepair.mRight);	
+	if(l.get() && r.get())
+	{
+		cv::Mat(mLeft->getImageHeight(),mLeft->getImageWidth(), CV_8UC1, &leftImage[0]).copyTo(stereoimagepair.mLeft);
+		cv::Mat(mRight->getImageHeight(),mRight->getImageWidth(), CV_8UC1, &rightImage[0]).copyTo(stereoimagepair.mRight);	
+		return true;
+	}
+	return false;
 }
 
-void Stereosystem::getUndistortedImagepair(Stereopair& sip)
+bool Stereosystem::getUndistortedImagepair(Stereopair& sip)
 {
-	this->getImagepair(sip);
+	if(this->getImagepair(sip))
+	{
+		cv::undistort(sip.mLeft, sip.mLeft, mIntrinsicLeft, mDistCoeffsLeft);
+		cv::undistort(sip.mRight, sip.mRight, mIntrinsicRight, mDistCoeffsRight);
+		return true;
+	}
 
-	cv::undistort(sip.mLeft, sip.mLeft, mIntrinsicLeft, mDistCoeffsLeft);
-	cv::undistort(sip.mRight, sip.mRight, mIntrinsicRight, mDistCoeffsRight);
+	return false;
 }
 
 bool Stereosystem::initRectification()
@@ -192,7 +295,12 @@ bool Stereosystem::getRectifiedImagepair(Stereopair& sip)
  	mIsInit = false;
  }
 
- void Stereosystem::getFundamentalMatrix(cv::Mat &fundamental)
+ void Stereosystem::getFundamentalMatrix(cv::Mat &fundamental) const
  {
  	mF.copyTo(fundamental);
+ }
+
+ void Stereosystem::getTranslationMatrix(cv::Mat &translation) const
+ {
+ 	mT.copyTo(translation);
  }

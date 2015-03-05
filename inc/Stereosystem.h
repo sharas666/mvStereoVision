@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <thread>
+#include <future>
 
 //OPENCV Stuff
 #include "opencv2/opencv.hpp"
@@ -23,18 +23,21 @@ class Stereosystem
 		double calibrate(std::string);
 		double calibrate(std::vector<cv::Mat> const&, std::vector<cv::Mat> const&);
 
-		bool loadExtrinisic(std::string);
-		bool loadIntrinsic(std::string);
+		bool loadExtrinisic(std::string const&);
+		bool loadIntrinsic(std::string const&);
+		bool saveExtrinsic(std::string const&);
+		bool saveIntrinsic(std::string const&);
 
-		void getImagepair(Stereopair&);
-		void getUndistortedImagepair(Stereopair&);
+		bool getImagepair(Stereopair&);
+		bool getUndistortedImagepair(Stereopair&);
 
 		bool initRectification();
 		bool getRectifiedImagepair(Stereopair&);
 
 		void resetRectification();
 
-		void getFundamentalMatrix(cv::Mat &);
+		void getFundamentalMatrix(cv::Mat &) const;
+		void getTranslationMatrix(cv::Mat &) const;
 
 	private:
 		Camera 			*mLeft;
