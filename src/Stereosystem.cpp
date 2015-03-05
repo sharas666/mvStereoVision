@@ -18,12 +18,12 @@ Stereosystem::Stereosystem(Camera* l, Camera* r):
 	mDistCoeffsRight(),
 	mTag("STEREOSYSTEM\t")
 {
-	std::cout<<"Stereosystem created\n";
+	LOG(INFO)<< mTag <<"Stereosystem created\n";
 }
 
 Stereosystem::~Stereosystem()
 {
-	std::cout<<"Stereosystem destroyed\n";
+	LOG(INFO)<< mTag <<"Stereosystem destroyed\n";
 }
 
 double Stereosystem::calibrate(std::string path)
@@ -41,13 +41,13 @@ double Stereosystem::calibrate(std::vector<cv::Mat> const& leftImages, std::vect
 
 bool Stereosystem::loadExtrinisic(std::string file)
 {
- 	cv::FileStorage fs;
+	cv::FileStorage fs;
  	bool success = fs.open(file, cv::FileStorage::READ);
-  fs["R"] >> mR;
-  fs["T"] >> mT;
-  fs["E"] >> mE;
-  fs["F"] >> mF;
-  fs.release();
+  	fs["R"] >> mR;
+  	fs["T"] >> mT;
+  	fs["E"] >> mE;
+  	fs["F"] >> mF;
+  	fs.release();
 
 	return success;
 }
@@ -56,11 +56,11 @@ bool Stereosystem::loadIntrinsic(std::string file)
 {
 	cv::FileStorage fs;
 	bool success = fs.open(file, cv::FileStorage::READ);
-  fs["cameraMatrixLeft"] >> mIntrinsicLeft;
-  fs["cameraMatrixRight"] >> mIntrinsicRight;
-  fs["distCoeffsLeft"] >> mDistCoeffsLeft;
-  fs["distCoeffsRight"] >> mDistCoeffsRight;
-  fs.release();
+  	fs["cameraMatrixLeft"] >> mIntrinsicLeft;
+  	fs["cameraMatrixRight"] >> mIntrinsicRight;
+  	fs["distCoeffsLeft"] >> mDistCoeffsLeft;
+  	fs["distCoeffsRight"] >> mDistCoeffsRight;
+  	fs.release();
 
 	return success;
 }
@@ -94,7 +94,7 @@ bool Stereosystem::initRectification()
 
 	cv::Size imagesizeL(mLeft->getImageWidth(), mLeft->getImageHeight());
 	cv::Size imagesizeR(mRight->getImageWidth(), mRight->getImageHeight());
-	std::cout<<imagesizeL << " "<< imagesizeR <<std::endl;
+	LOG(INFO) << mTag << "Imagessizes are: "<< imagesizeL << " "<< imagesizeR <<std::endl;
 	
 	if(imagesizeL == imagesizeR)
 	{
@@ -131,7 +131,7 @@ bool Stereosystem::initRectification()
 	return false;
 }
 
-void Stereosystem::getRectifiedImagepair(Stereopair& sip)
+bool Stereosystem::getRectifiedImagepair(Stereopair& sip)
 {
 
 	this->getImagepair(sip);
@@ -142,12 +142,16 @@ void Stereosystem::getRectifiedImagepair(Stereopair& sip)
 
    		sip.mLeft = sip.mLeft(mDisplayROI);
    		sip.mLeft = sip.mLeft(mDisplayROI);
+   		return true;
 
 	}
 	else
 	{
 		if(!this->initRectification())
+		{
 			LOG(ERROR) << "rectification failed!\n";
+			return false;
+		}
 		else
 		{
 			cv::remap(sip.mLeft, sip.mLeft, mMap1[0], mMap2[0], cv::INTER_LINEAR);
@@ -155,12 +159,20 @@ void Stereosystem::getRectifiedImagepair(Stereopair& sip)
 
 	   		sip.mLeft = sip.mLeft(mDisplayROI);
 	   		sip.mLeft = sip.mLeft(mDisplayROI);
+	   		return true;
 		
 		}
+		return false;
 	}
+	return false;
  }
 
  void Stereosystem::resetRectification()
  {
  	mIsInit = false;
+ }
+
+ void Stereosystem::getFundamentalMatrix(cv::Mat &fundamental)
+ {
+ 	mF.copyTo(fundamental);
  }
