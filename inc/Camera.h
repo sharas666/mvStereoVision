@@ -29,8 +29,8 @@ class Camera
 						~Camera();
 
 		//Functions
-		void 			getImage(std::vector<char>&);
-		void 			calibrate(std::vector<cv::Mat> const&);
+		bool 			getImage(std::vector<char>&);
+		double 			calibrate(std::vector<cv::Mat> const&);
 
 		//Setter
 		void 			setExposure(unsigned int);

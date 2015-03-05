@@ -46,7 +46,7 @@ Camera::~Camera()
 }
 
 
-void Camera::getImage(std::vector<char> &imageToReturn)
+bool Camera::getImage(std::vector<char> &imageToReturn)
 {
 	int result = DMR_NO_ERROR;
 	//request an image
@@ -60,6 +60,7 @@ void Camera::getImage(std::vector<char> &imageToReturn)
 		LOG(ERROR)<< mTag << "Error while requesting for image: "<<\
 		mvIMPACT::acquire::ImpactAcquireException::getErrorCodeAsString(result)<<\
 		std::endl;
+		return false;
 	}
 
 	int requestNr = mFunctionInterface.imageRequestWaitFor(mTimeout);
@@ -76,21 +77,23 @@ void Camera::getImage(std::vector<char> &imageToReturn)
 			mWidth = mRequest->imageWidth.read();
 			mHeight = mRequest->imageHeight.read();
 			mFunctionInterface.imageRequestUnlock(requestNr);
-			return;
+			return true;
 		}
 		else
 		{
 			std::cerr << "Error, request not OK!" <<std::endl;
 			LOG(ERROR) << mTag << "Error, request not OK!" <<std::endl;
-			return;
+			return false;
 		}
 	}
 	std::cerr << "Error, invalid requestnumber!" << std::endl;
 	LOG(ERROR) << mTag << "Error, invalid requestnumber!" << std::endl;
 	mFunctionInterface.imageRequestUnlock(requestNr);
+
+	return false;
 }
 
-void Camera::calibrate(std::vector<cv::Mat> const& images)
+double Camera::calibrate(std::vector<cv::Mat> const& images)
 {
 	int hCorners = 9;
 	int vCorners = 6;
@@ -141,11 +144,13 @@ void Camera::calibrate(std::vector<cv::Mat> const& images)
   cv::Size imagesize = cv::Size(images[0].size());
 
   // calibrate the camera	
-  cv::calibrateCamera(objectPoints, imagePoints, imagesize, intrinsic, distCoeffs, rvecs, tvecs);
+  double rms = cv::calibrateCamera(objectPoints, imagePoints, imagesize, intrinsic, distCoeffs, rvecs, tvecs);
 
   // assign intrinsic and extrinsic to camera
   mIntrinsic = intrinsic;
   mDistCoeffs = distCoeffs;
+
+  return rms;
 }
 
 void Camera::setExposure(unsigned int exposure)
