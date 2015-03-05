@@ -59,6 +59,9 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
+	left->setExposure(18000);
+	right->setExposure(18000);
+
 	char key = 0;
  	int binning = 0;
 	int imageCounter = 0;
@@ -69,7 +72,7 @@ int main(int argc, char* argv[])
 	while(running)
 	{
 	
-		if(!stereo.getRectifiedImagepair(s))
+		if(!stereo.getImagepair(s))
 		{
 			break;
 		}
