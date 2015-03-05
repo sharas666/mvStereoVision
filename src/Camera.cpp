@@ -86,7 +86,6 @@ bool Camera::getImage(std::vector<char> &imageToReturn)
 			return false;
 		}
 	}
-	std::cerr << "Error, invalid requestnumber!" << std::endl;
 	LOG(ERROR) << mTag << "Error, invalid requestnumber!" << std::endl;
 	mFunctionInterface.imageRequestUnlock(requestNr);
 
@@ -200,7 +199,6 @@ void Camera::setBinning(unsigned int option)
 			mBinningMode = BINNING_HV;
 			break;
 		default:
-			std::cerr << "Unknown binning mode: " << option << std::endl;
 			LOG(WARNING)<< mTag << "Unknown binning mode: " << option <<\
 								 ". No binning performed." << std::endl;
 			break;
