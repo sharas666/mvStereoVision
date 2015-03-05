@@ -43,13 +43,6 @@ Stereosystem::~Stereosystem()
 	LOG(INFO)<< mTag <<"Stereosystem destroyed\n";
 }
 
-double Stereosystem::calibrate(std::string path)
-{
-	std::cout<<"Calibration with path to images\n";
-	return 0.0;
-}
-
-
 double Stereosystem::calibrate(std::vector<cv::Mat> const& leftImages,
 															 std::vector<cv::Mat> const& rightImages)
 
