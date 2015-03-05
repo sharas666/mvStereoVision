@@ -33,10 +33,13 @@ double Stereosystem::calibrate(std::string path)
 }
 
 
-double Stereosystem::calibrate(std::vector<cv::Mat> const& leftImages, std::vector<cv::Mat> const& rightImages)
+double Stereosystem::calibrate(std::vector<cv::Mat> const& leftImages,
+															 std::vector<cv::Mat> const& rightImages)
+
 {
-	std::cout<<"Calibration with given images\n";
+	
 	return 0.0;
+
 }
 
 bool Stereosystem::loadExtrinisic(std::string file)
