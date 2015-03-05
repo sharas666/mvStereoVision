@@ -30,9 +30,11 @@ class Stereosystem
 		void getUndistortedImagepair(Stereopair&);
 
 		bool initRectification();
-		void getRectifiedImagepair(Stereopair&);
+		bool getRectifiedImagepair(Stereopair&);
 
 		void resetRectification();
+
+		void getFundamentalMatrix(cv::Mat &);
 
 	private:
 		Camera 			*mLeft;
