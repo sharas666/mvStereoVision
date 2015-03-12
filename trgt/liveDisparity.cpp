@@ -54,20 +54,23 @@ int main(int argc, char* argv[])
 	int frame = 0;
  	int binning = 0;
 
-	if(!stereo.loadIntrinsic("parameter/intrinsic.yml"))
+	if(!stereo.loadIntrinsic("parameter-backup/intrinsic.yml"))
 		return 0;
-	if(!stereo.loadExtrinisic("parameter/extrinsic.yml"))
+	if(!stereo.loadExtrinisic("parameter-backup/extrinsic.yml"))
 		return 0;
 
 	Stereopair s;
 
-	left->setExposure(24000);
-	right->setExposure(24000);
+	//left->setExposure(24000);
+	//right->setExposure(24000);
 	
-	cv::StereoSGBM disparity(0,16,7,8*25,32*25);
-	std::thread disp(disparityCalc,std::ref(s),std::ref(disparity));
 	
 	int numDisp = 16;
+	int windSize = 5;
+
+	cv::StereoSGBM disparity(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
+	std::thread disp(disparityCalc,std::ref(s),std::ref(disparity));
+	
 	while(true)
 	{
 	
@@ -83,8 +86,7 @@ int main(int argc, char* argv[])
 			newDisparityMap = false;		
 		}
 		cond_var.notify_one();
-
-		
+	
 		key = cv::waitKey(10);
 		
 		if(char(key) == 'q')
@@ -103,20 +105,37 @@ int main(int argc, char* argv[])
 			right->setBinning(binning);
 			stereo.resetRectification();
 		}
-		else if(char(key) == 'o')
+		else if(char(key) == 'i')
 		{
 			std::unique_lock<std::mutex> ul(disparityLock);
 			numDisp +=16;
-			disparity = cv::StereoSGBM(0,numDisp,7,8*25,32*25);
+			disparity = cv::StereoSGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
 
 		}
-		else if(char(key) == 'i')
+		else if(char(key) == 'd')
 		{
 			std::unique_lock<std::mutex> ul(disparityLock);
 			if( numDisp > 16)
 			{
 			numDisp -=16;
-			disparity = cv::StereoSGBM(0,numDisp,7,8*25,32*25);
+			disparity = cv::StereoSGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
+			}
+			
+		}
+		else if(char(key) == 'e')
+		{
+			std::unique_lock<std::mutex> ul(disparityLock);
+			windSize +=2;
+			disparity = cv::StereoSGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
+
+		}
+		else if(char(key) == 'r')
+		{
+			std::unique_lock<std::mutex> ul(disparityLock);
+			if( windSize > 2)
+			{
+			windSize -=2;
+			disparity = cv::StereoSGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
 			}
 			
 		}
