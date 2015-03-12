@@ -245,16 +245,18 @@ bool Stereosystem::getImagepair(Stereopair& stereoimagepair)
 	//mLeft->getImage(leftImage);
 	std::vector<char> rightImage;
 	//mRight->getImage(rightImage);
-	std::future<bool> l = std::async(std::launch::async,&Camera::getImage,mLeft,std::ref(leftImage));
-	std::future<bool> r = std::async(std::launch::async,&Camera::getImage,mRight,std::ref(rightImage));
+	//std::future<bool> l = std::async(std::launch::async,&Camera::getImage,mLeft,std::ref(leftImage));
+	//std::future<bool> r = std::async(std::launch::async,&Camera::getImage,mRight,std::ref(rightImage));
 
-	if(l.get() && r.get())
-	{
-		cv::Mat(mLeft->getImageHeight(),mLeft->getImageWidth(), CV_8UC1, &leftImage[0]).copyTo(stereoimagepair.mLeft);
-		cv::Mat(mRight->getImageHeight(),mRight->getImageWidth(), CV_8UC1, &rightImage[0]).copyTo(stereoimagepair.mRight);	
+	std::thread t1(&Camera::getImage,mLeft,std::ref(leftImage));
+	std::thread t2(&Camera::getImage,mRight,std::ref(rightImage));
+	
+	t1.join();
+	t2.join();
+	cv::Mat(mLeft->getImageHeight(),mLeft->getImageWidth(), CV_8UC1, &leftImage[0]).copyTo(stereoimagepair.mLeft);
+	cv::Mat(mRight->getImageHeight(),mRight->getImageWidth(), CV_8UC1, &rightImage[0]).copyTo(stereoimagepair.mRight);	
 		return true;
-	}
-	return false;
+	
 }
 
 bool Stereosystem::getUndistortedImagepair(Stereopair& sip)
@@ -297,7 +299,7 @@ bool Stereosystem::initRectification()
 
 		mDisplayROI = mValidROI[0] & mValidROI[1];
 		
-		LOG(INFO) << mTag << "Rectification successfully initialized!" <<std::endl;
+		LOG(INFO) << mTag << "Rectification successfully initialized! "<< mDisplayROI <<std::endl;
 		mIsInit = true;
 
 		if(mLeft->getBinningMode() && mRight->getBinningMode())
