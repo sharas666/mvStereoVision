@@ -57,28 +57,33 @@ int Utility::getFiles (std::string const& dir, std::vector<std::string> &files)
 bool Utility::directoryExist(std::string const& dirPath)
 {
 	struct stat st = {0};
-	if(stat(dirPath.c_str(),&st) == -1)
+	if(stat(dirPath.c_str(),&st) == 0)
 	{
-		return false;
+		return true;
 	}
-	return true;
+	return false;
 }
 
 bool Utility::createDirectory(std::string const& dirPath)
 {
 	//split the path
-	std::size_t pos = 2;
+	// std::size_t pos = 2;
 	
-	while(pos < dirPath.length()-1)
-	{
-		pos = dirPath.find("/",pos+1);
-		if(mkdir(dirPath.substr(0,pos).c_str(), 0777) == -1) 
-  		{ 
-			LOG(ERROR)<< mTag << "Error("<< errno <<"): could not create: " << dirPath.substr(0,pos) << std::endl;
-			return false;
-  		} 
-	}
-  	return true;
+	// while(pos < dirPath.length()-1)
+	// {
+	// 	pos = dirPath.find("/",pos+1);
+	// 	if(mkdir(dirPath.substr(0,pos).c_str(), 0777) == -1) 
+ //  		{ 
+	// 		LOG(ERROR)<< mTag << "Error("<< errno <<"): could not create: " << dirPath.substr(0,pos) << std::endl;
+	// 		return false;
+ //  		} 
+	// }
+ //  	return true;
+    system(std::string("mkdir -p " + dirPath).c_str());
+    if(directoryExist(dirPath))
+        return true;
+    else
+        return false;
 }
 
 bool Utility::initCameras(mvIMPACT::acquire::DeviceManager &devMgr, Camera *&left, Camera *&right)
