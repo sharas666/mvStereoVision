@@ -301,6 +301,9 @@ bool Stereosystem::initRectification()
 
 		mDisplayROI = mValidROI[0] & mValidROI[1];
 
+		std::cout << "ROI 1: " << mValidROI[0] << std::endl;
+		std::cout << "ROI 2: " << mValidROI[1] << std::endl;
+
 		LOG(INFO) << mTag << "Rectification successfully initialized! "<< mDisplayROI <<std::endl;
 		mIsInit = true;
 

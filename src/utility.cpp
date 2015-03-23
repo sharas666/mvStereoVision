@@ -104,8 +104,8 @@ bool Utility::initCameras(mvIMPACT::acquire::DeviceManager &devMgr, Camera *&lef
     {
         if(devMgr[1]->serial.read() == "26803881")
         {
-            std::cout<<"Successfully initilized both camers" <<std::endl;
-            LOG(INFO)<< mTag << "Successfully initilized both camers" <<std::endl;
+            std::cout<<"Successfully initialized both camers" <<std::endl;
+            LOG(INFO)<< mTag << "Successfully initialized both camers" <<std::endl;
 
             left = new Camera(devMgr[0]);
             right= new Camera(devMgr[1]);
