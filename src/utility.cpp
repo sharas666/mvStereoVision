@@ -29,7 +29,7 @@ int Utility::getFiles (std::string const& dir, std::vector<std::string> &files)
     struct dirent *dirp;
 
     //Unable to open dir
-    if((dp  = opendir(dir.c_str())) == NULL) 
+    if((dp  = opendir(dir.c_str())) == NULL)
     {
         std::cout << "Error(" << errno << ") opening " << dir << std::endl;
         return errno;
@@ -68,15 +68,15 @@ bool Utility::createDirectory(std::string const& dirPath)
 {
 	//split the path
 	// std::size_t pos = 2;
-	
+
 	// while(pos < dirPath.length()-1)
 	// {
 	// 	pos = dirPath.find("/",pos+1);
-	// 	if(mkdir(dirPath.substr(0,pos).c_str(), 0777) == -1) 
- //  		{ 
+	// 	if(mkdir(dirPath.substr(0,pos).c_str(), 0777) == -1)
+ //  		{
 	// 		LOG(ERROR)<< mTag << "Error("<< errno <<"): could not create: " << dirPath.substr(0,pos) << std::endl;
 	// 		return false;
- //  		} 
+ //  		}
 	// }
  //  	return true;
     system(std::string("mkdir -p " + dirPath).c_str());
@@ -99,7 +99,7 @@ bool Utility::initCameras(mvIMPACT::acquire::DeviceManager &devMgr, Camera *&lef
         return false;
     }
 
-   
+
     if(devMgr[0]->serial.read() == "26803878")
     {
         if(devMgr[1]->serial.read() == "26803881")
@@ -108,7 +108,7 @@ bool Utility::initCameras(mvIMPACT::acquire::DeviceManager &devMgr, Camera *&lef
             LOG(INFO)<< mTag << "Successfully initilized both camers" <<std::endl;
 
             left = new Camera(devMgr[0]);
-            right= new Camera(devMgr[1]);   
+            right= new Camera(devMgr[1]);
             return true;
         }
         std::cerr << "Error in camera initialization, got Serials:" <<\
@@ -124,7 +124,7 @@ bool Utility::initCameras(mvIMPACT::acquire::DeviceManager &devMgr, Camera *&lef
         {
             std::cout<<"Successfully initilized both camers" <<std::endl;
             LOG(INFO)<< mTag << "Successfully initilized both camers" <<std::endl;
-            
+
             left = new Camera(devMgr[1]);
             right = new Camera(devMgr[0]);
             return true;
@@ -137,4 +137,32 @@ bool Utility::initCameras(mvIMPACT::acquire::DeviceManager &devMgr, Camera *&lef
     }
 
     return false;
+}
+
+
+bool Utility::checkConfig(std::string const& configfile, std::vector<std::string> const& nodes, cv::FileStorage &fs)
+{
+    bool success = fs.open(configfile, cv::FileStorage::READ);
+
+    for(std::string currentNode : nodes)
+    {
+        if(fs[currentNode].empty())
+        {
+            LOG(ERROR) << mTag << "Node " << currentNode << " in " << configfile << " is empty." << std::endl;
+            fs.release();
+            return false;
+        }
+    }
+
+    if(success)
+    {
+        LOG(INFO) << mTag <<"Successfully checked configuration." << std::endl;;
+        return true;
+     }
+    else
+    {
+        LOG(ERROR) << mTag << "Unable to open configuration: " << configfile << std::endl;
+        fs.release();
+        return false;
+    }
 }

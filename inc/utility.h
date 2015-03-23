@@ -32,7 +32,7 @@ struct Stereopair
 	Stereopair();
 	Stereopair(cv::Mat &, cv::Mat &);
 	~Stereopair();
-	
+
 
 	cv::Mat mLeft;
 	cv::Mat mRight;
@@ -55,6 +55,8 @@ namespace Utility
 	bool createDirectory(std::string const& dirPath);
 
 	bool initCameras(mvIMPACT::acquire::DeviceManager&,Camera*&,Camera*&);
+
+	bool checkConfig(std::string const&,std::vector<std::string> const&, cv::FileStorage &);
 }
 
 
