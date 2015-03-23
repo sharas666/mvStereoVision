@@ -68,6 +68,12 @@ show-rectified: directories $(OBJ)
 	@$(CC) $(OBJ) $(TARGETOBJDIR)/show-rectified.o -o $(BINDIR)/show-rectified $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
+continousCapture: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/continousCapture.cpp -o $(TARGETOBJDIR)/continousCapture.o
+	@echo Compiled continousCapture.cpp successfully!
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/continousCapture.o -o $(BINDIR)/continousCapture $(LIB_PATH) $(LIBS)
+	@echo Linking complete!
+
 directories:
 	${MKDIR_P} ${OBJDIR}
 	${MKDIR_P} ${BINDIR}
