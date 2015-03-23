@@ -27,19 +27,19 @@ Stereosystem::~Stereosystem()
 	mT.release();
 	mE.release();
 	mF.release();
-	
+
 	mMap1[0].release();
 	mMap2[1].release();
 	mR0.release();
-	mR1.release(); 
-	mP0.release(); 
-	mP1.release(); 
+	mR1.release();
+	mP0.release();
+	mP1.release();
 	mQ.release();
 	mIntrinsicLeft.release();
 	mIntrinsicRight.release();
 	mDistCoeffsLeft.release();
 	mDistCoeffsRight.release();
-	
+
 	LOG(INFO)<< mTag <<"Stereosystem destroyed\n";
 }
 
@@ -135,7 +135,7 @@ bool Stereosystem::loadExtrinisic(std::string const& file )
  	}
 
  	if(success)
- 	{	
+ 	{
  	  	fs["R"] >> mR;
  	  	fs["T"] >> mT;
  	  	fs["E"] >> mE;
@@ -191,23 +191,24 @@ bool Stereosystem::saveExtrinsic(std::string const& file)
 	 	fs << "R" << mR;
 	  	fs << "T" << mT;
 	  	fs << "E" << mE;
-	  	fs << "F" << mF;	
-		if(fs["R"].empty() || fs["T"].empty() || fs["E"].empty() || fs["F"].empty())
-		{
-	 		LOG(ERROR) << mTag << "Unable to save extrinsic to " << file << ". Empty Node" << std::endl;
-	 		fs.release();
-			return false;
-		}
+	  	fs << "F" << mF;
+
+		// if(fs["R"].empty() || fs["T"].empty() || fs["E"].empty() || fs["F"].empty())
+		// {
+	 // 		LOG(ERROR) << mTag << "Unable to save extrinsic to " << file << ". Empty Node" << std::endl;
+	 // 		fs.release();
+		// 	return false;
+		// }
 	  	LOG(INFO) << mTag <<"Successfully saved Extrinsics to " << file << std::endl;;
 		fs.release();
-		return true;  	
+		return true;
  	}
   	else
   	{
 	  	LOG(ERROR) << mTag <<"Unable to open " << file << " for saving." << std::endl;;
 	  	fs.release();
-		return false;	
-  	} 	
+		return false;
+  	}
 }
 
 bool Stereosystem::saveIntrinsic(std::string const& file)
@@ -220,23 +221,24 @@ bool Stereosystem::saveIntrinsic(std::string const& file)
 	  	fs << "cameraMatrixRight" << mIntrinsicRight;
 	  	fs << "distCoeffsLeft" << mDistCoeffsLeft;
 	  	fs << "distCoeffsRight" << mDistCoeffsRight;
-		if(fs["cameraMatrixLeft"].empty() || fs["cameraMatrixRight"].empty() || fs["distCoeffsRight"].empty() || fs["distCoeffsRight"].empty())
-	  	{
-	  		LOG(ERROR) << mTag << "Unable to save intrisic to " << file << ". Empty Node" << std::endl;
-	 		fs.release();
-			return false;
-	  	}
+
+		// if(fs["cameraMatrixLeft"].empty() || fs["cameraMatrixRight"].empty() || fs["distCoeffsLeft"].empty() || fs["distCoeffsRight"].empty())
+	 //  	{
+	 //  		LOG(ERROR) << mTag << "Unable to save intrisic to " << file << ". Empty Node" << std::endl;
+	 // 		fs.release();
+		// 	return false;
+	 //  	}
 	  	LOG(INFO) << mTag <<"Successfully saved Intrinsics to " << file << std::endl;
 	  	fs.release();
-		return true;	
+		return true;
 	}
 	else
 	{
 		LOG(ERROR) << mTag <<"Unable to open " << file << " for saving." << std::endl;;
 	  	fs.release();
-		return false;	
+		return false;
 	}
-  	
+
 }
 
 bool Stereosystem::getImagepair(Stereopair& stereoimagepair)
@@ -250,13 +252,13 @@ bool Stereosystem::getImagepair(Stereopair& stereoimagepair)
 
 	std::thread t1(&Camera::getImage,mLeft,std::ref(leftImage));
 	std::thread t2(&Camera::getImage,mRight,std::ref(rightImage));
-	
+
 	t1.join();
 	t2.join();
 	cv::Mat(mLeft->getImageHeight(),mLeft->getImageWidth(), CV_8UC1, &leftImage[0]).copyTo(stereoimagepair.mLeft);
-	cv::Mat(mRight->getImageHeight(),mRight->getImageWidth(), CV_8UC1, &rightImage[0]).copyTo(stereoimagepair.mRight);	
+	cv::Mat(mRight->getImageHeight(),mRight->getImageWidth(), CV_8UC1, &rightImage[0]).copyTo(stereoimagepair.mRight);
 		return true;
-	
+
 }
 
 bool Stereosystem::getUndistortedImagepair(Stereopair& sip)
@@ -281,7 +283,7 @@ bool Stereosystem::initRectification()
 	cv::Size imagesizeL(mLeft->getImageWidth(), mLeft->getImageHeight());
 	cv::Size imagesizeR(mRight->getImageWidth(), mRight->getImageHeight());
 	LOG(INFO) << mTag << "Imagessizes are: "<< imagesizeL << " "<< imagesizeR <<std::endl;
-	
+
 	if(imagesizeL == imagesizeR)
 	{
 		if(mLeft->getBinningMode() && mRight->getBinningMode())
@@ -291,14 +293,14 @@ bool Stereosystem::initRectification()
 		}
 
 		cv::stereoRectify(mIntrinsicLeft, mDistCoeffsLeft, mIntrinsicRight, mDistCoeffsRight,
-		                      imagesizeL, mR, mT, mR0, mR1, mP0, mP1, mQ, CV_CALIB_ZERO_DISPARITY, 0, 
+		                      imagesizeL, mR, mT, mR0, mR1, mP0, mP1, mQ, CV_CALIB_ZERO_DISPARITY, 0,
 		                      imagesizeL, &mValidROI[0], &mValidROI[1]);
-		
+
 		cv::initUndistortRectifyMap(mIntrinsicLeft, mDistCoeffsLeft, mR0, mP0, imagesizeL, CV_32FC1, mMap1[0], mMap2[0]);
 		cv::initUndistortRectifyMap(mIntrinsicRight, mDistCoeffsRight, mR1, mP1, imagesizeL, CV_32FC1, mMap1[1], mMap2[1]);
 
 		mDisplayROI = mValidROI[0] & mValidROI[1];
-		
+
 		LOG(INFO) << mTag << "Rectification successfully initialized! "<< mDisplayROI <<std::endl;
 		mIsInit = true;
 
@@ -313,7 +315,7 @@ bool Stereosystem::initRectification()
 	{
 		LOG(ERROR) << mTag << "Unable to init rectification" <<std::endl;
 		return false;
-	}	
+	}
 	return false;
 }
 
@@ -347,7 +349,7 @@ bool Stereosystem::getRectifiedImagepair(Stereopair& sip)
 	   		sip.mLeft = sip.mLeft(mDisplayROI);
 	   		sip.mLeft = sip.mLeft(mDisplayROI);
 	   		return true;
-		
+
 		}
 		return false;
 	}
