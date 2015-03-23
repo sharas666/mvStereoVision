@@ -74,6 +74,12 @@ continousCapture: directories $(OBJ)
 	@$(CC) $(OBJ) $(TARGETOBJDIR)/continousCapture.o -o $(BINDIR)/continousCapture $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
+undistorted: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/show-undistorted.cpp -o $(TARGETOBJDIR)/show-undistorted.o
+	@echo Compiled show-undistorted.cpp successfully!
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/show-undistorted.o -o $(BINDIR)/show-undistorted $(LIB_PATH) $(LIBS)
+	@echo Linking complete!
+
 directories:
 	${MKDIR_P} ${OBJDIR}
 	${MKDIR_P} ${BINDIR}
