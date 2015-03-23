@@ -1,0 +1,5 @@
+%YAML:1.0
+inputImages: ./newImages
+cleanOldImages: 0
+outputImages: ./newImages
+parameterOutput: ./parameter
