@@ -16,120 +16,144 @@ INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char* argv[])
 {
-	std::string tag = "MAIN\t";
+    std::string tag = "MAIN\t";
 
-	LOG(INFO) << tag << "Application started.";
-	mvIMPACT::acquire::DeviceManager devMgr;    
-	
-	Camera *left; 
-	Camera *right;
+    LOG(INFO) << tag << "Application started.";
+    mvIMPACT::acquire::DeviceManager devMgr;
 
-	if(!Utility::initCameras(devMgr,left,right))
-	{
-		return 0;
-	}
-		
-	Stereosystem stereo(left,right);
+    Camera *left;
+    Camera *right;
 
-	// if(!stereo.loadIntrinsic("parameter/intrinsic.yml"))
-	// 	return 0;
-	// if(!stereo.loadExtrinisic("parameter/extrinsic.yml"))
-	// 	return 0;
+    if(!Utility::initCameras(devMgr,left,right))
+    {
+        return 0;
+    }
 
-	Stereopair s;
+    Stereosystem stereo(left,right);
 
-	
-	std::string dirPath = "capturedImages";
-	std::string pathLeft = dirPath+"/left";
-	std::string pathRight = dirPath+"/right";
+    // if(!stereo.loadIntrinsic("parameter/intrinsic.yml"))
+    //  return 0;
+    // if(!stereo.loadExtrinisic("parameter/extrinsic.yml"))
+    //  return 0;
 
-	std::system(std::string("mkdir -p " + pathLeft).c_str());
-	std::system(std::string("mkdir -p " + pathRight).c_str());
-	
-	if(Utility::directoryExist(pathLeft) && Utility::directoryExist(pathRight))
-	{
-			LOG(INFO) << tag << "Successfully created directories for captured images." << std::endl; 
+    Stereopair s;
 
-	}
-	else
-	{
-		LOG(ERROR) << tag << "Unable to create directories for captured images." <<std::endl;
-		return 0;
-	}
+    std::vector<std::string> nodes;
+    nodes.push_back("outputImages");
+    nodes.push_back("cleanOldImages");
 
-	left->setExposure(24000);
-	right->setExposure(24000);
+    std::string config = "./configs/default.yml";
 
-	char key = 0;
- 	int binning = 0;
-	int imageCounter = 0;
-	cv::namedWindow("Left", cv::WINDOW_AUTOSIZE);
-	cv::namedWindow("Right", cv::WINDOW_AUTOSIZE);
-	bool running = true;
-	std::string filename = "";
-	while(running)
-	{
-	
-		if(!stereo.getImagepair(s))
-		{
-			std::cout << "foo" << std::endl;
-			break;
-		}
-		cv::imshow("Left", s.mLeft);
-		cv::imshow("Right", s.mRight);
-	
-		key = cv::waitKey(5);
-		
-		if(key > 0)
-		{
-			switch(key)
-			{
-				case 'q':
-					running = false;
-					LOG(INFO) << tag << "Exit requested" <<std::endl;
-					delete left;
-					left = NULL;
+    cv::FileStorage fs;
 
-					delete right;
-					right = NULL;
-					break;
-				case 'b':
-					if (binning == 0)
-						binning = 1;
-					else
-						binning =0;
 
-					left->setBinning(binning);
-					right->setBinning(binning);
-					stereo.resetRectification();
-					break;
-				case 'c':
-					filename = "";
-					if(imageCounter < 10)
-					{
-						filename+= "00" + std::to_string(imageCounter);
-					}
-					if(imageCounter >= 10 && imageCounter < 100)
-					{
-						filename+="0" + std::to_string(imageCounter);
-					}
+    if(!Utility::checkConfig(config,nodes,fs))
+    {
+        return 0;
+    }
 
-					cv::imwrite(pathLeft+"/left_"+filename+".jpg",s.mLeft);
-					cv::imwrite(pathRight+"/right_"+filename+".jpg",s.mRight);
-					LOG(INFO) << tag << "Wrote left image to " << std::string(pathLeft+"/left_"+filename+".jpg") <<std::endl;
-					LOG(INFO) << tag << "Wrote right image to " << std::string(pathRight+"/right_"+filename+".jpg") <<std::endl;
-					++imageCounter;
-					break;
-				case 'f':
-					std::cout<<left->getFramerate()<<" "<<right->getFramerate()<<std::endl;
-					break;
-				default:
-					std::cout << "Key pressed has no action" <<std::endl;
-					break;
-			}	
-		}
-	}
-	
 
-	return 0;
+    std::string dirPath;
+    fs["outputImages"] >> dirPath;
+
+    std::string pathLeft = dirPath+"/left";
+    std::string pathRight = dirPath+"/right";
+
+    bool cleanOldImages;
+    fs["cleanOldImages"] >> cleanOldImages;
+
+    if(cleanOldImages)
+    {
+        std::system(std::string("rm " + pathLeft + "/* -f ").c_str());
+        std::system(std::string("rm " + pathRight + "/* -f").c_str());
+    }
+
+    std::system(std::string("mkdir -p " + pathLeft).c_str());
+    std::system(std::string("mkdir -p " + pathRight).c_str());
+
+    if(Utility::directoryExist(pathLeft) && Utility::directoryExist(pathRight))
+    {
+            LOG(INFO) << tag << "Successfully created directories for captured images." << std::endl;
+    }
+    else
+    {
+        LOG(ERROR) << tag << "Unable to create directories for captured images." <<std::endl;
+        return 0;
+    }
+
+    left->setExposure(24000);
+    right->setExposure(24000);
+
+    char key = 0;
+    int binning = 0;
+    int imageCounter = 0;
+    cv::namedWindow("Left", cv::WINDOW_AUTOSIZE);
+    cv::namedWindow("Right", cv::WINDOW_AUTOSIZE);
+    bool running = true;
+    std::string filename = "";
+    while(running)
+    {
+
+        if(!stereo.getImagepair(s))
+        {
+            std::cout << "foo" << std::endl;
+            break;
+        }
+        cv::imshow("Left", s.mLeft);
+        cv::imshow("Right", s.mRight);
+
+        key = cv::waitKey(5);
+
+        if(key > 0)
+        {
+            switch(key)
+            {
+                case 'q':
+                    running = false;
+                    LOG(INFO) << tag << "Exit requested" <<std::endl;
+                    delete left;
+                    left = NULL;
+
+                    delete right;
+                    right = NULL;
+                    break;
+                case 'b':
+                    if (binning == 0)
+                        binning = 1;
+                    else
+                        binning =0;
+
+                    left->setBinning(binning);
+                    right->setBinning(binning);
+                    stereo.resetRectification();
+                    break;
+                case 'c':
+                    filename = "";
+                    if(imageCounter < 10)
+                    {
+                        filename+= "00" + std::to_string(imageCounter);
+                    }
+                    if(imageCounter >= 10 && imageCounter < 100)
+                    {
+                        filename+="0" + std::to_string(imageCounter);
+                    }
+
+                    cv::imwrite(pathLeft+"/left_"+filename+".jpg",s.mLeft);
+                    cv::imwrite(pathRight+"/right_"+filename+".jpg",s.mRight);
+                    LOG(INFO) << tag << "Wrote left image to " << std::string(pathLeft+"/left_"+filename+".jpg") <<std::endl;
+                    LOG(INFO) << tag << "Wrote right image to " << std::string(pathRight+"/right_"+filename+".jpg") <<std::endl;
+                    ++imageCounter;
+                    break;
+                case 'f':
+                    std::cout<<left->getFramerate()<<" "<<right->getFramerate()<<std::endl;
+                    break;
+                default:
+                    std::cout << "Key pressed has no action" <<std::endl;
+                    break;
+            }
+        }
+    }
+
+
+    return 0;
 }
