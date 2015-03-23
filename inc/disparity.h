@@ -13,10 +13,8 @@
 namespace Disparity 
 {
 	void sgbm(Stereopair const&, cv::Mat&, cv::StereoSGBM);
+  void bm(Stereopair const&, cv::Mat&, cv::StereoBM);
+  void ncc(Stereopair const&, cv::Mat&);
 }
-
-
-
-
 
 #endif
