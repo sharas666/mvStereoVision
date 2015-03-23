@@ -15,13 +15,14 @@ INITIALIZE_EASYLOGGINGPP
 std::mutex disparityLock;
 std::condition_variable cond_var;
 bool newDisparityMap = false;
+bool newDisparityMap2 = false;
+bool newDisparityMap3 = false;
 bool running = true;
-cv::Mat dispMap;
+cv::Mat dispMap, dispMap2, dispMap3;
 
 
 void disparityCalc(Stereopair const& s, cv::StereoSGBM &disparity)
 {
-
 	while(running)	
 	{
 		std::unique_lock<std::mutex> ul(disparityLock);
@@ -29,7 +30,27 @@ void disparityCalc(Stereopair const& s, cv::StereoSGBM &disparity)
 		Disparity::sgbm(s, dispMap, disparity);
 		newDisparityMap=true;
 	}
+}
 
+void disparityCalcBM( Stereopair const& s, cv::StereoBM &disparity)
+{
+	while(running)
+	{
+		std::unique_lock<std::mutex> ul(disparityLock);
+		cond_var.wait(ul);
+		Disparity::bm(s, dispMap2, disparity);
+		newDisparityMap2=true;
+	}
+}
+
+void disparityCalcNCC( Stereopair const& s) {
+	while(running)
+	{
+		std::unique_lock<std::mutex> ul(disparityLock);
+		cond_var.wait(ul);
+		Disparity::ncc(s, dispMap3);
+		newDisparityMap3=true;
+	}
 }
 
 int main(int argc, char* argv[])
@@ -54,9 +75,9 @@ int main(int argc, char* argv[])
 	int frame = 0;
  	int binning = 0;
 
-	if(!stereo.loadIntrinsic("parameter-backup/intrinsic.yml"))
+	if(!stereo.loadIntrinsic("parameter/intrinsic.yml"))
 		return 0;
-	if(!stereo.loadExtrinisic("parameter-backup/extrinsic.yml"))
+	if(!stereo.loadExtrinisic("parameter/extrinsic.yml"))
 		return 0;
 
 	Stereopair s;
@@ -69,7 +90,11 @@ int main(int argc, char* argv[])
 	int windSize = 5;
 
 	cv::StereoSGBM disparity(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
+	cv::StereoBM disparity2(CV_STEREO_BM_BASIC, numDisp, windSize);
+
 	std::thread disp(disparityCalc,std::ref(s),std::ref(disparity));
+	std::thread disp2(disparityCalcBM,std::ref(s),std::ref(disparity2));
+	std::thread disp3(disparityCalcNCC, std::ref(s));
 	
 	while(true)
 	{
@@ -84,6 +109,12 @@ int main(int argc, char* argv[])
 			cv::normalize(dispMap,dispMap,0,255,cv::NORM_MINMAX, CV_8U);
 			cv::imshow("Disparity",dispMap);
 			newDisparityMap = false;		
+		}
+		if(newDisparityMap2)
+		{
+			cv::normalize(dispMap2,dispMap2,0,255,cv::NORM_MINMAX, CV_8U);
+			cv::imshow("Disparity2",dispMap2);
+			newDisparityMap2 = false;		
 		}
 		cond_var.notify_one();
 	
@@ -110,6 +141,7 @@ int main(int argc, char* argv[])
 			std::unique_lock<std::mutex> ul(disparityLock);
 			numDisp +=16;
 			disparity = cv::StereoSGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
+			disparity2 = cv::StereoBM (CV_STEREO_BM_BASIC, numDisp, windSize);
 
 		}
 		else if(char(key) == 'd')
@@ -117,8 +149,9 @@ int main(int argc, char* argv[])
 			std::unique_lock<std::mutex> ul(disparityLock);
 			if( numDisp > 16)
 			{
-			numDisp -=16;
-			disparity = cv::StereoSGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
+				numDisp -=16;
+				disparity = cv::StereoSGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
+				disparity2 = cv::StereoBM (CV_STEREO_BM_BASIC, numDisp, windSize);
 			}
 			
 		}
@@ -127,6 +160,7 @@ int main(int argc, char* argv[])
 			std::unique_lock<std::mutex> ul(disparityLock);
 			windSize +=2;
 			disparity = cv::StereoSGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
+			disparity2 = cv::StereoBM (CV_STEREO_BM_BASIC, numDisp, windSize);
 
 		}
 		else if(char(key) == 'r')
@@ -136,6 +170,7 @@ int main(int argc, char* argv[])
 			{
 			windSize -=2;
 			disparity = cv::StereoSGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
+			disparity2 = cv::StereoBM (CV_STEREO_BM_BASIC, numDisp, windSize);
 			}
 			
 		}
