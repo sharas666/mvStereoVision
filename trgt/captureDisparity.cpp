@@ -153,7 +153,8 @@ if(Utility::directoryExist(outputDirectory))
 	std::thread disp(disparityCalc,std::ref(s),std::ref(disparity));
 	std::thread disp2(disparityCalcBM,std::ref(s),std::ref(disparity2));
 	//std::thread disp3(disparityCalcNCC, std::ref(s));
-
+	cv::Mat normalizedSGBM;
+	cv::Mat normalizedBM;
 	while(running)
 	{
 
@@ -164,14 +165,14 @@ if(Utility::directoryExist(outputDirectory))
 
 		if(newDisparityMap)
 		{
-			cv::normalize(dispMapSGBM,dispMapSGBM,0,255,cv::NORM_MINMAX, CV_8U);
-			cv::imshow("Disparity",dispMapSGBM);
+			cv::normalize(dispMapSGBM,normalizedSGBM,0,255,cv::NORM_MINMAX, CV_8U);
+			cv::imshow("Disparity",normalizedSGBM);
 			newDisparityMap = false;
 		}
 		if(newDisparityMap2)
 		{
-			cv::normalize(dispMapBM,dispMapBM,0,255,cv::NORM_MINMAX, CV_8U);
-			cv::imshow("Disparity2",dispMapBM);
+			cv::normalize(dispMapBM,normalizedBM,0,255,cv::NORM_MINMAX, CV_8U);
+			cv::imshow("Disparity2",normalizedBM);
 			newDisparityMap2 = false;
 		}
 		cond_var.notify_one();
@@ -255,14 +256,16 @@ if(Utility::directoryExist(outputDirectory))
 
 			{
 				std::unique_lock<std::mutex> ul(disparityLockSGBM);
-				cv::normalize(dispMapSGBM,dispMapSGBM,0,255,cv::NORM_MINMAX, CV_8U);
-				cv::imwrite(std::string(outputDirectory+"/sgbm_"+prefix+std::to_string(imageNumber)+".jpg"),dispMapSGBM);
+				cv::normalize(dispMapSGBM,normalizedSGBM,0,255,cv::NORM_MINMAX, CV_8U);
+				cv::imwrite(std::string(outputDirectory+"/sgbm_raw_"+prefix+std::to_string(imageNumber)+".jpg"),dispMapSGBM);
+				cv::imwrite(std::string(outputDirectory+"/sgbm_norm_"+prefix+std::to_string(imageNumber)+".jpg"),normalizedSGBM);
 			}
 
 			{
 				std::unique_lock<std::mutex> ul(disparityLockBM);
-				cv::normalize(dispMapBM,dispMapBM,0,255,cv::NORM_MINMAX, CV_8U);
-				cv::imwrite(std::string(outputDirectory+"/bm_"+prefix+std::to_string(imageNumber)+".jpg"),dispMapBM);
+				cv::normalize(dispMapBM,normalizedBM,0,255,cv::NORM_MINMAX, CV_8U);
+				cv::imwrite(std::string(outputDirectory+"/bm_raw_"+prefix+std::to_string(imageNumber)+".jpg"),dispMapBM);
+				cv::imwrite(std::string(outputDirectory+"/bm_norm_"+prefix+std::to_string(imageNumber)+".jpg"),normalizedBM);
 			}
 
 
