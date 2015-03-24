@@ -31,11 +31,11 @@ int main(int argc, char const *argv[])
     return 0;
   }
 
-  Stereosystem s(left,right);
+  Stereosystem stereo(left,right);
 
   std::vector<std::string> nodes;
   nodes.push_back("inputImages");
-  nodes.push_back("parameterOutput");
+  nodes.push_back("outputParameter");
 
   std::string config = "./configs/default.yml";
 
@@ -49,8 +49,15 @@ int main(int argc, char const *argv[])
 
 
   std::string dirPath;
-
   fs["inputImages"] >> dirPath;
+
+  std::string parameterOutput;
+  fs["outputParameter"] >> parameterOutput;
+
+  if(!Utility::createDirectory(parameterOutput))
+  {
+    LOG(ERROR) << tag << "Unable to create output directory for parameter" << std::endl;
+  }
 
   std::vector<std::string> filenamesLeft;
   std::vector<std::string> filenamesRight;
@@ -67,19 +74,16 @@ int main(int argc, char const *argv[])
     }
   }
 
-  double stereoRMS = s.calibrate(imagesLeft, imagesRight);
+  double stereoRMS = stereo.calibrate(imagesLeft, imagesRight,27.5);
 
-  std::cout <<  stereoRMS << std::endl;
-  cv::Mat trans;
-  s.getTranslationMatrix(trans);
-  std::cout << trans << std::endl;
+  std::cout << "RMS after stereorectification: " <<  stereoRMS << std::endl;
 
   std::cout << "press 's' to save the new parameters." << std::endl;
   char key = getchar();
   if(key == 's')
   {
-    s.saveIntrinsic("parameter/intrinsic.yml");
-    s.saveExtrinsic("parameter/extrinsic.yml");
+    stereo.saveIntrinsic(parameterOutput + "/intrinsic.yml");
+    stereo.saveExtrinsic(parameterOutput + "/extrinsic.yml");
   }
 
   return 0;

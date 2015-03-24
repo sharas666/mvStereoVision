@@ -27,47 +27,84 @@ int main(int argc, char* argv[])
 
 	Stereosystem stereo(left,right);
 
+  std::vector<std::string> nodes;
+  nodes.push_back("capturedImages");
+
+  std::string config = "./configs/default.yml";
+
+  cv::FileStorage fs;
 
 
-	if(!stereo.loadIntrinsic("parameter-backup/intrinsic.yml"))
-		return 0;
-	if(!stereo.loadExtrinisic("parameter-backup/extrinsic.yml"))
-		return 0;
+  if(!Utility::checkConfig(config,nodes,fs))
+  {
+    return 0;
+  }
+
+
 
 	Stereopair s;
 
 	left->setExposure(24000);
 	right->setExposure(24000);
 
-	std::string leftFilePath = "continousCapture/left";
-	std::string rightFilePath = "continousCapture/right";
+	std::string outputDirectory;
+ 	fs["capturedImages"] >> outputDirectory;
 
-	if(!Utility::createDirectory(leftFilePath))
-		return 0;
+	std::string pathLeft = outputDirectory+"/left";
+  	std::string pathRight = outputDirectory+"/right";
 
-	if(!Utility::createDirectory(rightFilePath))
-		return 0;
+	unsigned int imageNumber = 0;
+
+
+ 	if(Utility::directoryExist(pathLeft) || Utility::directoryExist(pathRight))
+ 	{
+ 		std::vector<std::string> tmp1, tmp2;
+ 		Utility::getFiles(pathLeft,tmp1);
+ 		Utility::getFiles(pathRight,tmp2);
+
+ 		if(tmp1.size() != 0 || tmp2.size() != 0)
+ 		{
+ 			std::cout << "Output directory not empty, clean files? [y/n] " <<std::endl;
+ 			char key = getchar();
+  			if(key == 'y')
+  			{
+  				std::system(std::string("rm " + pathLeft + "/* -f ").c_str());
+  				std::system(std::string("rm " + pathRight + "/* -f ").c_str());
+  			}
+  			else if(key == 'n')
+  			{
+  				imageNumber = tmp1.size();
+          		LOG(INFO) << tag << "Start with image number " << imageNumber << std::endl;
+  			}
+ 		}
+ 	}
+
+
+
+  if(Utility::createDirectory(pathLeft) && Utility::createDirectory(pathRight))
+    {
+            LOG(INFO) << tag << "Successfully created directories for captured images." << std::endl;
+    }
+    else
+    {
+        LOG(ERROR) << tag << "Unable to create directories for captured images." <<std::endl;
+        return 0;
+    }
+
 
 
 	char key = 0;
 	bool running = true;
 	bool capture = false;
-	unsigned int imageNumber = 0;
 	unsigned int binning = 0;
-	cv::Mat currentFrame;
-	cv::VideoCapture cap(0);
 
-	if(!cap.isOpened())
-	{
-		return 0;
-	}
 	cv::namedWindow("Left" ,1);
 	cv::namedWindow("Right" ,1);
 
 	while(running)
 	{
 
-		stereo.getRectifiedImagepair(s);
+		stereo.getImagepair(s);
 		cv::imshow("Left", s.mLeft);
 		cv::imshow("Right", s.mRight);
 
@@ -88,8 +125,8 @@ int main(int argc, char* argv[])
 			{
 				prefix +="0";
 			}
-			cv::imwrite(std::string(leftFilePath+"/left_"+prefix+std::to_string(imageNumber)+".jpg"),s.mLeft);
-			cv::imwrite(std::string(rightFilePath+"/right_"+prefix+std::to_string(imageNumber)+".jpg"),s.mRight);
+			cv::imwrite(std::string(pathLeft+"/left_"+prefix+std::to_string(imageNumber)+".jpg"),s.mLeft);
+			cv::imwrite(std::string(pathRight+"/right_"+prefix+std::to_string(imageNumber)+".jpg"),s.mRight);
 			++imageNumber;
 		}
 

@@ -31,16 +31,10 @@ int main(int argc, char* argv[])
 
     Stereosystem stereo(left,right);
 
-    // if(!stereo.loadIntrinsic("parameter/intrinsic.yml"))
-    //  return 0;
-    // if(!stereo.loadExtrinisic("parameter/extrinsic.yml"))
-    //  return 0;
-
     Stereopair s;
 
     std::vector<std::string> nodes;
     nodes.push_back("outputImages");
-    nodes.push_back("cleanOldImages");
 
     std::string config = "./configs/default.yml";
 
@@ -59,19 +53,34 @@ int main(int argc, char* argv[])
     std::string pathLeft = dirPath+"/left";
     std::string pathRight = dirPath+"/right";
 
-    bool cleanOldImages;
-    fs["cleanOldImages"] >> cleanOldImages;
 
-    if(cleanOldImages)
+    int imageNumber = 0;
+
+
+    if(Utility::directoryExist(pathLeft) || Utility::directoryExist(pathRight))
+  {
+    std::vector<std::string> tmp1, tmp2;
+    Utility::getFiles(pathLeft,tmp1);
+    Utility::getFiles(pathRight,tmp2);
+
+    if(tmp1.size() != 0 || tmp2.size() != 0)
     {
-        std::system(std::string("rm " + pathLeft + "/* -f ").c_str());
-        std::system(std::string("rm " + pathRight + "/* -f").c_str());
+      std::cout << "Output directory not empty, clean files? [y/n] " <<std::endl;
+      char key = getchar();
+        if(key == 'y')
+        {
+          std::system(std::string("rm " + pathLeft + "/* -f ").c_str());
+          std::system(std::string("rm " + pathRight + "/* -f ").c_str());
+        }
+        else if(key == 'n')
+        {
+          imageNumber = tmp1.size();
+          LOG(INFO) << tag << "Start with image number " << imageNumber << std::endl;
+        }
     }
+  }
 
-    std::system(std::string("mkdir -p " + pathLeft).c_str());
-    std::system(std::string("mkdir -p " + pathRight).c_str());
-
-    if(Utility::directoryExist(pathLeft) && Utility::directoryExist(pathRight))
+    if(!Utility::createDirectory(pathLeft) && !Utility::createDirectory(pathRight))
     {
             LOG(INFO) << tag << "Successfully created directories for captured images." << std::endl;
     }
@@ -86,7 +95,6 @@ int main(int argc, char* argv[])
 
     char key = 0;
     int binning = 0;
-    int imageCounter = 0;
     cv::namedWindow("Left", cv::WINDOW_AUTOSIZE);
     cv::namedWindow("Right", cv::WINDOW_AUTOSIZE);
     bool running = true;
@@ -96,7 +104,7 @@ int main(int argc, char* argv[])
 
         if(!stereo.getImagepair(s))
         {
-            std::cout << "foo" << std::endl;
+            LOG(ERROR) << tag << "Unable to get imagepair" << std::endl;
             break;
         }
         cv::imshow("Left", s.mLeft);
@@ -129,20 +137,20 @@ int main(int argc, char* argv[])
                     break;
                 case 'c':
                     filename = "";
-                    if(imageCounter < 10)
+                    if(imageNumber < 10)
                     {
-                        filename+= "00" + std::to_string(imageCounter);
+                        filename+= "00" + std::to_string(imageNumber);
                     }
-                    if(imageCounter >= 10 && imageCounter < 100)
+                    if(imageNumber >= 10 && imageNumber < 100)
                     {
-                        filename+="0" + std::to_string(imageCounter);
+                        filename+="0" + std::to_string(imageNumber);
                     }
 
                     cv::imwrite(pathLeft+"/left_"+filename+".jpg",s.mLeft);
                     cv::imwrite(pathRight+"/right_"+filename+".jpg",s.mRight);
                     LOG(INFO) << tag << "Wrote left image to " << std::string(pathLeft+"/left_"+filename+".jpg") <<std::endl;
                     LOG(INFO) << tag << "Wrote right image to " << std::string(pathRight+"/right_"+filename+".jpg") <<std::endl;
-                    ++imageCounter;
+                    ++imageNumber;
                     break;
                 case 'f':
                     std::cout<<left->getFramerate()<<" "<<right->getFramerate()<<std::endl;
