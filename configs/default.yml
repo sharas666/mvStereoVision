@@ -7,7 +7,6 @@ capturedImagesRectified: ./images/rectifiedImages
 
 capturedDisparities: ./images/disparityMaps
 
-cleanOldImages: 0
 
 outputParameter: ./parameterTest
 inputParameter: ./parameter
