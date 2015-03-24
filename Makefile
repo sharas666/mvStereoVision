@@ -39,21 +39,28 @@ capture: directories $(OBJ)
 	@$(CC) $(OBJ) $(TARGETOBJDIR)/capture.o -o $(BINDIR)/capture $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
-epipoles: directories $(OBJ)
+captureRectified: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/captureRectified.cpp -o $(TARGETOBJDIR)/captureRectified.o
+	@echo Compiled captureRectified.cpp successfully!
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/captureRectified.o -o $(BINDIR)/captureRectified $(LIB_PATH) $(LIBS)
+	@echo Linking complete!
+
+
+epipolarLines: directories $(OBJ)
 	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/epipolarLines.cpp -o $(TARGETOBJDIR)/epipolarLines.o
 	@echo Compiled epipolarLines.cpp successfully!
 	@$(CC) $(OBJ) $(TARGETOBJDIR)/epipolarLines.o -o $(BINDIR)/epipolarLines $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
-disparity: directories $(OBJ)
-	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/liveDisparity.cpp -o $(TARGETOBJDIR)/liveDisparity.o
-	@$(CC) $(OBJ) $(TARGETOBJDIR)/liveDisparity.o -o $(BINDIR)/liveDisparity $(LIB_PATH) $(LIBS)
+liveUndistortion: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/liveUndistortion.cpp -o $(TARGETOBJDIR)/liveUndistortion.o
+	@echo Compiled liveUndistortion.cpp successfully!
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/liveUndistortion.o -o $(BINDIR)/liveUndistortion $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
-calibrate-single: directories $(OBJ)
-	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/calibrate-single.cpp -o $(TARGETOBJDIR)/calibrate-single.o
-	@echo Compiled calibrate-single.cpp successfully!
-	@$(CC) $(OBJ) $(TARGETOBJDIR)/calibrate-single.o -o $(BINDIR)/calibrate-single $(LIB_PATH) $(LIBS)
+captureDisparity: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/captureDisparity.cpp -o $(TARGETOBJDIR)/captureDisparity.o
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/captureDisparity.o -o $(BINDIR)/captureDisparity $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
 calibrate-stereo: directories $(OBJ)
@@ -62,22 +69,16 @@ calibrate-stereo: directories $(OBJ)
 	@$(CC) $(OBJ) $(TARGETOBJDIR)/calibrate-stereo.o -o $(BINDIR)/calibrate-stereo $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
-show-rectified: directories $(OBJ)
-	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/show-rectified.cpp -o $(TARGETOBJDIR)/show-rectified.o
-	@echo Compiled show-rectified.cpp successfully!
-	@$(CC) $(OBJ) $(TARGETOBJDIR)/show-rectified.o -o $(BINDIR)/show-rectified $(LIB_PATH) $(LIBS)
-	@echo Linking complete!
-
 continousCapture: directories $(OBJ)
 	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/continousCapture.cpp -o $(TARGETOBJDIR)/continousCapture.o
 	@echo Compiled continousCapture.cpp successfully!
 	@$(CC) $(OBJ) $(TARGETOBJDIR)/continousCapture.o -o $(BINDIR)/continousCapture $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
-undistorted: directories $(OBJ)
-	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/show-undistorted.cpp -o $(TARGETOBJDIR)/show-undistorted.o
-	@echo Compiled show-undistorted.cpp successfully!
-	@$(CC) $(OBJ) $(TARGETOBJDIR)/show-undistorted.o -o $(BINDIR)/show-undistorted $(LIB_PATH) $(LIBS)
+continousCaptureRectified: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/continousCaptureRectified.cpp -o $(TARGETOBJDIR)/continousCaptureRectified.o
+	@echo Compiled continousCaptureRectified.cpp successfully!
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/continousCaptureRectified.o -o $(BINDIR)/continousCaptureRectified $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
 directories:
@@ -85,7 +86,7 @@ directories:
 	${MKDIR_P} ${BINDIR}
 	${MKDIR_P} ${TARGETOBJDIR}
 
-	
+
 $(OBJ): $(OBJDIR)/%.o :$(SRCDIR)/%.cpp
 	@$(CC) $(CFLAGS) $(INC_PATH) $< -o $@
 	@echo Compiled $< $ successfully!
