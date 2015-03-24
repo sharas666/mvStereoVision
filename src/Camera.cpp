@@ -92,7 +92,7 @@ bool Camera::getImage(std::vector<char> &imageToReturn)
 	return false;
 }
 
-double Camera::calibrate(std::vector<cv::Mat> const& images)
+double Camera::calibrate(std::vector<cv::Mat> const& images, double patternsize)
 {
 	int hCorners = 9;
 	int vCorners = 6;
@@ -107,12 +107,11 @@ double Camera::calibrate(std::vector<cv::Mat> const& images)
 
   // camera matrices
   cv::Mat intrinsic, distCoeffs;
-  
+
   // size of calibration patteren squares
-  float squaresize = 27.5;
   for(int y=0; y<vCorners; ++y) {
     for(int x=0; x<hCorners; ++x) {
-      obj.push_back(cv::Point3f((float(x)*squaresize),(float(y)*squaresize),0));
+      obj.push_back(cv::Point3f((float(x)*patternsize),(float(y)*patternsize),0));
     }
   }
 
@@ -142,7 +141,7 @@ double Camera::calibrate(std::vector<cv::Mat> const& images)
 
   cv::Size imagesize = cv::Size(images[0].size());
 
-  // calibrate the camera	
+  // calibrate the camera
   double rms = cv::calibrateCamera(objectPoints, imagePoints, imagesize, intrinsic, distCoeffs, rvecs, tvecs);
 
   // assign intrinsic and extrinsic to camera
@@ -168,7 +167,7 @@ void Camera::setPixelFormat(int option)
 {
 	switch(option)
 	{
-		case MONO8: 
+		case MONO8:
 			mImageDestinaton.pixelFormat.write(mvIMPACT::acquire::idpfMono8);
 			mCameraSettingsBase.pixelFormat.write(mvIMPACT::acquire::ibpfMono8);
 			LOG(INFO) << mTag << "Set Pixelformat to Mono8" << std::endl;
@@ -176,7 +175,7 @@ void Camera::setPixelFormat(int option)
 		default:
 			LOG(WARNING) << mTag << "Unknown Pixelformat" <<std::endl;
 		//doesnt work
-		/*case MONO16: 
+		/*case MONO16:
 			mImageDestinaton.pixelFormat.write(mvIMPACT::acquire::idpfMono16);
 			mCameraSettingsBase.pixelFormat.write(mvIMPACT::acquire::ibpfMono16);
 			LOG(INFO) << mTag << "Set Pixelformat to Mono16" << std::endl;
@@ -184,7 +183,7 @@ void Camera::setPixelFormat(int option)
 	}
 }
 
-void Camera::setBinning(unsigned int option) 
+void Camera::setBinning(unsigned int option)
 {
 	switch(option)
 	{

@@ -30,7 +30,7 @@ class Camera
 
 		//Functions
 		bool 			getImage(std::vector<char>&);
-		double 			calibrate(std::vector<cv::Mat> const&);
+		double 			calibrate(std::vector<cv::Mat> const&,double);
 
 		//Setter
 		void 			setExposure(unsigned int);
@@ -60,7 +60,7 @@ class Camera
   		mvIMPACT::acquire::ImageDestination 		mImageDestinaton;
 		mvIMPACT::acquire::Request*					mRequest;
 		int 										mTimeout;
-		
+
 		//Log tag
 		std::string									mTag;
 
