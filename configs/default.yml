@@ -1,5 +1,13 @@
 %YAML:1.0
-inputImages: ./newImages
+
+inputImages: ./images/newImages
+outputImages: ./images/newImages
+
+capturedImagesRectified: ./images/rectifiedImages
+
+capturedDisparities: ./images/disparityMaps
+
 cleanOldImages: 0
-outputImages: ./newImages
-parameterOutput: ./parameter
+
+outputParameter: ./parameterTest
+inputParameter: ./parameter
