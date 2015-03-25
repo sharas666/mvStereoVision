@@ -13,17 +13,41 @@ void Disparity::bm(Stereopair const& inputImages, cv::Mat &output, cv::StereoBM 
   output/=16;
 }
 
-void Disparity::ncc(Stereopair const& inputImages, cv::Mat &output)
+void Disparity::tm(Stereopair const& inputImages, cv::Mat &output, unsigned int kernelSize)
 {
-  cv::Mat meanLeft, meanRight;
-  cv::Mat devLeft, devRight;
-  cv::Mat varianceLeft, varianceRight;
 
-  cv::meanStdDev(inputImages.mLeft, meanLeft, meanLeft);
-  cv::meanStdDev(inputImages.mRight, meanRight, meanRight);
-  cv::pow(devLeft, 2, varianceLeft);
-  cv::pow(devRight, 2, varianceRight);
 
-  std::cout << meanLeft << std::endl;
-  std::cout << meanRight << std::endl;
+  output = cv::Mat(inputImages.mLeft.rows, inputImages.mLeft.cols,CV_8U,cv::Scalar::all(0));
+
+  cv::Mat currentTemplate;
+  cv::Mat currentSearchRange;
+  cv::Mat result;
+
+  double minVal;
+  double maxVal;
+  cv::Point2i minLoc;
+  cv::Point2i maxLoc;
+  // cv::Point2i matchLoc;
+
+  for(int i = 0; i < inputImages.mLeft.rows-kernelSize; ++i)
+  {
+    for(int j = 0; j < inputImages.mLeft.cols-kernelSize ; ++j)
+    {
+      cv::Point2i position(j,i);
+      cv::Rect kernel(position, cv::Size(kernelSize,kernelSize));
+
+      currentTemplate = inputImages.mLeft(kernel);
+      int destWidth = inputImages.mRight.cols - position.x-1;
+      currentSearchRange = inputImages.mRight(cv::Rect(position,cv::Size(destWidth,kernelSize)));
+
+      cv::matchTemplate(currentSearchRange,currentTemplate,result,CV_TM_CCORR_NORMED);
+
+      cv::minMaxLoc( result, &minVal, &maxVal, &minLoc, &maxLoc, cv::Mat() );
+
+      output.at<char>(i,j) = maxLoc.x;
+      //std::cout<< int(output.at<char>(i,j)) <<std::endl;
+
+    }
+  }
+
 }

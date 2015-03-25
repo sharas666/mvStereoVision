@@ -10,11 +10,11 @@
 #include <opencv2/calib3d/calib3d.hpp>
 
 
-namespace Disparity 
+namespace Disparity
 {
 	void sgbm(Stereopair const&, cv::Mat&, cv::StereoSGBM);
-  void bm(Stereopair const&, cv::Mat&, cv::StereoBM);
-  void ncc(Stereopair const&, cv::Mat&);
+  void bm(Stereopair const&, cv::Mat& , cv::StereoBM);
+  void tm(Stereopair const&, cv::Mat& ,unsigned int);
 }
 
 #endif
