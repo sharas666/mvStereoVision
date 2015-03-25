@@ -45,6 +45,15 @@ captureRectified: directories $(OBJ)
 	@$(CC) $(OBJ) $(TARGETOBJDIR)/captureRectified.o -o $(BINDIR)/captureRectified $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
+captureDisparity: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/captureDisparity.cpp -o $(TARGETOBJDIR)/captureDisparity.o
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/captureDisparity.o -o $(BINDIR)/captureDisparity $(LIB_PATH) $(LIBS)
+	@echo Linking complete!
+
+calcDisparity: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/disparityTest.cpp -o $(TARGETOBJDIR)/disparityTest.o
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/disparityTest.o -o $(BINDIR)/disparityTest $(LIB_PATH) $(LIBS)
+	@echo Linking complete!
 
 epipolarLines: directories $(OBJ)
 	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/epipolarLines.cpp -o $(TARGETOBJDIR)/epipolarLines.o
@@ -56,11 +65,6 @@ liveUndistortion: directories $(OBJ)
 	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/liveUndistortion.cpp -o $(TARGETOBJDIR)/liveUndistortion.o
 	@echo Compiled liveUndistortion.cpp successfully!
 	@$(CC) $(OBJ) $(TARGETOBJDIR)/liveUndistortion.o -o $(BINDIR)/liveUndistortion $(LIB_PATH) $(LIBS)
-	@echo Linking complete!
-
-captureDisparity: directories $(OBJ)
-	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/captureDisparity.cpp -o $(TARGETOBJDIR)/captureDisparity.o
-	@$(CC) $(OBJ) $(TARGETOBJDIR)/captureDisparity.o -o $(BINDIR)/captureDisparity $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
 calibrate-stereo: directories $(OBJ)
