@@ -11,6 +11,70 @@
 
 INITIALIZE_EASYLOGGINGPP
 
+cv::StereoSGBM disparitySGBM;
+cv::StereoBM disparityBM;
+
+int numDispSGBM = 16;
+int windSizeSGBM = 5;
+
+int numDispBM = 16;
+int windSizeBM = 5;
+
+void changeNumDispSGBM(int, void*)
+{
+    numDispSGBM+=numDispSGBM%16;
+
+    if(numDispSGBM < 16)
+    {
+        numDispSGBM = 16;
+        cv::setTrackbarPos("Num Disp", "SGBM", numDispSGBM);
+    }
+
+    cv::setTrackbarPos("Num Disp", "SGBM", numDispSGBM);
+    disparitySGBM = cv::StereoSGBM(0,numDispSGBM,windSizeSGBM,8*windSizeSGBM*windSizeSGBM,32*windSizeSGBM*windSizeSGBM);
+}
+
+void changeNumDispBM(int, void*)
+{
+    numDispBM+=numDispBM%16;
+
+    if(numDispBM < 16)
+    {
+        numDispBM = 16;
+        cv::setTrackbarPos("Num Disp", "BM", numDispBM);
+    }
+    cv::setTrackbarPos("Num Disp", "BM", numDispBM);
+    disparityBM = cv::StereoBM(CV_STEREO_BM_BASIC, numDispBM, windSizeBM);
+}
+
+void changeWindSizeSGBM(int, void*)
+{
+    if(windSizeSGBM%2 == 0)
+        windSizeSGBM+=1;
+
+    if(windSizeSGBM < 5)
+    {
+        windSizeSGBM = 5;
+        cv::setTrackbarPos("Wind Size", "SGBM", windSizeSGBM);
+    }
+    cv::setTrackbarPos("Wind Size", "SGBM", windSizeSGBM);
+    disparitySGBM = cv::StereoSGBM(0,numDispSGBM,windSizeSGBM,8*windSizeSGBM*windSizeSGBM,32*windSizeSGBM*windSizeSGBM);
+}
+
+void changeWindSizeBM(int, void*)
+{
+    if(windSizeBM%2 == 0)
+        windSizeBM+=1;
+
+
+    if(windSizeBM < 5)
+    {
+        windSizeBM = 5;
+        cv::setTrackbarPos("Wind Size", "BM", windSizeBM);
+    }
+    cv::setTrackbarPos("Wind Size", "BM", windSizeBM);
+    disparityBM = cv::StereoBM(CV_STEREO_BM_BASIC, numDispBM, windSizeBM);
+}
 
 int main(int argc, char* argv[])
 {
@@ -89,12 +153,19 @@ if(Utility::directoryExist(outputDirectory))
     s.mLeft = grayLeft;
     s.mRight = grayRight;
 
-    int numDisp = 16;
-    int windSize = 5;
 
-    cv::StereoSGBM disparitySGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
-    cv::StereoBM disparityBM(CV_STEREO_BM_BASIC, numDisp, windSize);
 
+    disparitySGBM = cv::StereoSGBM(0,numDispSGBM,windSizeSGBM,8*windSizeSGBM*windSizeSGBM,32*windSizeSGBM*windSizeSGBM);
+    disparityBM = cv::StereoBM(CV_STEREO_BM_BASIC, numDispBM, windSizeBM);
+
+    cv::namedWindow("SGBM" ,1);
+    cv::namedWindow("BM" ,1);
+
+    cv::createTrackbar("Num Disp", "SGBM", &numDispSGBM, 320, changeNumDispSGBM);
+    cv::createTrackbar("Wind Size", "SGBM", &windSizeSGBM, 51, changeWindSizeSGBM);
+
+    cv::createTrackbar("Num Disp", "BM", &numDispBM, 320, changeNumDispBM);
+    cv::createTrackbar("Wind Size", "BM", &windSizeBM, 51, changeWindSizeBM);
 
     cv::Mat normalizedSGBM;
     cv::Mat normalizedBM;
@@ -113,17 +184,19 @@ if(Utility::directoryExist(outputDirectory))
 
         Disparity::sgbm(s, dispMapSGBM, disparitySGBM);
         Disparity::bm(s, dispMapBM, disparityBM);
-        Disparity::tm(s, dispMapTM,5);
+  //      Disparity::tm(s, dispMapTM,5);
 
 
-        cv::normalize(dispMapSGBM,normalizedSGBM,0,255,cv::NORM_MINMAX, CV_8U);
-        cv::imshow("SGBM",normalizedSGBM);
+         cv::normalize(dispMapSGBM,normalizedSGBM,0,255,cv::NORM_MINMAX, CV_8U);
+         cv::resize(normalizedSGBM, normalizedSGBM, cv::Size(), 2,2, CV_INTER_AREA);
+         cv::imshow("SGBM",normalizedSGBM);
 
-        cv::normalize(dispMapBM,normalizedBM,0,255,cv::NORM_MINMAX, CV_8U);
-        cv::imshow("BM",normalizedBM);
+         cv::normalize(dispMapBM,normalizedBM,0,255,cv::NORM_MINMAX, CV_8U);
+         cv::resize(normalizedBM, normalizedBM, cv::Size(), 2,2, CV_INTER_AREA);
+         cv::imshow("BM",normalizedBM);
 
-        cv::normalize(dispMapTM,normalizedTM,0,255,cv::NORM_MINMAX, CV_8U);
-        cv::imshow("TM",normalizedTM);
+        // cv::normalize(dispMapTM,normalizedTM,0,255,cv::NORM_MINMAX, CV_8U);
+        // cv::imshow("TM",normalizedTM);
 
         key = cv::waitKey(10);
 
@@ -132,39 +205,6 @@ if(Utility::directoryExist(outputDirectory))
         {
             running = false;
             break;
-        }
-        else if(char(key) == 'i')
-        {
-            numDisp +=16;
-            disparitySGBM = cv::StereoSGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
-            disparityBM = cv::StereoBM (CV_STEREO_BM_BASIC, numDisp, windSize);
-
-        }
-        else if(char(key) == 'd')
-        {
-            if( numDisp > 16)
-            {
-                numDisp -=16;
-                disparitySGBM = cv::StereoSGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
-                disparityBM = cv::StereoBM (CV_STEREO_BM_BASIC, numDisp, windSize);
-            }
-
-        }
-        else if(char(key) == 'e')
-        {
-            windSize +=2;
-            disparitySGBM = cv::StereoSGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
-            disparityBM = cv::StereoBM (CV_STEREO_BM_BASIC, numDisp, windSize);
-        }
-        else if(char(key) == 'r')
-        {
-            if( windSize > 5)
-            {
-            windSize -=2;
-            disparitySGBM = cv::StereoSGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
-            disparityBM = cv::StereoBM (CV_STEREO_BM_BASIC, numDisp, windSize);
-            }
-
         }
         else if (char(key) == 'c')
         {
@@ -183,16 +223,16 @@ if(Utility::directoryExist(outputDirectory))
             }
 
                 cv::normalize(dispMapSGBM,normalizedSGBM,0,255,cv::NORM_MINMAX, CV_8U);
-                cv::imwrite(std::string(outputDirectory+"/sgbm_raw_"+prefix+std::to_string(imageNumber)+".jpg"),dispMapSGBM);
-                cv::imwrite(std::string(outputDirectory+"/sgbm_norm_"+prefix+std::to_string(imageNumber)+".jpg"),normalizedSGBM);
+                cv::imwrite(std::string(outputDirectory+"/sgbm_raw_nd"+ std::to_string(numDispSGBM)+"_ws"+std::to_string(windSizeSGBM)+"_"+prefix+std::to_string(imageNumber)+".jpg"),dispMapSGBM);
+                cv::imwrite(std::string(outputDirectory+"/sgbm_norm_nd"+ std::to_string(numDispSGBM)+"_ws"+std::to_string(windSizeSGBM)+"_"+prefix+std::to_string(imageNumber)+".jpg"),normalizedSGBM);
 
                 cv::normalize(dispMapBM,normalizedBM,0,255,cv::NORM_MINMAX, CV_8U);
-                cv::imwrite(std::string(outputDirectory+"/bm_raw_"+prefix+std::to_string(imageNumber)+".jpg"),dispMapBM);
-                cv::imwrite(std::string(outputDirectory+"/bm_norm_"+prefix+std::to_string(imageNumber)+".jpg"),normalizedBM);
+                cv::imwrite(std::string(outputDirectory+"/bm_raw_nd"+ std::to_string(numDispBM)+"_ws"+std::to_string(windSizeBM)+"_"+prefix+std::to_string(imageNumber)+".jpg"),dispMapBM);
+                cv::imwrite(std::string(outputDirectory+"/bm_norm_nd"+ std::to_string(numDispBM)+"_ws"+std::to_string(windSizeBM)+"_"+prefix+std::to_string(imageNumber)+".jpg"),normalizedBM);
 
-                cv::normalize(dispMapTM,normalizedTM,0,255,cv::NORM_MINMAX, CV_8U);
-                cv::imwrite(std::string(outputDirectory+"/tm_raw_"+prefix+std::to_string(imageNumber)+".jpg"),dispMapTM);
-                cv::imwrite(std::string(outputDirectory+"/tm_norm_"+prefix+std::to_string(imageNumber)+".jpg"),normalizedTM);
+                // cv::normalize(dispMapTM,normalizedTM,0,255,cv::NORM_MINMAX, CV_8U);
+                // cv::imwrite(std::string(outputDirectory+"/tm_raw_"+prefix+std::to_string(imageNumber)+".jpg"),dispMapTM);
+                // cv::imwrite(std::string(outputDirectory+"/tm_norm_"+prefix+std::to_string(imageNumber)+".jpg"),normalizedTM);
 
             ++imageNumber;
         }
