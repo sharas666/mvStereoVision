@@ -12,7 +12,7 @@
 INITIALIZE_EASYLOGGINGPP
 
 //Thread stuff
-std::mutex disparityLockSGBM,disparityLockBM;
+std::mutex disparityLockSGBM,disparityLockBM, disparityLockTM;
 std::condition_variable cond_var;
 bool newDisparityMap = false;
 bool newDisparityMap2 = false;
@@ -41,6 +41,17 @@ void disparityCalcBM( Stereopair const& s, cv::StereoBM &disparity)
 		Disparity::bm(s, dispMapBM, disparity);
 		newDisparityMap2=true;
 	}
+}
+
+void disparityCalcTM(Stereopair const& s)
+{
+	// while(running)
+	// {
+		std::unique_lock<std::mutex> ul(disparityLockTM);
+		cond_var.wait(ul);
+		Disparity::tm(s,3);
+		newDisparityMap3 = true;
+	//}
 }
 
 // void disparityCalcNCC( Stereopair const& s) {
@@ -152,7 +163,7 @@ if(Utility::directoryExist(outputDirectory))
 
 	std::thread disp(disparityCalc,std::ref(s),std::ref(disparity));
 	std::thread disp2(disparityCalcBM,std::ref(s),std::ref(disparity2));
-	//std::thread disp3(disparityCalcNCC, std::ref(s));
+	std::thread disp3(disparityCalcTM, std::ref(s));
 	cv::Mat normalizedSGBM;
 	cv::Mat normalizedBM;
 	while(running)
@@ -175,6 +186,12 @@ if(Utility::directoryExist(outputDirectory))
 			cv::imshow("Disparity2",normalizedBM);
 			newDisparityMap2 = false;
 		}
+		// if(newDisparityMap3)
+		// {
+		// 	cv::normalize(dispMapBM,normalizedBM,0,255,cv::NORM_MINMAX, CV_8U);
+		// 	cv::imshow("Disparity2",normalizedBM);
+		// 	newDisparityMap2 = false;
+		// }
 		cond_var.notify_one();
 
 		key = cv::waitKey(10);
