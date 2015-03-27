@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <math.h>
 
 //OPENCV Stuff
 #include "opencv2/opencv.hpp"
@@ -24,8 +25,6 @@
 #include "easylogging++.h"
 
 #include "Camera.h"
-
-
 
 struct Stereopair
 {
@@ -57,6 +56,10 @@ namespace Utility
 	bool initCameras(mvIMPACT::acquire::DeviceManager&,Camera*&,Camera*&);
 
 	bool checkConfig(std::string const&,std::vector<std::string> const&, cv::FileStorage &);
+
+	bool covariance(cv::Mat const&, cv::Mat const&, cv::Scalar&);
+	bool standartDeviation(cv::Mat const&, cv::Scalar&);
+	bool normalizedCrossCorrelation(Stereopair const&, cv::Mat&);
 }
 
 
