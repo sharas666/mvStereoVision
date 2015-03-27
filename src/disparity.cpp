@@ -1,4 +1,5 @@
 #include "disparity.h"
+#include "utility.h"
 #include "math.h"
 
 void Disparity::sgbm(Stereopair const& inputImages, cv::Mat &output, cv::StereoSGBM dispCompute)
@@ -15,6 +16,7 @@ void Disparity::bm(Stereopair const& inputImages, cv::Mat &output, cv::StereoBM 
 
 void Disparity::tm(Stereopair const& inputImages, cv::Mat &output, unsigned int kernelSize)
 {
+
 
 
   output = cv::Mat(inputImages.mLeft.rows, inputImages.mLeft.cols,CV_8U,cv::Scalar::all(0));
