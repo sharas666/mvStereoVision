@@ -30,7 +30,7 @@ class Camera
 
 		//Functions
 		bool 			getImage(std::vector<char>&);
-		double 			calibrate(std::vector<cv::Mat> const&,double);
+		double 			calibrate(std::vector<cv::Mat> const&, double, cv::Size);
 
 		//Setter
 		void 			setExposure(unsigned int);

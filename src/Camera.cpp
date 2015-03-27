@@ -92,13 +92,8 @@ bool Camera::getImage(std::vector<char> &imageToReturn)
 	return false;
 }
 
-double Camera::calibrate(std::vector<cv::Mat> const& images, double patternsize)
+double Camera::calibrate(std::vector<cv::Mat> const& images, double patternsize, cv::Size chessboardSize)
 {
-	int hCorners = 9;
-	int vCorners = 6;
-
-	cv::Size boardSize = cv::Size(hCorners, vCorners);
-
 	std::vector<cv::Mat> rvecs,tvecs;
 	std::vector<std::vector<cv::Point3f> > objectPoints;
   std::vector<std::vector<cv::Point2f> > imagePoints;
@@ -109,8 +104,8 @@ double Camera::calibrate(std::vector<cv::Mat> const& images, double patternsize)
   cv::Mat intrinsic, distCoeffs;
 
   // size of calibration patteren squares
-  for(int y=0; y<vCorners; ++y) {
-    for(int x=0; x<hCorners; ++x) {
+  for(int y=0; y<chessboardSize.height; ++y) {
+    for(int x=0; x<chessboardSize.width; ++x) {
       obj.push_back(cv::Point3f((float(x)*patternsize),(float(y)*patternsize),0));
     }
   }
@@ -120,7 +115,7 @@ double Camera::calibrate(std::vector<cv::Mat> const& images, double patternsize)
 
   	cv::cvtColor(images[i], grayImage, CV_BGR2GRAY);
 
-    bool found = cv::findChessboardCorners( grayImage, boardSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+    bool found = cv::findChessboardCorners( grayImage, chessboardSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
 
 		if(found) {
       cv::cornerSubPix(grayImage, corners, cv::Size(5,5), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 300, 0.1));
