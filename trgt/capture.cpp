@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
     }
   }
 
-    if(!Utility::createDirectory(pathLeft) && !Utility::createDirectory(pathRight))
+    if(Utility::createDirectory(pathLeft) && Utility::createDirectory(pathRight))
     {
             LOG(INFO) << tag << "Successfully created directories for captured images." << std::endl;
     }

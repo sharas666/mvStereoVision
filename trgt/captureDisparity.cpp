@@ -43,16 +43,17 @@ void disparityCalcBM( Stereopair const& s, cv::StereoBM &disparity)
 	}
 }
 
-void disparityCalcTM(Stereopair const& s)
-{
-	// while(running)
-	// {
-		std::unique_lock<std::mutex> ul(disparityLockTM);
-		cond_var.wait(ul);
-		Disparity::tm(s,3);
-		newDisparityMap3 = true;
-	//}
-}
+
+// void disparityCalcTM(Stereopair const& s)
+// {
+// 	// while(running)
+// 	// {
+// 		std::unique_lock<std::mutex> ul(disparityLockTM);
+// 		cond_var.wait(ul);
+// 		Disparity::tm(s,3);
+// 		newDisparityMap3 = true;
+// 	//}
+// }
 
 // void disparityCalcNCC( Stereopair const& s) {
 // 	while(running)
@@ -151,8 +152,8 @@ if(Utility::directoryExist(outputDirectory))
  	int binning = 1;
 	Stereopair s;
 
-	left->setBinning(binning);
-	right->setBinning(binning);
+	//left->setBinning(binning);
+	//right->setBinning(binning);
 	stereo.resetRectification();
 
 	int numDisp = 16;
@@ -163,7 +164,7 @@ if(Utility::directoryExist(outputDirectory))
 
 	std::thread disp(disparityCalc,std::ref(s),std::ref(disparity));
 	std::thread disp2(disparityCalcBM,std::ref(s),std::ref(disparity2));
-	std::thread disp3(disparityCalcTM, std::ref(s));
+	//std::thread disp3(disparityCalcTM, std::ref(s));
 	cv::Mat normalizedSGBM;
 	cv::Mat normalizedBM;
 	while(running)
@@ -211,6 +212,8 @@ if(Utility::directoryExist(outputDirectory))
 
 			left->setBinning(binning);
 			right->setBinning(binning);
+			left->setExposure(20000);
+			right->setExposure(20000);
 			stereo.resetRectification();
 		}
 		else if(char(key) == 'i')
