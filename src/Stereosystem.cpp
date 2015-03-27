@@ -44,24 +44,20 @@ Stereosystem::~Stereosystem()
 }
 
 double Stereosystem::calibrate(std::vector<cv::Mat> const& leftImages,
-                               std::vector<cv::Mat> const& rightImages, double patternSize)
+                               std::vector<cv::Mat> const& rightImages,
+                               double patternSize, cv::Size chessboardSize)
 
 {
 
   if(leftImages.size() == rightImages.size())
   {
-    mLeft->calibrate(leftImages,patternSize);
-    mRight->calibrate(rightImages,patternSize);
+    mLeft->calibrate(leftImages,patternSize, chessboardSize);
+    mRight->calibrate(rightImages,patternSize, chessboardSize);
 
     mIntrinsicLeft = mLeft->getIntrinsic();
     mIntrinsicRight = mRight->getIntrinsic();
     mDistCoeffsLeft = mLeft->getDistCoeffs();
     mDistCoeffsRight = mRight->getDistCoeffs();
-
-    int hCorners = 9;
-    int vCorners = 6;
-
-    cv::Size boardSize = cv::Size(hCorners, vCorners);
 
     std::vector<std::vector<cv::Point3f> > objectPoints;
     std::vector<std::vector<cv::Point2f> > imagePointsLeft;
@@ -71,10 +67,9 @@ double Stereosystem::calibrate(std::vector<cv::Mat> const& leftImages,
     std::vector<cv::Point3f> obj;
 
     // size of calibration patteren squares
-    float squaresize = 27.5;
-    for(int y=0; y<vCorners; ++y) {
-      for(int x=0; x<hCorners; ++x) {
-        obj.push_back(cv::Point3f((float(x)*squaresize),(float(y)*squaresize),0));
+    for(int y=0; y<chessboardSize.height; ++y) {
+      for(int x=0; x<chessboardSize.width; ++x) {
+        obj.push_back(cv::Point3f((float(x)*patternSize),(float(y)*patternSize),0));
       }
     }
 
@@ -85,8 +80,8 @@ double Stereosystem::calibrate(std::vector<cv::Mat> const& leftImages,
       cv::cvtColor(leftImages[i], grayImageLeft, CV_BGR2GRAY);
       cv::cvtColor(rightImages[i], grayImageRight, CV_BGR2GRAY);
 
-      bool foundL = cv::findChessboardCorners( grayImageLeft, boardSize, cornersLeft, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
-      bool foundR = cv::findChessboardCorners( grayImageRight, boardSize, cornersRight, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+      bool foundL = cv::findChessboardCorners( grayImageLeft, chessboardSize, cornersLeft, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+      bool foundR = cv::findChessboardCorners( grayImageRight, chessboardSize, cornersRight, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
 
       if(foundL && foundR) {
         cv::cornerSubPix(grayImageLeft, cornersLeft, cv::Size(5,5), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 300, 0.1));

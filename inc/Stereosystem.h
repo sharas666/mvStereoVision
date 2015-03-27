@@ -20,7 +20,7 @@ class Stereosystem
 		Stereosystem(Camera*, Camera*);
 		~Stereosystem();
 
-		double calibrate(std::vector<cv::Mat> const&, std::vector<cv::Mat> const&,double);
+		double calibrate(std::vector<cv::Mat> const&, std::vector<cv::Mat> const&,double,cv::Size);
 
 		bool loadExtrinisic(std::string const&);
 		bool loadIntrinsic(std::string const&);
