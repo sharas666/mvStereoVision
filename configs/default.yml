@@ -1,12 +1,11 @@
 %YAML:1.0
 
-inputImages: ./images/newImages
-outputImages: ./images/newImages
+inputImages: ./images/smallBLFisheye
+outputImages: ./images/smallBLFisheye
 
-capturedImagesRectified: ./images/rectifiedImages
+capturedImagesRectified: ./images/moritz_r
 
 capturedDisparities: ./images/disparityMaps
 
-
-outputParameter: ./parameterTest
-inputParameter: ./parameter
+outputParameter: ./smallBLFisheye
+inputParameter: ./parameterSmallestBaseline
