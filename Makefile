@@ -23,13 +23,31 @@ MKDIR_P = mkdir -p
 RM = rm -rf
 
 #include path
-INC_PATH = -I./inc/  -I/opt/mvIMPACT_acquire/
+INC_PATH = -I./inc/  -I/opt/mvIMPACT_acquire/ -I/usr/local/include/opencv2/
 
 #library paths
-LIB_PATH = -L/opt/mvIMPACT_acquire/lib/x86_64/
+LIB_PATH = -L/opt/mvIMPACT_acquire/lib/x86_64/ -L/usr/local/lib/
 
 #libraries
-OPENCV = `pkg-config opencv --cflags --libs`
+OPENCV = -lopencv_core \
+	 -lopencv_highgui \
+	 -lopencv_calib3d \
+	 -lopencv_contrib \
+	 -lopencv_features2d \
+	 -lopencv_flann \
+	 -lopencv_gpu \
+	 -lopencv_imgproc \
+	 -lopencv_legacy \
+	 -lopencv_ml \
+	 -lopencv_nonfree \
+	 -lopencv_objdetect \
+	 -lopencv_ocl \
+	 -lopencv_photo \
+	 -lopencv_stitching \
+	 -lopencv_superres \
+	 -lopencv_video \
+	 -lopencv_videostab
+
 LIBS = -lmvDeviceManager -lpthread $(OPENCV)
 
 
