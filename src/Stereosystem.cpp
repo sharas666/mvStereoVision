@@ -114,7 +114,6 @@ double Stereosystem::calibrate(std::vector<cv::Mat> const& leftImages,
   }
 
   return -1.0;
-
 }
 
 bool Stereosystem::loadExtrinisic(std::string const& file )
