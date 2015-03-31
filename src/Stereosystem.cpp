@@ -303,6 +303,7 @@ bool Stereosystem::initRectification()
 
     std::cout << "ROI 1: " << mValidROI[0] << std::endl;
     std::cout << "ROI 2: " << mValidROI[1] << std::endl;
+    std::cout << mDisplayROI << std::endl;
 
     LOG(INFO) << mTag << "Rectification successfully initialized! "<< mDisplayROI <<std::endl;
     mIsInit = true;
@@ -335,7 +336,7 @@ bool Stereosystem::getRectifiedImagepair(Stereopair& sip)
     cv::remap(sip.mRight, sip.mRight, mMap1[1], mMap2[1], cv::INTER_LINEAR);
 
     sip.mLeft = sip.mLeft(mDisplayROI);
-    sip.mLeft = sip.mLeft(mDisplayROI);
+    sip.mRight = sip.mRight(mDisplayROI);
     return true;
   }
   else
@@ -350,7 +351,7 @@ bool Stereosystem::getRectifiedImagepair(Stereopair& sip)
       cv::remap(sip.mRight, sip.mRight, mMap1[1], mMap2[1], cv::INTER_LINEAR);
 
       sip.mLeft = sip.mLeft(mDisplayROI);
-      sip.mLeft = sip.mLeft(mDisplayROI);
+      sip.mRight = sip.mRight(mDisplayROI);
       return true;
     }
     return false;

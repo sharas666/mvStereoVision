@@ -245,9 +245,9 @@ int main(int argc, char* argv[])
   std::string outputDirectory;
   fs["capturedDisparities"] >> outputDirectory;
 
-int imageNumber = 0;
+	int imageNumber = 0;
 
-if(Utility::directoryExist(outputDirectory))
+	if(Utility::directoryExist(outputDirectory))
  	{
  		std::vector<std::string> tmp1;
  		Utility::getFiles(outputDirectory,tmp1);
@@ -268,17 +268,15 @@ if(Utility::directoryExist(outputDirectory))
  		}
  	}
 
-
-
   if(Utility::createDirectory(outputDirectory))
-    {
-            LOG(INFO) << tag << "Successfully created directory for captured disparity maps." << std::endl;
-    }
-    else
-    {
-        LOG(ERROR) << tag << "Unable to create directoryfor captured disparity maps." <<std::endl;
-        return 0;
-    }
+  {
+  	LOG(INFO) << tag << "Successfully created directory for captured disparity maps." << std::endl;
+  }
+  else
+  {
+    LOG(ERROR) << tag << "Unable to create directoryfor captured disparity maps." <<std::endl;
+    return 0;
+  }
 
 
 	Stereosystem stereo(left,right);
@@ -289,38 +287,13 @@ if(Utility::directoryExist(outputDirectory))
   if(!stereo.loadExtrinisic(inputParameter +"/extrinsic.yml"))
     return 0;
 
-
-bool success = fs.open("./parameter/extrinsic.yml", cv::FileStorage::READ);
-
-    if(fs["R"].empty() || fs["T"].empty() || fs["E"].empty() || fs["F"].empty())
-    {
-        LOG(ERROR) << tag << "Node is empty." <<std::endl;
-        fs.release();
-        return 0;
-    }
-
-  if(success)
-  {
-      fs["R"] >> R;
-      LOG(INFO) << tag <<"Successfully loaded Extrinsics." << std::endl;
-      fs.release();
-    }
-  else
-  {
-    LOG(ERROR) << tag << "Unable to open extrinsic file: " << std::endl;
-      fs.release();
-    return 0;
-  }
-
-    R.convertTo(R_32F,CV_32F);
-
-
 	int key = 0;
  	int binning = 1;
 	Stereopair s;
-
-	left->setBinning(binning);
-	right->setBinning(binning);
+	double focusLeft, focusRight;
+	
+	//left->setBinning(binning);
+	//right->setBinning(binning);
 	stereo.resetRectification();
 
 	disparitySGBM = cv::StereoSGBM(0,numDispSGBM,windSizeSGBM,8*windSizeSGBM*windSizeSGBM,32*windSizeSGBM*windSizeSGBM);
@@ -333,7 +306,6 @@ bool success = fs.open("./parameter/extrinsic.yml", cv::FileStorage::READ);
 	cv::Mat normalizedBM;
 	while(running)
 	{
-
 		stereo.getRectifiedImagepair(s);
 		cv::imshow("Left", s.mLeft);
 		cv::imshow("Right", s.mRight);
@@ -410,13 +382,12 @@ bool success = fs.open("./parameter/extrinsic.yml", cv::FileStorage::READ);
 				cv::imwrite(std::string(outputDirectory+"/bm_norm_"+prefix+std::to_string(imageNumber)+".jpg"),normalizedBM);
 
 			}
-
-
 			++imageNumber;
 		}
 		else if(char(key) == 'f')
+		{
 			std::cout<<left->getFramerate()<<" "<<right->getFramerate()<<std::endl;
-
+		}
 	}
 
 	disp.join();

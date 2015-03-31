@@ -17,6 +17,7 @@
 #include "opencv2/opencv.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/features2d/features2d.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 
 //Camera stuff
 #include <mvIMPACT_CPP/mvIMPACT_acquire.h>
@@ -54,11 +55,9 @@ namespace Utility
 
 	bool checkConfig(std::string const&,std::vector<std::string> const&, cv::FileStorage &);
 
-	bool covariance(cv::Mat const&, cv::Mat const&, cv::Scalar&);
-	bool standartDeviation(cv::Mat const&, cv::Scalar&);
-	bool normalizedCrossCorrelation(Stereopair const&, cv::Mat&);
-
 	bool calcLeftCoordinate(cv::Mat_<float> &, cv::Mat const&,int,int,double,double,double,double,double);
+	
+	double checkSharpness(cv::Mat const&);
 }
 
 #endif //__UTILITY__H__

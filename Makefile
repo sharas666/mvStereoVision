@@ -40,6 +40,12 @@ capture: directories $(OBJ)
 	@$(CC) $(OBJ) $(TARGETOBJDIR)/capture.o -o $(BINDIR)/capture $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
+liveView: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/liveView.cpp -o $(TARGETOBJDIR)/liveView.o
+	@echo Compiled liveView.cpp successfully!
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/liveView.o -o $(BINDIR)/liveView $(LIB_PATH) $(LIBS)
+	@echo Linking complete!
+
 captureRectified: directories $(OBJ)
 	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/captureRectified.cpp -o $(TARGETOBJDIR)/captureRectified.o
 	@echo Compiled captureRectified.cpp successfully!

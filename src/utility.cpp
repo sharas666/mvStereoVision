@@ -52,8 +52,6 @@ int Utility::getFiles (std::string const& dir, std::vector<std::string> &files)
   return 0;
 }
 
-
-
 bool Utility::directoryExist(std::string const& dirPath)
 {
 	struct stat st = {0};
@@ -164,4 +162,15 @@ bool Utility::calcLeftCoordinate(cv::Mat_<float> &toReturn, cv::Mat const& dispa
     }
 }
 
+double Utility::checkSharpness(cv::Mat const& src)
+{
+  cv::Mat M = (cv::Mat_<double>(3, 1) << -1, 2, -1);
+  cv::Mat G = cv::getGaussianKernel(3, -1, CV_64F);
+ 
+  cv::Mat Lx, Ly;
+  cv::sepFilter2D(src, Lx, CV_64F, M, G);
+  cv::sepFilter2D(src, Ly, CV_64F, G, M);
 
+  cv::Mat FM = cv::abs(Lx) + cv::abs(Ly);
+  return cv::mean(FM).val[0];
+}
