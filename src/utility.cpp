@@ -145,3 +145,24 @@ bool Utility::checkConfig(std::string const& configfile, std::vector<std::string
         return false;
     }
 }
+
+bool Utility::calcLeftCoordinate(cv::Mat_<float> &toReturn, cv::Mat const& disparityMap,int x,int y,double baseline,double fx,double fy,double cx,double cy)
+{
+    double d = static_cast<float>(disparityMap.at<short>(y,x));
+    d/=16.0;
+
+    if(d > 0)
+    {
+        toReturn(2) = baseline*fx/d;
+        toReturn(0) = toReturn(2)*(x-cx)/fx;
+        toReturn(1) = toReturn(2)*(y-cy)/fy;
+        return true;
+    }
+    else
+    {
+        LOG(WARNING) << mTag << "Disparity value not >= 0!" <<std::endl;
+        return false;
+    }
+}
+
+

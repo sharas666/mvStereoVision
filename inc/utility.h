@@ -60,6 +60,8 @@ namespace Utility
 	bool covariance(cv::Mat const&, cv::Mat const&, cv::Scalar&);
 	bool standartDeviation(cv::Mat const&, cv::Scalar&);
 	bool normalizedCrossCorrelation(Stereopair const&, cv::Mat&);
+
+	bool calcLeftCoordinate(cv::Mat_<float> &, cv::Mat const&,int,int,double,double,double,double,double);
 }
 
 
