@@ -38,6 +38,9 @@ class Stereosystem
 		void getFundamentalMatrix(cv::Mat &) const;
 		void getTranslationMatrix(cv::Mat &) const;
 
+		double getBaseline() const;
+		cv::Mat getRotationMatrix() const;
+
 	private:
 		Camera 			*mLeft;
 		Camera 			*mRight;

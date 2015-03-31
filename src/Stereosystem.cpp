@@ -164,6 +164,8 @@ bool Stereosystem::loadIntrinsic(std::string const& file)
       fs["cameraMatrixRight"] >> mIntrinsicRight;
       fs["distCoeffsLeft"] >> mDistCoeffsLeft;
       fs["distCoeffsRight"] >> mDistCoeffsRight;
+      mLeft->setIntrinsic(mIntrinsicLeft);
+      mRight->setIntrinsic(mIntrinsicRight);
       LOG(INFO) << mTag <<"Successfully loaded Intrinsics." << std::endl;;
       fs.release();
       return true;
@@ -366,4 +368,14 @@ bool Stereosystem::getRectifiedImagepair(Stereopair& sip)
  void Stereosystem::getTranslationMatrix(cv::Mat &translation) const
  {
   mT.copyTo(translation);
+ }
+
+ double Stereosystem::getBaseline() const
+ {
+  return sqrt(pow(mT.at<double>(0,0),2) + pow(mT.at<double>(1,0),2) + pow(mT.at<double>(2,0),2));
+ }
+
+ cv::Mat Stereosystem::getRotationMatrix() const
+ {
+  return mR;
  }
