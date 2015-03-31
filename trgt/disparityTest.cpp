@@ -9,6 +9,8 @@
 #include <mutex>
 #include <condition_variable>
 
+#include <cmath>
+
 INITIALIZE_EASYLOGGINGPP
 
 cv::StereoSGBM disparitySGBM;
@@ -19,6 +21,17 @@ int windSizeSGBM = 5;
 
 int numDispBM = 16;
 int windSizeBM = 5;
+
+double baseline ;
+double fx ;
+double fy ;
+double cx ;
+double cy ;
+cv::Mat dispMapSGBM, dispMapBM, dispMapTM;
+
+cv::Mat R, R_32F;
+cv::Mat disparityMap_32FC1;
+
 
 void changeNumDispSGBM(int, void*)
 {
@@ -76,6 +89,45 @@ void changeWindSizeBM(int, void*)
     disparityBM = cv::StereoBM(CV_STEREO_BM_BASIC, numDispBM, windSizeBM);
 }
 
+void mouseClick(int event, int x, int y,int flags, void* userdata)
+{
+  if  ( event == CV_EVENT_LBUTTONDOWN )
+     {
+            double d = double(disparityMap_32FC1.at<float>(x,y));
+
+            if(d > 0)
+            {
+                cv::Mat_<float>  p(3,1), pFinish(3,1);
+                p(2) = baseline*fx/d;
+                p(0) = p(2)*(y-cx)/fx;
+                p(1) = p(2)*(x-cy)/fy;
+                pFinish = R_32F.t()*p;
+                std::cout<< pFinish(0) << " " << pFinish(1) << " " << pFinish(2) << std::endl;
+                std::cout<<"distance: " << sqrt(pow(p(0),2)+pow(p(1),2)+pow(p(2),2)) <<std::endl;
+            }
+            else
+            {
+                std::cout <<"invalid disparity\n";
+            }
+
+     }
+     // else if  ( event == CV_EVENT_RBUTTONDOWN )
+     // {
+     //      std::cout << "Right button of the mouse is clicked - position (" << x << ", " << y << ")" << std::endl;
+     // }
+     // else if  ( event == CV_EVENT_MBUTTONDOWN )
+     // {
+     //      std::cout << "Middle button of the mouse is clicked - position (" << x << ", " << y << ")" << std::endl;
+     // }
+     // else if ( event == CV_EVENT_MOUSEMOVE )
+     // {
+     //      std::cout << "Mouse move over the window - position (" << x << ", " << y << ")" << std::endl;
+
+     // }
+
+
+}
+
 int main(int argc, char* argv[])
 {
     std::string tag = "MAIN\t";
@@ -90,6 +142,11 @@ int main(int argc, char* argv[])
 
   cv::FileStorage fs;
 
+    baseline = 255.752069442;
+    fx = 614.245/2.0;
+    fy = 614.456/2.0;
+    cx = 376.9866/2.0;
+    cy = 230.39104/2.0;
 
   if(!Utility::checkConfig(config,nodes,fs))
   {
@@ -153,6 +210,29 @@ if(Utility::directoryExist(outputDirectory))
     s.mLeft = grayLeft;
     s.mRight = grayRight;
 
+    bool success = fs.open("./parameter/extrinsic.yml", cv::FileStorage::READ);
+
+    if(fs["R"].empty() || fs["T"].empty() || fs["E"].empty() || fs["F"].empty())
+    {
+        LOG(ERROR) << tag << "Node is empty." <<std::endl;
+        fs.release();
+        return 0;
+    }
+
+  if(success)
+  {
+      fs["R"] >> R;
+      LOG(INFO) << tag <<"Successfully loaded Extrinsics." << std::endl;
+      fs.release();
+    }
+  else
+  {
+    LOG(ERROR) << tag << "Unable to open extrinsic file: " << std::endl;
+      fs.release();
+    return 0;
+  }
+
+    R.convertTo(R_32F,CV_32F);
 
 
     disparitySGBM = cv::StereoSGBM(0,numDispSGBM,windSizeSGBM,8*windSizeSGBM*windSizeSGBM,32*windSizeSGBM*windSizeSGBM);
@@ -167,11 +247,13 @@ if(Utility::directoryExist(outputDirectory))
     cv::createTrackbar("Num Disp", "BM", &numDispBM, 320, changeNumDispBM);
     cv::createTrackbar("Wind Size", "BM", &windSizeBM, 51, changeWindSizeBM);
 
+    cv::setMouseCallback("SGBM", mouseClick, NULL);
+
+
     cv::Mat normalizedSGBM;
     cv::Mat normalizedBM;
     cv::Mat normalizedTM;
 
-    cv::Mat dispMapSGBM, dispMapBM, dispMapTM;
 
     bool running = true;
 
@@ -186,14 +268,16 @@ if(Utility::directoryExist(outputDirectory))
         Disparity::bm(s, dispMapBM, disparityBM);
   //      Disparity::tm(s, dispMapTM,5);
 
+         dispMapSGBM.convertTo(disparityMap_32FC1,CV_32FC1);
 
+       //  cv::threshold(dispMapSGBM,dispMapSGBM,1.0,300,CV_THRESH_TOZERO);
          cv::normalize(dispMapSGBM,normalizedSGBM,0,255,cv::NORM_MINMAX, CV_8U);
-         cv::resize(normalizedSGBM, normalizedSGBM, cv::Size(), 2,2, CV_INTER_AREA);
+         //cv::resize(normalizedSGBM, normalizedSGBM, cv::Size(), 2,2, CV_INTER_AREA);
          cv::imshow("SGBM",normalizedSGBM);
 
-         cv::normalize(dispMapBM,normalizedBM,0,255,cv::NORM_MINMAX, CV_8U);
-         cv::resize(normalizedBM, normalizedBM, cv::Size(), 2,2, CV_INTER_AREA);
-         cv::imshow("BM",normalizedBM);
+         //cv::normalize(dispMapBM,normalizedBM,0,255,cv::NORM_MINMAX, CV_8U);
+         //cv::resize(normalizedBM, normalizedBM, cv::Size(), 2,2, CV_INTER_AREA);
+         //cv::imshow("BM",normalizedBM);
 
         // cv::normalize(dispMapTM,normalizedTM,0,255,cv::NORM_MINMAX, CV_8U);
         // cv::imshow("TM",normalizedTM);

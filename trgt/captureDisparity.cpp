@@ -20,6 +20,23 @@ bool newDisparityMap3 = false;
 bool running = true;
 cv::Mat dispMapSGBM, dispMapBM, dispMapNCC;
 
+cv::StereoSGBM disparitySGBM;
+cv::StereoBM disparityBM;
+
+int numDispSGBM = 16;
+int windSizeSGBM = 5;
+
+int numDispBM = 16;
+int windSizeBM = 5;
+
+double baseline ;
+double fx ;
+double fy ;
+double cx ;
+double cy ;
+
+cv::Mat R, R_32F;
+	cv::Mat disparityMap_32FC1;
 
 void disparityCalc(Stereopair const& s, cv::StereoSGBM &disparity)
 {
@@ -28,6 +45,8 @@ void disparityCalc(Stereopair const& s, cv::StereoSGBM &disparity)
 		std::unique_lock<std::mutex> ul(disparityLockSGBM);
 		cond_var.wait(ul);
 		Disparity::sgbm(s, dispMapSGBM, disparity);
+        dispMapSGBM.convertTo(disparityMap_32FC1,CV_32FC1);
+
 		newDisparityMap=true;
 	}
 }
@@ -55,6 +74,121 @@ void disparityCalcBM( Stereopair const& s, cv::StereoBM &disparity)
 // 	//}
 // }
 
+
+void changeNumDispSGBM(int, void*)
+{
+    numDispSGBM+=numDispSGBM%16;
+
+    if(numDispSGBM < 16)
+    {
+        numDispSGBM = 16;
+        cv::setTrackbarPos("Num Disp", "SGBM", numDispSGBM);
+    }
+
+    cv::setTrackbarPos("Num Disp", "SGBM", numDispSGBM);
+    disparitySGBM = cv::StereoSGBM(0,numDispSGBM,windSizeSGBM,8*windSizeSGBM*windSizeSGBM,32*windSizeSGBM*windSizeSGBM);
+}
+
+void changeNumDispBM(int, void*)
+{
+    numDispBM+=numDispBM%16;
+
+    if(numDispBM < 16)
+    {
+        numDispBM = 16;
+        cv::setTrackbarPos("Num Disp", "BM", numDispBM);
+    }
+    cv::setTrackbarPos("Num Disp", "BM", numDispBM);
+    disparityBM = cv::StereoBM(CV_STEREO_BM_BASIC, numDispBM, windSizeBM);
+}
+
+void changeWindSizeSGBM(int, void*)
+{
+    if(windSizeSGBM%2 == 0)
+        windSizeSGBM+=1;
+
+    if(windSizeSGBM < 5)
+    {
+        windSizeSGBM = 5;
+        cv::setTrackbarPos("Wind Size", "SGBM", windSizeSGBM);
+    }
+    cv::setTrackbarPos("Wind Size", "SGBM", windSizeSGBM);
+    disparitySGBM = cv::StereoSGBM(0,numDispSGBM,windSizeSGBM,8*windSizeSGBM*windSizeSGBM,32*windSizeSGBM*windSizeSGBM);
+}
+
+void changeWindSizeBM(int, void*)
+{
+    if(windSizeBM%2 == 0)
+        windSizeBM+=1;
+
+
+    if(windSizeBM < 5)
+    {
+        windSizeBM = 5;
+        cv::setTrackbarPos("Wind Size", "BM", windSizeBM);
+    }
+    cv::setTrackbarPos("Wind Size", "BM", windSizeBM);
+    disparityBM = cv::StereoBM(CV_STEREO_BM_BASIC, numDispBM, windSizeBM);
+}
+
+void mouseClick(int event, int x, int y,int flags, void* userdata)
+{
+
+  if  ( event == CV_EVENT_LBUTTONDOWN )
+     {
+
+            double d = double(dispMapSGBM.at<unsigned char>(x,y));
+            std::cout<<d<<std::endl;
+            if(d > 0)
+            {
+                cv::Mat_<float>  p(3,1), pFinish(3,1);
+                p(2) = baseline*fx/d;
+                p(0) = p(2)*(x-cx)/fx;
+                p(1) = p(2)*(y-cy)/fy;
+                pFinish = R_32F.t()*p;
+                std::cout<< p(0) << " " << p(1) << " " << p(2) << std::endl;
+                std::cout<< pFinish(0) << " " << pFinish(1) << " " << pFinish(2) << std::endl;
+                std::cout<<"distance: " << (pFinish(2))/1000.0 <<std::endl;
+            }
+            else
+            {
+                std::cout <<"invalid disparity\n";
+            }
+
+     }
+     // else if  ( event == CV_EVENT_RBUTTONDOWN )
+     // {
+     //      std::cout << "Right button of the mouse is clicked - position (" << x << ", " << y << ")" << std::endl;
+     // }
+     // else if  ( event == CV_EVENT_MBUTTONDOWN )
+     // {
+     //      std::cout << "Middle button of the mouse is clicked - position (" << x << ", " << y << ")" << std::endl;
+     // }
+     // else if ( event == CV_EVENT_MOUSEMOVE )
+     // {
+     //      std::cout << "Mouse move over the window - position (" << x << ", " << y << ")" << std::endl;
+
+     // }
+
+
+}
+
+
+void initWindows()
+{
+	cv::namedWindow("SGBM" ,1);
+    cv::namedWindow("BM" ,1);
+
+	cv::createTrackbar("Num Disp", "SGBM", &numDispSGBM, 320, changeNumDispSGBM);
+    cv::createTrackbar("Wind Size", "SGBM", &windSizeSGBM, 51, changeWindSizeSGBM);
+
+    cv::createTrackbar("Num Disp", "BM", &numDispBM, 320, changeNumDispBM);
+    cv::createTrackbar("Wind Size", "BM", &windSizeBM, 51, changeWindSizeBM);
+
+    cv::setMouseCallback("SGBM", mouseClick, NULL);
+
+}
+
 // void disparityCalcNCC( Stereopair const& s) {
 // 	while(running)
 // 	{
@@ -64,6 +198,8 @@ void disparityCalcBM( Stereopair const& s, cv::StereoBM &disparity)
 // 		newDisparityMap3=true;
 // 	}
 // }
+
+
 
 int main(int argc, char* argv[])
 {
@@ -75,11 +211,18 @@ int main(int argc, char* argv[])
 	Camera *left;
 	Camera *right;
 
+	initWindows();
 	if(!Utility::initCameras(devMgr,left,right))
 	{
 		return 0;
 	}
 
+
+	baseline =131.97;
+    fx = 615.00087800830659;
+    fy = 614.52456559429913;
+    cx = 375.75962528613366;
+    cy = 232.47166090354159;
 
 	std::vector<std::string> nodes;
   nodes.push_back("inputParameter");
@@ -147,23 +290,44 @@ if(Utility::directoryExist(outputDirectory))
     return 0;
 
 
+bool success = fs.open("./parameter/extrinsic.yml", cv::FileStorage::READ);
+
+    if(fs["R"].empty() || fs["T"].empty() || fs["E"].empty() || fs["F"].empty())
+    {
+        LOG(ERROR) << tag << "Node is empty." <<std::endl;
+        fs.release();
+        return 0;
+    }
+
+  if(success)
+  {
+      fs["R"] >> R;
+      LOG(INFO) << tag <<"Successfully loaded Extrinsics." << std::endl;
+      fs.release();
+    }
+  else
+  {
+    LOG(ERROR) << tag << "Unable to open extrinsic file: " << std::endl;
+      fs.release();
+    return 0;
+  }
+
+    R.convertTo(R_32F,CV_32F);
+
 
 	int key = 0;
  	int binning = 1;
 	Stereopair s;
 
-	//left->setBinning(binning);
-	//right->setBinning(binning);
+	left->setBinning(binning);
+	right->setBinning(binning);
 	stereo.resetRectification();
 
-	int numDisp = 16;
-	int windSize = 5;
+	disparitySGBM = cv::StereoSGBM(0,numDispSGBM,windSizeSGBM,8*windSizeSGBM*windSizeSGBM,32*windSizeSGBM*windSizeSGBM);
+	disparityBM  = cv::StereoBM(CV_STEREO_BM_BASIC, numDispBM, windSizeBM);
 
-	cv::StereoSGBM disparity(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
-	cv::StereoBM disparity2(CV_STEREO_BM_BASIC, numDisp, windSize);
-
-	std::thread disp(disparityCalc,std::ref(s),std::ref(disparity));
-	std::thread disp2(disparityCalcBM,std::ref(s),std::ref(disparity2));
+	std::thread disp(disparityCalc,std::ref(s),std::ref(disparitySGBM));
+	std::thread disp2(disparityCalcBM,std::ref(s),std::ref(disparityBM));
 	//std::thread disp3(disparityCalcTM, std::ref(s));
 	cv::Mat normalizedSGBM;
 	cv::Mat normalizedBM;
@@ -178,13 +342,13 @@ if(Utility::directoryExist(outputDirectory))
 		if(newDisparityMap)
 		{
 			cv::normalize(dispMapSGBM,normalizedSGBM,0,255,cv::NORM_MINMAX, CV_8U);
-			cv::imshow("Disparity",normalizedSGBM);
+			cv::imshow("SGBM",normalizedSGBM);
 			newDisparityMap = false;
 		}
 		if(newDisparityMap2)
 		{
 			cv::normalize(dispMapBM,normalizedBM,0,255,cv::NORM_MINMAX, CV_8U);
-			cv::imshow("Disparity2",normalizedBM);
+			cv::imshow("BM",normalizedBM);
 			newDisparityMap2 = false;
 		}
 		// if(newDisparityMap3)
@@ -216,48 +380,6 @@ if(Utility::directoryExist(outputDirectory))
 			right->setExposure(20000);
 			stereo.resetRectification();
 		}
-		else if(char(key) == 'i')
-		{
-			std::unique_lock<std::mutex> ulSGBM(disparityLockSGBM);
-			std::unique_lock<std::mutex> ulBM(disparityLockBM);
-			numDisp +=16;
-			disparity = cv::StereoSGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
-			disparity2 = cv::StereoBM (CV_STEREO_BM_BASIC, numDisp, windSize);
-
-		}
-		else if(char(key) == 'd')
-		{
-			std::unique_lock<std::mutex> ulSGBM(disparityLockSGBM);
-			std::unique_lock<std::mutex> ulBM(disparityLockBM);
-			if( numDisp > 16)
-			{
-				numDisp -=16;
-				disparity = cv::StereoSGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
-				disparity2 = cv::StereoBM (CV_STEREO_BM_BASIC, numDisp, windSize);
-			}
-
-		}
-		else if(char(key) == 'e')
-		{
-			std::unique_lock<std::mutex> ulSGBM(disparityLockSGBM);
-			std::unique_lock<std::mutex> ulBM(disparityLockBM);
-			windSize +=2;
-			disparity = cv::StereoSGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
-			disparity2 = cv::StereoBM (CV_STEREO_BM_BASIC, numDisp, windSize);
-
-		}
-		else if(char(key) == 'r')
-		{
-			std::unique_lock<std::mutex> ulSGBM(disparityLockSGBM);
-			std::unique_lock<std::mutex> ulBM(disparityLockBM);
-			if( windSize > 5)
-			{
-			windSize -=2;
-			disparity = cv::StereoSGBM(0,numDisp,windSize,8*windSize*windSize,32*windSize*windSize);
-			disparity2 = cv::StereoBM (CV_STEREO_BM_BASIC, numDisp, windSize);
-			}
-
-		}
 		else if (char(key) == 'c')
 		{
 			std::string prefix = "";
@@ -286,6 +408,7 @@ if(Utility::directoryExist(outputDirectory))
 				cv::normalize(dispMapBM,normalizedBM,0,255,cv::NORM_MINMAX, CV_8U);
 				cv::imwrite(std::string(outputDirectory+"/bm_raw_"+prefix+std::to_string(imageNumber)+".jpg"),dispMapBM);
 				cv::imwrite(std::string(outputDirectory+"/bm_norm_"+prefix+std::to_string(imageNumber)+".jpg"),normalizedBM);
+
 			}
 
 
