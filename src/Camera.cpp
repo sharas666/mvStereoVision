@@ -4,9 +4,9 @@ Camera::Camera():
 	mDevice(NULL),
 	mFunctionInterface(NULL),
 	mStatistics(NULL),
-  	mSystemSettings(NULL),
-  	mCameraSettingsBase(NULL),
-  	mCameraSettingsBlueFOX(NULL),
+  mSystemSettings(NULL),
+  mCameraSettingsBase(NULL),
+  mCameraSettingsBlueFOX(NULL),
 	mImageDestinaton(NULL),
 	mTimeout(1000),
 	mTag(" CAMERA "),
@@ -21,10 +21,10 @@ Camera::Camera(mvIMPACT::acquire::Device* dev):
 	mDevice(dev),
 	mFunctionInterface(dev),
 	mStatistics(dev),
-  	mSystemSettings(dev),
-  	mCameraSettingsBase(dev),
-  	mCameraSettingsBlueFOX(dev),
-  	mImageDestinaton(dev),
+  mSystemSettings(dev),
+  mCameraSettingsBase(dev),
+  mCameraSettingsBlueFOX(dev),
+  mImageDestinaton(dev),
 	mTimeout(1000),
 	mTag("CAMERA\tSerial:"+mDevice->serial.read() +\
 		 " ID:" + std::to_string(mDevice->deviceID.read())+ "\t"),
@@ -72,8 +72,8 @@ bool Camera::getImage(std::vector<char> &imageToReturn)
 		{
 			//create vector with image data from request
 			imageToReturn= std::vector<char>(static_cast<char*>(mRequest->imageData.read()),
-									static_cast<char*>(mRequest->imageData.read()) +\
-															mRequest->imageSize.read());
+									                     static_cast<char*>(mRequest->imageData.read()) +\
+															         mRequest->imageSize.read());
 			mWidth = mRequest->imageWidth.read();
 			mHeight = mRequest->imageHeight.read();
 			mFunctionInterface.imageRequestUnlock(requestNr);
@@ -94,6 +94,7 @@ bool Camera::getImage(std::vector<char> &imageToReturn)
 
 double Camera::calibrate(std::vector<cv::Mat> const& images, double patternsize, cv::Size chessboardSize)
 {
+  // needed calibration variables
 	std::vector<cv::Mat> rvecs,tvecs;
 	std::vector<std::vector<cv::Point3f> > objectPoints;
   std::vector<std::vector<cv::Point2f> > imagePoints;
@@ -112,19 +113,15 @@ double Camera::calibrate(std::vector<cv::Mat> const& images, double patternsize,
 
 	for(unsigned int i = 0; i < images.size(); ++i) {
 		cv::Mat grayImage;
-
   	cv::cvtColor(images[i], grayImage, CV_BGR2GRAY);
 
     bool found = cv::findChessboardCorners( grayImage, chessboardSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
 
 		if(found) {
       cv::cornerSubPix(grayImage, corners, cv::Size(5,5), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 300, 0.1));
-
       imagePoints.push_back(corners);
       objectPoints.push_back(obj);
-
       std::cout << "Found " << i << std::endl;
-
       grayImage.release();
 		}
 		else
@@ -134,9 +131,8 @@ double Camera::calibrate(std::vector<cv::Mat> const& images, double patternsize,
 		}
   }
 
-  cv::Size imagesize = cv::Size(images[0].size());
-
   // calibrate the camera
+  cv::Size imagesize = cv::Size(images[0].size());
   double rms = cv::calibrateCamera(objectPoints, imagePoints, imagesize, intrinsic, distCoeffs, rvecs, tvecs);
 
   // assign intrinsic and extrinsic to camera

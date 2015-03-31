@@ -32,11 +32,9 @@ struct Stereopair
 	Stereopair(cv::Mat &, cv::Mat &);
 	~Stereopair();
 
-
 	cv::Mat mLeft;
 	cv::Mat mRight;
 	std::string mTag;
-
 };
 
 struct CameraInit
@@ -45,7 +43,6 @@ struct CameraInit
 	Camera* right;
 	bool init;
 };
-
 
 namespace Utility
 {
@@ -62,6 +59,4 @@ namespace Utility
 	bool normalizedCrossCorrelation(Stereopair const&, cv::Mat&);
 }
 
-
-#endif
-
+#endif //__UTILITY__H__
