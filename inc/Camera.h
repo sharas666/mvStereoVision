@@ -38,6 +38,7 @@ class Camera
 		void 			setPixelFormat(int);
 		void 			setBinning(unsigned int);
 
+		void			setIntrinsic(cv::Mat);
 		//Getter
 		float 			getFramerate() 		const;
 		unsigned int 	getImageWidth() 	const;

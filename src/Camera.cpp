@@ -199,6 +199,11 @@ void Camera::setBinning(unsigned int option)
 	}
 }
 
+void Camera::setIntrinsic(cv::Mat intrinsic)
+{
+    intrinsic.copyTo(mIntrinsic);
+}
+
 float Camera::getFramerate() const
 {
 	return mStatistics.framesPerSecond.read();
