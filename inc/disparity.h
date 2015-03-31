@@ -9,7 +9,6 @@
 #include "opencv2/features2d/features2d.hpp"
 #include <opencv2/calib3d/calib3d.hpp>
 
-
 namespace Disparity
 {
 	void sgbm(Stereopair const&, cv::Mat&, cv::StereoSGBM);
@@ -17,4 +16,4 @@ namespace Disparity
   void tm(Stereopair const&, cv::Mat& ,unsigned int);
 }
 
-#endif
+#endif //__DISPARITY__H__

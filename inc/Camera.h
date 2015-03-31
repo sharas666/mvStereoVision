@@ -29,7 +29,7 @@ class Camera
 						~Camera();
 
 		//Functions
-		bool 			getImage(std::vector<char>&);
+		bool 				getImage(std::vector<char>&);
 		double 			calibrate(std::vector<cv::Mat> const&, double, cv::Size);
 
 		//Setter
@@ -40,27 +40,27 @@ class Camera
 
 		void			setIntrinsic(cv::Mat);
 		//Getter
-		float 			getFramerate() 		const;
+		float 				getFramerate() 		const;
 		unsigned int 	getImageWidth() 	const;
 		unsigned int 	getImageHeight() 	const;
-		int 			getExposure() 		const;
-		float 			getGain() 			const;
-		int 			getBinningMode()	const;
-		cv::Mat getIntrinsic() const;
-		cv::Mat getDistCoeffs() const;
+		int 					getExposure() 		const;
+		float 				getGain() 				const;
+		int 					getBinningMode()	const;
+		cv::Mat 			getIntrinsic() 		const;
+		cv::Mat 			getDistCoeffs() 	const;
 
 
 	private:
 		//Camera settings
-		mvIMPACT::acquire::Device* 					mDevice;
-		mvIMPACT::acquire::FunctionInterface		mFunctionInterface;
-	 	mvIMPACT::acquire::Statistics 				mStatistics;
-  		mvIMPACT::acquire::SystemSettings 			mSystemSettings;
-  		mvIMPACT::acquire::CameraSettingsBase 		mCameraSettingsBase;
-  		mvIMPACT::acquire::CameraSettingsBlueFOX 	mCameraSettingsBlueFOX;
-  		mvIMPACT::acquire::ImageDestination 		mImageDestinaton;
-		mvIMPACT::acquire::Request*					mRequest;
-		int 										mTimeout;
+		mvIMPACT::acquire::Device* 								mDevice;
+		mvIMPACT::acquire::FunctionInterface			mFunctionInterface;
+	 	mvIMPACT::acquire::Statistics 						mStatistics;
+  	mvIMPACT::acquire::SystemSettings 				mSystemSettings;
+  	mvIMPACT::acquire::CameraSettingsBase 		mCameraSettingsBase;
+  	mvIMPACT::acquire::CameraSettingsBlueFOX 	mCameraSettingsBlueFOX;
+  	mvIMPACT::acquire::ImageDestination 			mImageDestinaton;
+		mvIMPACT::acquire::Request*								mRequest;
+		int 																			mTimeout;
 
 		//Log tag
 		std::string									mTag;
@@ -74,6 +74,4 @@ class Camera
 		cv::Mat mDistCoeffs;
 };
 
-
-
-#endif
+#endif //__Camera__H__

@@ -32,11 +32,9 @@ struct Stereopair
 	Stereopair(cv::Mat &, cv::Mat &);
 	~Stereopair();
 
-
 	cv::Mat mLeft;
 	cv::Mat mRight;
 	std::string mTag;
-
 };
 
 struct CameraInit
@@ -45,7 +43,6 @@ struct CameraInit
 	Camera* right;
 	bool init;
 };
-
 
 namespace Utility
 {
@@ -64,6 +61,4 @@ namespace Utility
 	bool calcLeftCoordinate(cv::Mat_<float> &, cv::Mat const&,int,int,double,double,double,double,double);
 }
 
-
-#endif
-
+#endif //__UTILITY__H__

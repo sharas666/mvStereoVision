@@ -51,14 +51,16 @@ double Stereosystem::calibrate(std::vector<cv::Mat> const& leftImages,
 
   if(leftImages.size() == rightImages.size())
   {
+    // calibrate each camera at first to get intrinsics
     mLeft->calibrate(leftImages,patternSize, chessboardSize);
     mRight->calibrate(rightImages,patternSize, chessboardSize);
-
+    
     mIntrinsicLeft = mLeft->getIntrinsic();
     mIntrinsicRight = mRight->getIntrinsic();
     mDistCoeffsLeft = mLeft->getDistCoeffs();
     mDistCoeffsRight = mRight->getDistCoeffs();
 
+    // needed calibration variables
     std::vector<std::vector<cv::Point3f> > objectPoints;
     std::vector<std::vector<cv::Point2f> > imagePointsLeft;
     std::vector<std::vector<cv::Point2f> > imagePointsRight;
@@ -76,7 +78,6 @@ double Stereosystem::calibrate(std::vector<cv::Mat> const& leftImages,
     for(unsigned int i = 0; i < leftImages.size(); ++i) {
       cv::Mat grayImageLeft;
       cv::Mat grayImageRight;
-
       cv::cvtColor(leftImages[i], grayImageLeft, CV_BGR2GRAY);
       cv::cvtColor(rightImages[i], grayImageRight, CV_BGR2GRAY);
 
@@ -104,6 +105,7 @@ double Stereosystem::calibrate(std::vector<cv::Mat> const& leftImages,
       }
     }
 
+    // calibrate the stereo system
     cv::Size imagesize = cv::Size(leftImages[0].size());
     double stereoRMS = cv::stereoCalibrate(objectPoints,imagePointsLeft,imagePointsRight,
                                            mIntrinsicLeft,mDistCoeffsLeft,mIntrinsicRight,mDistCoeffsRight,
@@ -253,8 +255,7 @@ bool Stereosystem::getImagepair(Stereopair& stereoimagepair)
   t2.join();
   cv::Mat(mLeft->getImageHeight(),mLeft->getImageWidth(), CV_8UC1, &leftImage[0]).copyTo(stereoimagepair.mLeft);
   cv::Mat(mRight->getImageHeight(),mRight->getImageWidth(), CV_8UC1, &rightImage[0]).copyTo(stereoimagepair.mRight);
-    return true;
-
+  return true;
 }
 
 bool Stereosystem::getUndistortedImagepair(Stereopair& sip)
@@ -268,7 +269,6 @@ bool Stereosystem::getUndistortedImagepair(Stereopair& sip)
     tmpRight.copyTo(sip.mRight);
     return true;
   }
-
   return false;
 }
 
@@ -288,13 +288,17 @@ bool Stereosystem::initRectification()
       mIntrinsicRight/=2;
     }
 
+    // initialize all Rectification parameters
     cv::stereoRectify(mIntrinsicLeft, mDistCoeffsLeft, mIntrinsicRight, mDistCoeffsRight,
-                          imagesizeL, mR, mT, mR0, mR1, mP0, mP1, mQ, CV_CALIB_ZERO_DISPARITY, 0,
-                          imagesizeL, &mValidROI[0], &mValidROI[1]);
+                      imagesizeL, mR, mT, mR0, mR1, mP0, mP1, mQ, CV_CALIB_ZERO_DISPARITY, 0,
+                      imagesizeL, &mValidROI[0], &mValidROI[1]);
 
-    cv::initUndistortRectifyMap(mIntrinsicLeft, mDistCoeffsLeft, mR0, mP0, imagesizeL, CV_32FC1, mMap1[0], mMap2[0]);
-    cv::initUndistortRectifyMap(mIntrinsicRight, mDistCoeffsRight, mR1, mP1, imagesizeL, CV_32FC1, mMap1[1], mMap2[1]);
+    cv::initUndistortRectifyMap(mIntrinsicLeft, mDistCoeffsLeft, mR0, mP0,
+                                imagesizeL, CV_32FC1, mMap1[0], mMap2[0]);
+    cv::initUndistortRectifyMap(mIntrinsicRight, mDistCoeffsRight, mR1, mP1,
+                                imagesizeL, CV_32FC1, mMap1[1], mMap2[1]);
 
+    // just get the image conained by both ROIs
     mDisplayROI = mValidROI[0] & mValidROI[1];
 
     std::cout << "ROI 1: " << mValidROI[0] << std::endl;
@@ -328,11 +332,11 @@ bool Stereosystem::getRectifiedImagepair(Stereopair& sip)
   if(mIsInit)
   {
     cv::remap(sip.mLeft, sip.mLeft, mMap1[0], mMap2[0], cv::INTER_LINEAR);
-      cv::remap(sip.mRight, sip.mRight, mMap1[1], mMap2[1], cv::INTER_LINEAR);
+    cv::remap(sip.mRight, sip.mRight, mMap1[1], mMap2[1], cv::INTER_LINEAR);
 
-      sip.mLeft = sip.mLeft(mDisplayROI);
-      sip.mLeft = sip.mLeft(mDisplayROI);
-      return true;
+    sip.mLeft = sip.mLeft(mDisplayROI);
+    sip.mLeft = sip.mLeft(mDisplayROI);
+    return true;
   }
   else
   {
@@ -343,12 +347,11 @@ bool Stereosystem::getRectifiedImagepair(Stereopair& sip)
     else
     {
       cv::remap(sip.mLeft, sip.mLeft, mMap1[0], mMap2[0], cv::INTER_LINEAR);
-        cv::remap(sip.mRight, sip.mRight, mMap1[1], mMap2[1], cv::INTER_LINEAR);
+      cv::remap(sip.mRight, sip.mRight, mMap1[1], mMap2[1], cv::INTER_LINEAR);
 
-        sip.mLeft = sip.mLeft(mDisplayROI);
-        sip.mLeft = sip.mLeft(mDisplayROI);
-        return true;
-
+      sip.mLeft = sip.mLeft(mDisplayROI);
+      sip.mLeft = sip.mLeft(mDisplayROI);
+      return true;
     }
     return false;
   }

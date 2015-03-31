@@ -49,7 +49,7 @@ class Stereosystem
 		cv::Mat			mE;
 		cv::Mat			mF;
 
-		bool			mIsInit;
+		bool				mIsInit;
 		cv::Mat			mMap1[2];
 		cv::Mat			mMap2[2];
 		cv::Mat 		mR0;
@@ -68,4 +68,4 @@ class Stereosystem
 		std::string		mTag;
 };
 
-#endif
+#endif //__STEREOSYSTEM__H__
