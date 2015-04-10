@@ -55,9 +55,13 @@ namespace Utility
 
 	bool checkConfig(std::string const&,std::vector<std::string> const&, cv::FileStorage &);
 
-	bool calcLeftCoordinate(cv::Mat_<float> &, cv::Mat const&,int,int,double,double,double,double,double);
-	
 	double checkSharpness(cv::Mat const&);
+	bool covariance(cv::Mat const&, cv::Mat const&, cv::Scalar&);
+	bool standartDeviation(cv::Mat const&, cv::Scalar&);
+	bool normalizedCrossCorrelation(Stereopair const&, cv::Mat&);
+
+	bool calcCoordinate(cv::Mat_<float> &,cv::Mat const&, cv::Mat const&,int,int);
+
 }
 
 #endif //__UTILITY__H__

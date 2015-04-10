@@ -62,6 +62,11 @@ distance: directories $(OBJ)
 	@$(CC) $(OBJ) $(TARGETOBJDIR)/distanceMeasurement.o -o $(BINDIR)/distanceMeasurement $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
+tests: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/testsetting.cpp -o $(TARGETOBJDIR)/testsetting.o
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/testsetting.o -o $(BINDIR)/testsetting $(LIB_PATH) $(LIBS)
+	@echo Linking complete!
+
 calcDisparity: directories $(OBJ)
 	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/disparityTest.cpp -o $(TARGETOBJDIR)/disparityTest.o
 	@$(CC) $(OBJ) $(TARGETOBJDIR)/disparityTest.o -o $(BINDIR)/disparityTest $(LIB_PATH) $(LIBS)

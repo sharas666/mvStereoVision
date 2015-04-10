@@ -90,8 +90,8 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    left->setExposure(24000);
-    right->setExposure(24000);
+    left->setExposure(4800);
+    right->setExposure(4800);
 
     char key = 0;
     int binning = 0;

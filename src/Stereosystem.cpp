@@ -54,7 +54,7 @@ double Stereosystem::calibrate(std::vector<cv::Mat> const& leftImages,
     // calibrate each camera at first to get intrinsics
     mLeft->calibrate(leftImages,patternSize, chessboardSize);
     mRight->calibrate(rightImages,patternSize, chessboardSize);
-    
+
     mIntrinsicLeft = mLeft->getIntrinsic();
     mIntrinsicRight = mRight->getIntrinsic();
     mDistCoeffsLeft = mLeft->getDistCoeffs();
@@ -300,7 +300,7 @@ bool Stereosystem::initRectification()
 
     // just get the image conained by both ROIs
     mDisplayROI = mValidROI[0] & mValidROI[1];
-
+    std::cout<<"SYSTEM: "<<mQ<<std::endl;
     std::cout << "ROI 1: " << mValidROI[0] << std::endl;
     std::cout << "ROI 2: " << mValidROI[1] << std::endl;
     std::cout << mDisplayROI << std::endl;
@@ -377,9 +377,15 @@ bool Stereosystem::getRectifiedImagepair(Stereopair& sip)
  double Stereosystem::getBaseline() const
  {
   return sqrt(pow(mT.at<double>(0,0),2) + pow(mT.at<double>(1,0),2) + pow(mT.at<double>(2,0),2));
+  // return mT.at<double>(0,0);
  }
 
  cv::Mat Stereosystem::getRotationMatrix() const
  {
   return mR;
  }
+
+cv::Mat Stereosystem::getQMatrix() const
+{
+  return mQ;
+}

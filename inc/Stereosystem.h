@@ -40,6 +40,7 @@ class Stereosystem
 
 		double getBaseline() const;
 		cv::Mat getRotationMatrix() const;
+		cv::Mat getQMatrix() const;
 
 	private:
 		Camera 			*mLeft;

@@ -1,11 +1,12 @@
 %YAML:1.0
 
-inputImages: ./images/final
-outputImages: ./images/final
+
+inputImages: ./images/newCalibration
+outputImages: ./images/newCalibration
 
 capturedImagesRectified: ./images/moritz_r
 
 capturedDisparities: ./images/disparityMaps
 
-outputParameter: ./final
-inputParameter: ./final
+outputParameter: ./newCalibration
+inputParameter: ./newCalibration
