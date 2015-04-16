@@ -1,10 +1,9 @@
 %YAML:1.0
 
-
 inputImages: ./images/newCalibration
-outputImages: ./images/newCalibration
+outputImages: ./images/rotation_test
 
-capturedImagesRectified: ./images/moritz_r
+capturedImagesRectified: ./images/rotation_test
 
 capturedDisparities: ./images/disparityMaps
 
