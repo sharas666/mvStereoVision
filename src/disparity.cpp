@@ -11,7 +11,12 @@ void Disparity::sgbm(Stereopair const& inputImages, cv::Mat &output, cv::StereoS
 void Disparity::bm(Stereopair const& inputImages, cv::Mat &output, cv::StereoBM dispCompute)
 {
   dispCompute(inputImages.mLeft,inputImages.mRight,output);
-  output/=16;
+  //output/=16;
+}
+
+void Disparity::calcDisparityMap(cv::Mat & rawDisparity) 
+{
+  rawDisparity /= 16;
 }
 
 void Disparity::tm(Stereopair const& inputImages, cv::Mat &output, unsigned int kernelSize)
@@ -29,9 +34,9 @@ void Disparity::tm(Stereopair const& inputImages, cv::Mat &output, unsigned int 
   cv::Point2i maxLoc;
   // cv::Point2i matchLoc;
 
-  for(int i = 0; i < inputImages.mLeft.rows-kernelSize; ++i)
+  for(unsigned int i = 0; i < inputImages.mLeft.rows-kernelSize; ++i)
   {
-    for(int j = 0; j < inputImages.mLeft.cols-kernelSize ; ++j)
+    for(unsigned int j = 0; j < inputImages.mLeft.cols-kernelSize ; ++j)
     {
       cv::Point2i position(j,i);
       cv::Rect kernel(position, cv::Size(kernelSize,kernelSize));
