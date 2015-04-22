@@ -77,7 +77,7 @@ bool Utility::initCameras(mvIMPACT::acquire::DeviceManager &devMgr, Camera *&lef
 
   if(devCnt != 2)
   {
-    LOG(ERROR)<< mTag <<"Invalid numver of cameras detected! Number of detected cameras: " <<\
+    LOG(ERROR)<< mTag <<"Invalid number of cameras detected! Number of detected cameras: " <<\
     devCnt << std::endl;
     return false;
   }
@@ -102,7 +102,7 @@ bool Utility::initCameras(mvIMPACT::acquire::DeviceManager &devMgr, Camera *&lef
   {
     if(devMgr[1]->serial.read() == "26803878")
     {
-      LOG(INFO)<< mTag << "Successfully initilized both camers" <<std::endl;
+      LOG(INFO)<< mTag << "Successfully initialized both camers" <<std::endl;
 
       left = new Camera(devMgr[1]);
       right = new Camera(devMgr[0]);
@@ -183,15 +183,16 @@ double Utility::checkSharpness(cv::Mat const& src)
   return cv::mean(FM).val[0];
 }
 
-void Utility::calcDistanceMap(cv::Mat const& disparity, cv::Mat &distanceMap) {
-  double disparityValue;
-  std::cout << disparity.size()  << std::endl;
-  for(int r; r < disparity.rows; ++r)
+void Utility::calcDistanceMap(cv::Mat &distanceMap, cv::Mat const& disparity, cv::Mat const& Q, int binning)
+{
+  for(int r = 0; r < disparity.rows; ++r)
   {
-    for(int c; c < disparity.cols; ++c)
+    for(int c = 0; c < disparity.cols; ++c)
     {
-      disparityValue = disparity.at<double>(cv::Point(r,c));
-      std::cout << r << std::endl;
+      cv::Mat_<float> coord(1,4);
+      coord = calcCoordinate(coord, Q, disparity, c,r,binning);
+      std::cout << coord(2) << std::endl;
+      coord.release();
     }
   } 
 }

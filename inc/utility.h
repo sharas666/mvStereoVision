@@ -61,7 +61,7 @@ namespace Utility
 	bool normalizedCrossCorrelation(Stereopair const&, cv::Mat&);
 
 	bool calcCoordinate(cv::Mat_<float> &,cv::Mat const&, cv::Mat const&,int,int,int);
-	void calcDistanceMap(cv::Mat const&, cv::Mat &);
+	void calcDistanceMap(cv::Mat &, cv::Mat const&, cv::Mat const&, int);
 
 
 }
