@@ -143,7 +143,7 @@ bool Utility::checkConfig(std::string const& configfile, std::vector<std::string
   }
 }
 
-bool Utility::calcCoordinate(cv::Mat_<float> &toReturn,cv::Mat const& Q, cv::Mat const& disparityMap,int x,int y)
+bool Utility::calcCoordinate(cv::Mat_<float> &toReturn,cv::Mat const& Q, cv::Mat const& disparityMap,int x,int y, int binning)
 {
     double d = static_cast<float>(disparityMap.at<short>(y,x));
     d/=16.0;
@@ -156,6 +156,12 @@ bool Utility::calcCoordinate(cv::Mat_<float> &toReturn,cv::Mat const& Q, cv::Mat
 
       toReturn = Q*toReturn.t();
       toReturn/=toReturn(3);
+      
+      if(binning == 1)
+      {
+        toReturn=toReturn/2;
+      }
+
       return true;
     }
     else
@@ -175,4 +181,17 @@ double Utility::checkSharpness(cv::Mat const& src)
 
   cv::Mat FM = cv::abs(Lx) + cv::abs(Ly);
   return cv::mean(FM).val[0];
+}
+
+void Utility::calcDistanceMap(cv::Mat const& disparity, cv::Mat &distanceMap) {
+  double disparityValue;
+  std::cout << disparity.size()  << std::endl;
+  for(int r; r < disparity.rows; ++r)
+  {
+    for(int c; c < disparity.cols; ++c)
+    {
+      disparityValue = disparity.at<double>(cv::Point(r,c));
+      std::cout << r << std::endl;
+    }
+  } 
 }
