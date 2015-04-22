@@ -3,7 +3,7 @@ TARGETDIR = trgt
 TARGETOBJDIR = trgt_obj
 #compiler flags
 CC = g++
-CFLAGS  = -c -g -fPIC -Wall -fdiagnostics-color=auto -std=c++11
+CFLAGS  = -c -g -fPIC -Wall -std=c++11
 
 #source directories
 SRCDIR = src
@@ -32,7 +32,6 @@ LIB_PATH = -L/opt/mvIMPACT_acquire/lib/x86_64/ -L/usr/local/lib/
 OPENCV = `pkg-config opencv --libs`
 
 LIBS = -lmvDeviceManager -lpthread $(OPENCV)
-
 
 capture: directories $(OBJ)
 	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/capture.cpp -o $(TARGETOBJDIR)/capture.o
@@ -100,6 +99,12 @@ continousCaptureRectified: directories $(OBJ)
 	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/continousCaptureRectified.cpp -o $(TARGETOBJDIR)/continousCaptureRectified.o
 	@echo Compiled continousCaptureRectified.cpp successfully!
 	@$(CC) $(OBJ) $(TARGETOBJDIR)/continousCaptureRectified.o -o $(BINDIR)/continousCaptureRectified $(LIB_PATH) $(LIBS)
+	@echo Linking complete!
+
+obstacleDetection: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/obstacleDetection.cpp -o $(TARGETOBJDIR)/obstacleDetection.o
+	@echo Compiled obstacleDetection.cpp successfully!
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/obstacleDetection.o -o $(BINDIR)/obstacleDetection $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
 directories:
