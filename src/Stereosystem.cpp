@@ -274,7 +274,7 @@ bool Stereosystem::getUndistortedImagepair(Stereopair& sip)
 
 bool Stereosystem::initRectification()
 {
-  LOG(INFO) << mTag << "Called initRectifiaction()" << std::endl;
+  LOG(INFO) << mTag << "Called initRectification()" << std::endl;
 
   cv::Size imagesizeL(mLeft->getImageWidth(), mLeft->getImageHeight());
   cv::Size imagesizeR(mRight->getImageWidth(), mRight->getImageHeight());
