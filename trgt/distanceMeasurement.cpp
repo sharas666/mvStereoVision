@@ -19,10 +19,10 @@ cv::StereoSGBM disparitySGBM;
 int numDispSGBM = 64;
 int windSizeSGBM = 9;
 int exposure = 4800;
+int binning = 0;
 
 Camera *left;
 Camera *right;
-
 
 double baseline ;
 double fx ;
@@ -79,7 +79,7 @@ void mouseClick(int event, int x, int y,int flags, void* userdata)
   if  ( event == CV_EVENT_LBUTTONDOWN )
      {
         cv::Mat_<float>  coordinateQ(1,4);
-        if(Utility::calcCoordinate(coordinateQ ,Q_32F ,dispMapSGBM,x,y))
+        if(Utility::calcCoordinate(coordinateQ ,Q_32F ,dispMapSGBM,x,y, binning))
         {
             std::cout<<"Coordinate Q: " << coordinateQ <<std::endl;
             std::cout<<"distance Q: " << (coordinateQ(2)/1000.0) <<std::endl;
@@ -90,18 +90,11 @@ void mouseClick(int event, int x, int y,int flags, void* userdata)
         }
 
      }
-     // else if  ( event == CV_EVENT_RBUTTONDOWN )
-     // {
-     //      std::cout << "Right button of the mouse is clicked - position (" << x << ", " << y << ")" << std::endl;
-     // }
-     // else if  ( event == CV_EVENT_MBUTTONDOWN )
-     // {
-     //      std::cout << "Middle button of the mouse is clicked - position (" << x << ", " << y << ")" << std::endl;
-     // }
+  
      else if ( event == CV_EVENT_MOUSEMOVE )
      {
         cv::Mat_<float>  coordinateQ(1,4);
-        if(Utility::calcCoordinate(coordinateQ ,Q_32F ,dispMapSGBM,x,y))
+        if(Utility::calcCoordinate(coordinateQ ,Q_32F ,dispMapSGBM,x,y,binning))
         {
             qText = "distance Q: " + std::to_string(coordinateQ(2)/1000.0);
         }
@@ -124,10 +117,8 @@ void initWindows()
     cv::createTrackbar("Wind Size", "SGBM", &windSizeSGBM, 51, changeWindSizeSGBM);
     cv::createTrackbar("Exposure", "SGBM", &exposure, 48000, setExposure);
 
-
   // cv::createTrackbar("Num Disp", "BM", &numDispBM, 320, changeNumDispBM);
   // cv::createTrackbar("Wind Size", "BM", &windSizeBM, 51, changeWindSizeBM);
-
 
     cv::setMouseCallback("SGBM", mouseClick, NULL);
     cv::setMouseCallback("Left", mouseClick, NULL);
@@ -163,7 +154,7 @@ int main(int argc, char* argv[])
 
   if(!Utility::checkConfig(config,nodes,fs))
   {
-  return 0;
+    return 0;
   }
 
   std::string inputParameter;
@@ -174,43 +165,12 @@ int main(int argc, char* argv[])
 
   int imageNumber = 0;
 
-  if(Utility::directoryExist(outputDirectory))
-  {
-    std::vector<std::string> tmp1;
-    Utility::getFiles(outputDirectory,tmp1);
-
-    if(tmp1.size() != 0)
-    {
-      std::cout << "Output directory not empty, clean files? [y/n] " <<std::endl;
-      char key = getchar();
-      if(key == 'y')
-      {
-        std::system(std::string("rm " + outputDirectory + "/* -f ").c_str());
-      }
-      else if(key == 'n')
-      {
-        imageNumber = tmp1.size();
-        LOG(INFO) << tag << "Start with image number " << imageNumber << std::endl;
-      }
-    }
-  }
-
-  if(Utility::createDirectory(outputDirectory))
-  {
-    LOG(INFO) << tag << "Successfully created directory for captured disparity maps." << std::endl;
-  }
-  else
-  {
-    LOG(ERROR) << tag << "Unable to create directoryfor captured disparity maps." <<std::endl;
-    return 0;
-  }
-
   Stereosystem stereo(left,right);
 
   if(!stereo.loadIntrinsic(inputParameter+"/intrinsic.yml"))
-  return 0;
+    return 0;
   if(!stereo.loadExtrinisic(inputParameter +"/extrinsic.yml"))
-  return 0;
+    return 0;
 
   disparitySGBM = cv::StereoSGBM(0,numDispSGBM,windSizeSGBM,8*windSizeSGBM*windSizeSGBM,32*windSizeSGBM*windSizeSGBM);
   //disparityBM  = cv::StereoBM(CV_STEREO_BM_BASIC, numDispBM, windSizeBM);
@@ -224,7 +184,7 @@ int main(int argc, char* argv[])
 
     std::cout<<Q_32F<<std::endl;
     int key = 0;
-    int binning =0;
+    //int binning =0;
 
     cv::Mat normalizedSGBM;
     cv::Mat leftColor;
@@ -232,7 +192,6 @@ int main(int argc, char* argv[])
     {
 
         stereo.getRectifiedImagepair(s);
-
 
         cvtColor(s.mLeft, leftColor, CV_GRAY2RGB);
         cv::putText(leftColor,qText.c_str(), cv::Point(10,80),CV_FONT_HERSHEY_PLAIN,2,CV_RGB(255,128,0));
@@ -263,7 +222,7 @@ int main(int argc, char* argv[])
             }
             else
             {
-                binning =0;
+                binning = 0;
                 fx = left->getIntrinsic().at<double>(0,0);
                 fy = left->getIntrinsic().at<double>(1,1);
                 cx = left->getIntrinsic().at<double>(0,2);

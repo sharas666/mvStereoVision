@@ -15,19 +15,16 @@ INITIALIZE_EASYLOGGINGPP
 std::mutex disparityLockSGBM,disparityLockBM, disparityLockTM;
 std::condition_variable cond_var;
 bool newDisparityMap = false;
-bool newDisparityMap2 = false;
-bool newDisparityMap3 = false;
 bool running = true;
-cv::Mat dispMapSGBM, dispMapBM, dispMapNCC;
+cv::Mat dispMapSGBM;
 
 cv::StereoSGBM disparitySGBM;
-cv::StereoBM disparityBM;
 
 int numDispSGBM = 16;
 int windSizeSGBM = 5;
 
 int numDispBM = 16;
-int windSizeBM = 5;
+
 
 double baseline ;
 double fx ;
@@ -50,30 +47,6 @@ void disparityCalc(Stereopair const& s, cv::StereoSGBM &disparity)
 		newDisparityMap=true;
 	}
 }
-
-void disparityCalcBM( Stereopair const& s, cv::StereoBM &disparity)
-{
-	while(running)
-	{
-		std::unique_lock<std::mutex> ul(disparityLockBM);
-		cond_var.wait(ul);
-		Disparity::bm(s, dispMapBM, disparity);
-		newDisparityMap2=true;
-	}
-}
-
-
-// void disparityCalcTM(Stereopair const& s)
-// {
-// 	// while(running)
-// 	// {
-// 		std::unique_lock<std::mutex> ul(disparityLockTM);
-// 		cond_var.wait(ul);
-// 		Disparity::tm(s,3);
-// 		newDisparityMap3 = true;
-// 	//}
-// }
-
 
 void changeNumDispSGBM(int, void*)
 {
@@ -274,7 +247,7 @@ int main(int argc, char* argv[])
   }
   else
   {
-    LOG(ERROR) << tag << "Unable to create directoryfor captured disparity maps." <<std::endl;
+    LOG(ERROR) << tag << "Unable to create directory for captured disparity maps." <<std::endl;
     return 0;
   }
 
