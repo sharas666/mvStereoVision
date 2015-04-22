@@ -12,8 +12,7 @@
 INITIALIZE_EASYLOGGINGPP
 
 bool running = true;
-cv::Mat dispMapSGBM, dispMapBM, dispMapNCC;
-
+cv::Mat dispMapSGBM;
 cv::StereoSGBM disparitySGBM;
 
 int numDispSGBM = 64;
@@ -78,7 +77,7 @@ void mouseClick(int event, int x, int y,int flags, void* userdata)
 
   if  ( event == CV_EVENT_LBUTTONDOWN )
      {
-        cv::Mat_<float>  coordinateQ(1,4);
+        cv::Mat_<float> coordinateQ(1,4);
         if(Utility::calcCoordinate(coordinateQ ,Q_32F ,dispMapSGBM,x,y, binning))
         {
             std::cout<<"Coordinate Q: " << coordinateQ <<std::endl;
@@ -260,7 +259,6 @@ int main(int argc, char* argv[])
         }
         else if(char(key) == 'f')
             std::cout<<left->getFramerate()<<" "<<right->getFramerate()<<std::endl;
-
   }
   return 0;
 }
