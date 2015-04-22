@@ -27,6 +27,7 @@ bool newDisparityMap = false;
 cv::Mat dMapRaw;
 cv::Mat dMapNorm;
 
+cv::Mat Q, Q_32F;
 cv::Mat R, R_32F;
 cv::Mat disparityMap_32FC1;
 
@@ -148,6 +149,10 @@ int main(int argc, char* argv[])
   int binning = 0;
   cv::Mat distanceMap;
 
+  stereo.getRectifiedImagepair(s);
+  Q = stereo.getQMatrix();
+  Q.convertTo(Q_32F,CV_32F);
+
   cv::namedWindow("Left", cv::WINDOW_AUTOSIZE);
   cv::namedWindow("Right", cv::WINDOW_AUTOSIZE);
   initWindows();
@@ -175,19 +180,21 @@ int main(int argc, char* argv[])
     cond_var.notify_one();
 
     key = cv::waitKey(5);
+      cv::Mat_<float> coord(1,4);
 
+    // keypress stuff
     if(key > 0)
     {
       switch(key)
       {
         case 'q':
-          cond_var.notify_one();
-          running = false;
           LOG(INFO) << tag << "Exit requested" <<std::endl;
           delete left;
           left = nullptr;
           delete right;
           right = nullptr;
+          cond_var.notify_one();
+          running = false;
           break;
         case 'b':
           if (binning == 0)
@@ -202,7 +209,7 @@ int main(int argc, char* argv[])
           std::cout<<left->getFramerate()<<" "<<right->getFramerate()<<std::endl;
           break;
         case 'd':
-          Utility::calcDistanceMap(dMapRaw, distanceMap);
+          Utility::calcDistanceMap(distanceMap, dMapRaw, Q_32F, binning);
           break;
         default:
           std::cout << "Key pressed has no action" <<std::endl;
