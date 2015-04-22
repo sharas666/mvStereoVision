@@ -183,15 +183,16 @@ double Utility::checkSharpness(cv::Mat const& src)
   return cv::mean(FM).val[0];
 }
 
-void Utility::calcDistanceMap(cv::Mat &distanceMap, cv::Mat const& disparity, cv::Mat const& Q, int binning)
+void Utility::calcDistanceMap(cv::Mat &distanceMap, cv::Mat const& dMap, cv::Mat const& Q, int binning)
 {
-  for(int r = 0; r < disparity.rows; ++r)
+  distanceMap = cv::Mat(dMap.rows,dMap.cols,CV_32F);
+  for(int r = 0; r < dMap.rows; ++r)
   {
-    for(int c = 0; c < disparity.cols; ++c)
+    for(int c = 0; c < dMap.cols; ++c)
     {
       cv::Mat_<float> coord(1,4);
-      coord = calcCoordinate(coord, Q, disparity, c,r,binning);
-      std::cout << coord(2) << std::endl;
+      coord = calcCoordinate(coord, Q, dMap, c,r,binning);
+      distanceMap.at<float>(c,r) = 0;
       coord.release();
     }
   } 
