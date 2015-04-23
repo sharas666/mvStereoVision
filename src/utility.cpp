@@ -185,7 +185,10 @@ double Utility::checkSharpness(cv::Mat const& src)
 
 void Utility::calcDistanceMap(cv::Mat &distanceMap, cv::Mat const& dMap, cv::Mat const& Q, int binning)
 {
-  distanceMap = cv::Mat(dMap.rows,dMap.cols,CV_32F);
+  //TODO:
+  // although it is inefficient and slow as ...
+  // fix crash when copying the distances into the mat
+  distanceMap = cv::Mat(dMap.rows, dMap.cols, CV_32F);
   for(int r = 0; r < dMap.rows; ++r)
   {
     for(int c = 0; c < dMap.cols; ++c)
