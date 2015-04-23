@@ -170,6 +170,9 @@ int main(int argc, char* argv[])
     if(newDisparityMap)
     {
       cv::normalize(dMapRaw,dMapNorm,0,255,cv::NORM_MINMAX, CV_8U);
+
+
+
       drawObstacleGrid(dMapNorm, binning);
       cv::imshow("SGBM",dMapNorm);
       newDisparityMap = false;
@@ -179,7 +182,7 @@ int main(int argc, char* argv[])
     cond_var.notify_one();
     key = cv::waitKey(5);
 
-    cv::Rect newRect = cv::Rect(cv::Point(1,1),cv::Point(100,100));
+    cv::Rect newRect = cv::Rect(cv::Point(0,0),cv::Point(100,100));
     Subimage sub = Subimage(dMapRaw(newRect),1,2);
 
     // keypress stuff
