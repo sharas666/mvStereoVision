@@ -8,22 +8,24 @@ Subimage::Subimage():
   mSamplepoints()
 {}
 
+// final resolutions depending on binning are:
+// with binning: 752x480 --> final subimage sizes: 250x160  200 pts per mSubMatrix  
+// without binn: 376x240 --> final subimage sizes: 125x80   100 pts per mSubMatrix  13x8sp
 Subimage::Subimage(cv::Mat const& mat, int const& index, int const& samplepoints):
   mIndex(index),
   mSubMatrix(mat),
   mNumSamplepoints(samplepoints)
 {
-  for(int i = 0; i < samplepoints; ++i)
+  std::vector<int> xCoords, yCoords;
+  for (int i = 0; i < samplepoints; ++i)
   {
-
+    
   }
 }
 
 
 Subimage::~Subimage()
-{
-
-}
+{}
 
 // SETTER
 void Subimage::setSamplePoints(int const& numSP)
@@ -52,13 +54,12 @@ int Subimage::getIndex() const
   return mIndex;
 }
 
-int Subimage::getNumberOfSamplePoints() const
+int Subimage::getNumberOfSamplepoints() const
 {
   return mNumSamplepoints;
 }
 
-// METHODS
-void Subimage::displaySubImage() const
+std::vector<cv::Point> Subimage::getSamplepoints() const
 {
-  std::cout << "draw call" << std::endl;
+  return mSamplepoints;
 }

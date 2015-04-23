@@ -27,8 +27,8 @@ class Subimage
 
     cv::Mat getSubMatrix() const;
     int getIndex() const;
-    int getNumberOfSamplePoints() const;
-
+    int getNumberOfSamplepoints() const;
+    std::vector<cv::Point> getSamplepoints() const;
     void displaySubImage() const;
 
   private:
