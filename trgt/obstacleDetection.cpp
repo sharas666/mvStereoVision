@@ -7,6 +7,7 @@
 #include "Stereosystem.h"
 #include "disparity.h"
 #include "easylogging++.h"
+#include "subimage.h"
 
 #include <thread>
 #include <mutex>
@@ -141,13 +142,11 @@ int main(int argc, char* argv[])
   }
 
   Stereopair s;
-
   left->setExposure(20000);
   right->setExposure(20000);
 
   char key = 0;
   int binning = 0;
-  cv::Mat distanceMap;
 
   stereo.getRectifiedImagepair(s);
   Q = stereo.getQMatrix();
@@ -178,9 +177,10 @@ int main(int argc, char* argv[])
 
     // notify the thread to start 
     cond_var.notify_one();
-
     key = cv::waitKey(5);
-      cv::Mat_<float> coord(1,4);
+
+    cv::Rect newRect = cv::Rect(cv::Point(1,1),cv::Point(100,100));
+    Subimage sub = Subimage(dMapRaw(newRect),1,2);
 
     // keypress stuff
     if(key > 0)
@@ -207,9 +207,6 @@ int main(int argc, char* argv[])
           break;
         case 'f':
           std::cout<<left->getFramerate()<<" "<<right->getFramerate()<<std::endl;
-          break;
-        case 'd':
-          Utility::calcDistanceMap(distanceMap, dMapRaw, Q_32F, binning);
           break;
         default:
           std::cout << "Key pressed has no action" <<std::endl;
