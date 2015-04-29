@@ -37,8 +37,12 @@ double scale = 1;
 
 cv::Mat R, R_32F;
 cv::Mat Q, Q_32F;
+cv::Mat normalizedSGBM;
 
 std::string qText;
+std::string timeString;
+std::time_t currentTime;
+
 Stereopair s;
 
 std::ofstream measurementFile;
@@ -77,6 +81,25 @@ void setExposure(int, void*)
     right->setExposure(exposure);
 }
 
+void saveMeasurement()
+{
+    std::string testdirectory = "./tests/" + std::to_string(currentTime) +"/" + std::to_string(measureCounter);
+
+    if(Utility::createDirectory(testdirectory))
+    {
+            LOG(INFO) << "\tMAIN" << "Successfully created directory for measurement." << std::endl;
+            cv::normalize(dispMapSGBM,normalizedSGBM,0,255,cv::NORM_MINMAX, CV_8U);
+            cv::imwrite(std::string(testdirectory+"/sgbm_norm.jpg"),normalizedSGBM);
+            cv::imwrite(std::string(testdirectory+"/left.jpg"),s.mLeft);
+            cv::imwrite(std::string(testdirectory+"/right.jpg"),s.mRight);
+            cv::FileStorage file(testdirectory+"/disparity.yml", cv::FileStorage::WRITE);
+            file << "Q" << Q_32F;
+            file << "disparity" << (dispMapSGBM/16.0);
+    }
+    else
+        LOG(   ERROR) << "MAIN\t" << "\aUnable to create directory for test measurements." << std::endl;
+}
+
 void mouseClick(int event, int x, int y,int flags, void* userdata)
 {
 
@@ -88,8 +111,9 @@ void mouseClick(int event, int x, int y,int flags, void* userdata)
             std::cout<<"Coordinate Q: " << coordinateQ <<std::endl;
             std::cout<<"distance Q: " << (coordinateQ(2)/1000.0) <<std::endl;
 
-            measurementFile << measureCounter << "\t" << std::to_string(coordinateQ(2)/1000.0)<<"\t";
+            measurementFile << measureCounter<< "\t" << numDispSGBM <<"\t" << windSizeSGBM << "\t" << std::to_string(coordinateQ(2)/1000.0)<<"\t";
             std::string laser;
+            saveMeasurement();
             std::cout << "Laserdata: ";
             std::getline(std::cin, laser);
             measurementFile << laser << std::endl;
@@ -148,14 +172,16 @@ int main(int argc, char* argv[])
 {
     std::string tag = "MAIN\t";
 
-    std::time_t currentTime = std::time(nullptr);
-    LOG(INFO) << tag << "Application started at: " <<  std::asctime(std::localtime(&currentTime))<<std::endl;
+    currentTime = std::time(nullptr);
+    timeString = std::asctime(std::localtime(&currentTime));
+    LOG(INFO) << tag << "Application started at: " << timeString<<std::endl;
 
     mvIMPACT::acquire::DeviceManager devMgr;
 
-    measurementFile.open("data.csv",std::ofstream::app);
-    measurementFile << "\n#Measurement at " << std::asctime(std::localtime(&currentTime)) << std::endl;
-    measurementFile << "#Counter\tDisparity\tLaser\n";
+    Utility::createDirectory("./tests/");
+    measurementFile.open("./tests/data.csv",std::ofstream::app);
+    measurementFile << "\n#Measurement at " << std::asctime(std::localtime(&currentTime)) << "#ID: " << currentTime << std::endl;
+    measurementFile << "#Counter\tnumDisp\twindowSize\tDisparity\tLaser\n";
     initWindows();
 
     if(!Utility::initCameras(devMgr,left,right))
@@ -252,7 +278,7 @@ if(Utility::directoryExist(outputDirectory))
     disparitySGBM = cv::StereoSGBM(0,numDispSGBM,windSizeSGBM,8*windSizeSGBM*windSizeSGBM,32*windSizeSGBM*windSizeSGBM);
     //disparityBM  = cv::StereoBM(CV_STEREO_BM_BASIC, numDispBM, windSizeBM);
 
-    cv::Mat normalizedSGBM;
+
     cv::Mat leftColor;
     while(running)
     {

@@ -1,0 +1,26 @@
+\documentclass[11pt]{article}
+
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage[colorlinks, urlcolor = blue]{hyperref}
+
+\title{\textbf{Fast Depth Map Estimation from Stereo Camera Systems}\\Project Documentation SLAM For UAV's}
+\author{Malik Al-hallak 90020\\
+		Hagen Hiller 110514 }
+\date{Winter term 2014/15}
+\begin{document}
+
+\maketitle
+
+\renewcommand\thesubsection{\alph{subsection}.}
+
+\abstract{The major goal of the project \emph{SLAM For UAV's} is to implement a SLAM algorithm on an \emph {\href{http://www.asctec.de/en/uav-uas-drone-products/asctec-pelican/}{AscTec Pelican}}. Since this goal covers several topics, we split the project group and work on different subtopics. In this documentation we describe how a stereo camera system is used to create depth maps, which then can be used for further tasks like obstacle avoidance or 3D reconstruction. We will describe the complete pipe line, from stereo camera images to a depth map and the tools needed.}
+
+\section{Introduction}
+\section{Related Work}
+\section{System Description}
+\section{Evaluation}
+\section{Discussion}
+\section{Future Work}
+
+\end{document}

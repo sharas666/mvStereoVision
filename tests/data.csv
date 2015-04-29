@@ -1,0 +1,33 @@
+
+#Measurement at Mon Apr 13 15:46:44 2015
+#ID: 1428932804
+#Counter	numDisp	windowSize	Disparity	Laser
+0	144	9	0.590217	0.60
+1	144	9	0.659735	0.668
+2	144	9	0.591142	0.599
+3	144	9	1.040888	1.05
+4	144	9	1.099558	1.08
+
+#Measurement at Wed Apr 15 14:16:10 2015
+#ID: 1429100170
+#Counter	numDisp	windowSize	Disparity	Laser
+0	176	9	0.531694	0.53
+1	176	9	0.982158	1.01
+2	176	9	1.510608	1.54
+3	176	9	2.342538	2.36
+4	176	9	3.337598	3.40
+5	176	9	4.159727	4.25
+6	176	9	5.413616	f
+7	176	9	5.119664	5.17
+8	176	9	5.923799	6.17
+9	176	9	7.912208	f
+10	176	9	7.912208	7.29
+
+#Measurement at Wed Apr 15 14:25:06 2015
+#ID: 1429100706
+#Counter	numDisp	windowSize	Disparity	Laser
+0	160	13	8.839419	moritz
+1	160	13	5.214035	moritz
+2	160	13	3.591891	moritz
+3	160	13	7.347049	moritz
+4	160	13	3.673525	moritz
