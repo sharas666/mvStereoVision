@@ -4,7 +4,6 @@
 #include <vector>
 #include <iostream>
 #include <string>
-#include <vector>
 #include <algorithm>
 #include <math.h>
 
@@ -18,26 +17,15 @@ class Subimage
 {
   public:
     Subimage();
-    Subimage(cv::Mat const&, int const&, int const&);
+    Subimage(cv::Mat const&, std::string const&);
     ~Subimage();
 
-    void setSamplePoints(int const & );
-    void setIndex(int);
-    void setSubMatrix(cv::Mat const&);
-
-    cv::Mat getSubMatrix() const;
-    int getIndex() const;
-    int getNumberOfSamplepoints() const;
-    std::vector<cv::Point> getSamplepoints() const;
-    void displaySubImage() const;
+    cv::Mat 
 
   private:
-    int                     mIndex;
-    cv::Mat                 mSubMatrix;
-    int                     mNumSamplepoints;
-    std::vector<cv::Point>  mSamplepoints;
-   
-    std::string mTag;
+    std::string   mId;
+    cv::Mat       mSubMat;
+
 };
 
 

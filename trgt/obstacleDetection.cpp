@@ -111,7 +111,6 @@ void drawObstacleGrid(cv::Mat &stream, int binning)
     cv::line(stream, cv::Point(0,160/2), cv::Point(stream.cols, 160/2), cv::Scalar(0,0,255), 1);
     cv::line(stream, cv::Point(0,320/2), cv::Point(stream.cols, 320/2), cv::Scalar(0,0,255), 1);
   }
-
 }
 
 
@@ -170,9 +169,6 @@ int main(int argc, char* argv[])
     if(newDisparityMap)
     {
       cv::normalize(dMapRaw,dMapNorm,0,255,cv::NORM_MINMAX, CV_8U);
-
-
-
       drawObstacleGrid(dMapNorm, binning);
       cv::imshow("SGBM",dMapNorm);
       newDisparityMap = false;
@@ -181,9 +177,6 @@ int main(int argc, char* argv[])
     // notify the thread to start 
     cond_var.notify_one();
     key = cv::waitKey(5);
-
-    cv::Rect newRect = cv::Rect(cv::Point(0,0),cv::Point(100,100));
-    Subimage sub = Subimage(dMapRaw(newRect),1,2);
 
     // keypress stuff
     if(key > 0)
