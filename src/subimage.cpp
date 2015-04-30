@@ -47,3 +47,44 @@ std::pair<cv::Scalar, cv::Scalar> Subimage::calcMeanStdDev() const
   auto returnValues = std::make_pair(mean,stdDev);
   return returnValues;
 }
+
+void Subimage::subdivide(std::vector<Subimage>& returnVec)
+{
+  int width = mSubMat.rows;
+  int height = mSubMat.cols;
+
+  std::vector<Subimage> subdivisions;
+  cv::Rect tmp;
+  int x1,x2,y1,y2;
+
+  for (int i = 0; i < 9; ++i)
+  {
+    if(i < 3)
+    {
+      x1 = i%3*(width/3);
+      x2 = (i%3+1)*(width/3);
+      y1 = 0;
+      y2 = height/3;
+      tmp = cv::Rect(cv::Point(x1,y1),cv::Point(x2,y2));
+      std::cout << tmp << std::endl;
+    }
+    else if(i > 3 && i < 7)
+    {
+      x1 = i%3*(width/3);
+      x2 = (i%3+1)*(width/3);
+      y1 = height/3;
+      y2 = height/3*2;
+      tmp = cv::Rect(cv::Point(x1,y1),cv::Point(x2,y2));
+      std::cout << tmp << std::endl;
+    }
+    else if (i > 7)
+    {
+      x1 = i%3*(width/3);
+      x2 = (i%3+1)*(width/3);
+      y1 = height/3*2;
+      y2 = height;
+      tmp = cv::Rect(cv::Point(x1,y1),cv::Point(x2,y2));
+      std::cout << tmp << std::endl;
+    }
+  }
+}

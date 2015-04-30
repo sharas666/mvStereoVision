@@ -27,12 +27,11 @@ class Subimage
     void setId(std::string const&);
 
     std::pair<cv::Scalar, cv::Scalar> calcMeanStdDev() const;
+    void subdivide(std::vector<Subimage>&);
 
   private:
     std::string   mId;
     cv::Mat       mSubMat;
-
 };
-
 
 #endif //__SUBIMAGE_H__
