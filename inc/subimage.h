@@ -20,7 +20,13 @@ class Subimage
     Subimage(cv::Mat const&, std::string const&);
     ~Subimage();
 
-    cv::Mat 
+    cv::Mat getSubMat() const;
+    std::string getId() const;
+
+    void setSubMat(cv::Mat const&);
+    void setId(std::string const&);
+
+    std::pair<cv::Scalar, cv::Scalar> calcMeanStdDev() const;
 
   private:
     std::string   mId;
