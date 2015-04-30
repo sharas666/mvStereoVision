@@ -20,7 +20,8 @@ class obstacleDetection
     ~obstacleDetection();
 
   private:
-    cv::Mat   mDispMap;
+    cv::Mat                 mDispMap;
+    std::vector<cv::Point>  mSamplePoints;
     
 };
 
