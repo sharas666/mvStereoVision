@@ -141,8 +141,8 @@ int main(int argc, char* argv[])
   }
 
   Stereopair s;
-  left->setExposure(20000);
-  right->setExposure(20000);
+  left->setExposureMode(1);
+  right->setExposureMode(1);
 
   char key = 0;
   int binning = 0;
