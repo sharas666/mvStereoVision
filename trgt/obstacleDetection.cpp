@@ -204,6 +204,12 @@ int main(int argc, char* argv[])
         case 'f':
           std::cout<<left->getFramerate()<<" "<<right->getFramerate()<<std::endl;
           break;
+        case 'd':
+        {
+          Subimage sub = Subimage(dMapRaw, "root");
+          std::vector<Subimage> v;
+          sub.subdivide(v);
+        }
         default:
           std::cout << "Key pressed has no action" <<std::endl;
           break;
