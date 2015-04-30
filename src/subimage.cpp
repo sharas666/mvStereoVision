@@ -44,7 +44,6 @@ std::pair<cv::Scalar, cv::Scalar> Subimage::calcMeanStdDev() const
   cv::Scalar mean, stdDev;
   cv::meanStdDev(mSubMat, mean, stdDev);
 
-  std::pair<cv::Scalar, cv::Scalar> returnValues = std::pair<cv::Scalar, cv::Scalar>(mean,stdDev);
+  auto returnValues = std::make_pair(mean,stdDev);
   return returnValues;
-
 }
