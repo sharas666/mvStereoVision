@@ -174,22 +174,16 @@ float Utility::calcDistance(cv::Mat const& Q, float const& dispValue, int binnin
 {
   float d = dispValue / 16;
   cv::Mat_<float> coordinateQ(1,4);
-  if(d > 0)
-  {
-    coordinateQ(0)=1;
-    coordinateQ(1)=1;
-    coordinateQ(2)=d;
-    coordinateQ(3)=1;
 
-    coordinateQ = Q*coordinateQ.t();
-    coordinateQ/=coordinateQ(3);
-    
-    return coordinateQ(2)/1000;
-  }
-  else
-  {
-    return -1.0;
-  }
+  coordinateQ(0)=1;
+  coordinateQ(1)=1;
+  coordinateQ(2)=d;
+  coordinateQ(3)=1;
+
+  coordinateQ = Q*coordinateQ.t();
+  coordinateQ/=coordinateQ(3);
+  
+  return coordinateQ(2)/1000;
 
   coordinateQ.release();
 }
