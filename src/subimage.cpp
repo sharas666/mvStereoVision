@@ -2,8 +2,8 @@
 
 Subimage::Subimage():
   mId(0),
-  mSubMat(),
-  mSubimages()
+  mSubimage(),
+  mSubdividedImages()
 {}
 
 // final resolutions depending on binning are:
@@ -11,29 +11,41 @@ Subimage::Subimage():
 // without binn: 376x240 --> final subimage sizes: 125x80   100 pts per mSubMatrix  13x8sp
 Subimage::Subimage(cv::Mat const& mat, int const& id):
   mId(id),
-  mSubMat(mat),
-  mSubimages()
+  mSubimage(mat),
+  mSubdividedImages()
 {}
 
 
 Subimage::~Subimage()
 {
-  mSubMat.release();
+  mSubimage.release();
 }
 
 
-cv::Mat Subimage::getSubMat() const {
-  return mSubMat;
+cv::Mat Subimage::getSubMat() const
+{
+  return mSubimage;
 }
 
-int Subimage::getId() const {
+int Subimage::getId() const
+{
   return mId; 
+}
+
+std::vector<Subimage> Subimage::getSubdividedImages() const
+{
+  return mSubdividedImages;
+}
+
+cv::Mat Subimage::getSubdividedMatrix(int const& index) const
+{
+  return mSubdividedImages[index].getSubMat();
 }
 
 
 void Subimage::setSubMat(cv::Mat const& matrix) 
 {
-  mSubMat = matrix;
+  mSubimage = matrix;
 }
 
 void Subimage::setId(int const& id) 
@@ -44,7 +56,7 @@ void Subimage::setId(int const& id)
 std::pair<cv::Scalar, cv::Scalar> Subimage::calcMeanStdDev() const 
 {
   cv::Scalar mean, stdDev;
-  cv::meanStdDev(mSubMat, mean, stdDev);
+  cv::meanStdDev(mSubimage, mean, stdDev);
 
   auto returnValues = std::make_pair(mean,stdDev);
   return returnValues;
@@ -52,8 +64,8 @@ std::pair<cv::Scalar, cv::Scalar> Subimage::calcMeanStdDev() const
 
 void Subimage::subdivide()
 {
-  int width = mSubMat.cols;
-  int height = mSubMat.rows;
+  int width = mSubimage.cols;
+  int height = mSubimage.rows;
 
   cv::Rect tmpRect;
   cv::Mat tmpMat;
@@ -70,12 +82,11 @@ void Subimage::subdivide()
       
       tmpRect = cv::Rect(cv::Point(x1,y1),cv::Point(x2,y2));
       // std::cout << tmpRect << std::endl;
-      tmpMat = mSubMat(tmpRect);
+      tmpMat = mSubimage(tmpRect);
 
-      mSubimages.push_back(Subimage(tmpMat,i));
-
+      mSubdividedImages.push_back(Subimage(tmpMat,i));
     }
-    else if(i > 3 && i < 7)
+    else if(i > 2 && i < 6)
     {
       x1 = i%3*(width/3);
       x2 = (i%3+1)*(width/3);
@@ -84,11 +95,11 @@ void Subimage::subdivide()
 
       tmpRect = cv::Rect(cv::Point(x1,y1),cv::Point(x2,y2));
       // std::cout << tmpRect << std::endl;
-      tmpMat = mSubMat(tmpRect);
+      tmpMat = mSubimage(tmpRect);
 
-      mSubimages.push_back(Subimage(tmpMat,i));
+      mSubdividedImages.push_back(Subimage(tmpMat,i));
     }
-    else if (i > 7)
+    else if (i > 5)
     {
       x1 = i%3*(width/3);
       x2 = (i%3+1)*(width/3);
@@ -97,12 +108,11 @@ void Subimage::subdivide()
 
       tmpRect = cv::Rect(cv::Point(x1,y1),cv::Point(x2,y2));
       // std::cout << tmpRect << std::endl;
-      tmpMat = mSubMat(tmpRect);
+      tmpMat = mSubimage(tmpRect);
 
-      mSubimages.push_back(Subimage(tmpMat,i));
+      mSubdividedImages.push_back(Subimage(tmpMat,i));
     }
   }
 
   tmpMat.release();
-  
 }

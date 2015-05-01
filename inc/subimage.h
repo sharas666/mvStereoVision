@@ -22,6 +22,9 @@ class Subimage
 
     cv::Mat getSubMat() const;
     int getId() const;
+    std::vector<Subimage> getSubdividedImages() const;
+    cv::Mat getSubdividedMatrix(int const&) const;
+
 
     void setSubMat(cv::Mat const&);
     void setId(int const&);
@@ -31,8 +34,8 @@ class Subimage
 
   private:
     int                   mId;
-    cv::Mat               mSubMat;
-    std::vector<Subimage> mSubimages;
+    cv::Mat               mSubimage;
+    std::vector<Subimage> mSubdividedImages;
 };
 
 #endif //__SUBIMAGE_H__
