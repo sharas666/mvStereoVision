@@ -17,21 +17,22 @@ class Subimage
 {
   public:
     Subimage();
-    Subimage(cv::Mat const&, std::string const&);
+    Subimage(cv::Mat const&, int const&);
     ~Subimage();
 
     cv::Mat getSubMat() const;
-    std::string getId() const;
+    int getId() const;
 
     void setSubMat(cv::Mat const&);
-    void setId(std::string const&);
+    void setId(int const&);
 
     std::pair<cv::Scalar, cv::Scalar> calcMeanStdDev() const;
-    void subdivide(std::vector<Subimage>&);
+    void subdivide();
 
   private:
-    std::string   mId;
-    cv::Mat       mSubMat;
+    int                   mId;
+    cv::Mat               mSubMat;
+    std::vector<Subimage> mSubimages;
 };
 
 #endif //__SUBIMAGE_H__
