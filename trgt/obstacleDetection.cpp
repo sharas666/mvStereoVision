@@ -178,6 +178,11 @@ int main(int argc, char* argv[])
     cond_var.notify_one();
     key = cv::waitKey(5);
 
+    {
+      Subimage sub = Subimage(dMapRaw, 0);
+      sub.subdivide();
+    }
+
     // keypress stuff
     if(key > 0)
     {
@@ -206,10 +211,14 @@ int main(int argc, char* argv[])
           break;
         case 'd':
         {
-          Subimage sub = Subimage(dMapRaw, "root");
+          Subimage sub = Subimage(dMapRaw, 0);
           std::vector<Subimage> v;
-          sub.subdivide(v);
+          sub.subdivide();
+          break;
         }
+        case 'e':
+          std::cout << left->getExposure() << std::endl;
+          std::cout << left->getExposure() << std::endl;
         default:
           std::cout << "Key pressed has no action" <<std::endl;
           break;
