@@ -158,7 +158,10 @@ int main(int argc, char* argv[])
   disparitySGBM = cv::StereoSGBM(0,numDispSGBM,windSizeSGBM,8*windSizeSGBM*windSizeSGBM,32*windSizeSGBM*windSizeSGBM);
   std::thread disparity(disparityCalc,std::ref(s),std::ref(disparitySGBM));
 
+  cv::namedWindow("SubMat", cv::WINDOW_AUTOSIZE);
+
   bool running = true;
+  int frame = 0;
   while(running)
   {
 
@@ -174,14 +177,25 @@ int main(int argc, char* argv[])
       newDisparityMap = false;
     }
 
+    if (frame > 2) {
+      Subimage sub = Subimage(dMapRaw, 0);
+      sub.subdivide();
+      std::vector<Subimage> subvec = sub.getSubdividedImages();
+      for (unsigned int i = 0; i < subvec.size(); ++i)
+      {
+        subvec[i].subdivide();
+      }
+
+      cv::Mat foo = subvec[4].getSubdividedMatrix(0);
+      cv::Mat fooNorm;
+      cv::normalize(foo,fooNorm,0,255,cv::NORM_MINMAX, CV_8U);
+      cv::imshow("SubMat", fooNorm);
+    }
+
+
     // notify the thread to start 
     cond_var.notify_one();
     key = cv::waitKey(5);
-
-    {
-      Subimage sub = Subimage(dMapRaw, 0);
-      sub.subdivide();
-    }
 
     // keypress stuff
     if(key > 0)
@@ -212,8 +226,17 @@ int main(int argc, char* argv[])
         case 'd':
         {
           Subimage sub = Subimage(dMapRaw, 0);
-          std::vector<Subimage> v;
           sub.subdivide();
+          std::vector<Subimage> subvec = sub.getSubdividedImages();
+          for (unsigned int i = 0; i < subvec.size(); ++i)
+          {
+            subvec[i].subdivide();
+          }
+
+          cv::Mat foo = subvec[4].getSubdividedMatrix(0);
+          cv::Mat fooNorm;
+          cv::normalize(foo,fooNorm,0,255,cv::NORM_MINMAX, CV_8U);
+          cv::imshow("SubImageNorm", fooNorm);
           break;
         }
         case 'e':
@@ -224,6 +247,7 @@ int main(int argc, char* argv[])
           break;
       }
     }
+    ++frame;
   }
 
   disparity.join();
