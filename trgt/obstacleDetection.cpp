@@ -186,12 +186,20 @@ int main(int argc, char* argv[])
         subvec[i].subdivide();
       }
 
-      cv::Mat foo = subvec[4].getSubdividedMatrix(0);
-      cv::Mat fooNorm;
-      cv::normalize(foo,fooNorm,0,255,cv::NORM_MINMAX, CV_8U);
-      cv::imshow("SubMat", fooNorm);
-    }
+      // cv::Mat foo = subvec[4].getSubdividedMatrix(0);
+      for (unsigned int i = 0; i < subvec.size(); ++i)
+      {
+        for (unsigned int j = 0; j < subvec.size(); ++j)
+        {
+          float mean = subvec[i].getSubdividedImages()[j].calcMeanStdDev().first[0];
+          float distance = Utility::calcDistance(Q_32F, mean, binning);
+          // std::cout << distance << std::endl;
+        }
+      }
 
+      // cv::normalize(foo,fooNorm,0,255,cv::NORM_MINMAX, CV_8U);
+      // cv::imshow("SubMat", fooNorm);
+    }
 
     // notify the thread to start 
     cond_var.notify_one();
@@ -239,9 +247,16 @@ int main(int argc, char* argv[])
           cv::imshow("SubImageNorm", fooNorm);
           break;
         }
+        case 't':
+        {
+          std::cout << Utility::calcDistance(Q_32F, 288, binning) << std::endl;
+          std::cout << Utility::calcDistance(Q_32F, 341, binning) << std::endl;
+          std::cout << Utility::calcDistance(Q_32F, 160, binning) << std::endl;
+        }
         case 'e':
           std::cout << left->getExposure() << std::endl;
           std::cout << left->getExposure() << std::endl;
+          break;
         default:
           std::cout << "Key pressed has no action" <<std::endl;
           break;
