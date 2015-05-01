@@ -62,7 +62,7 @@ namespace Utility
 
 	bool calcCoordinate(cv::Mat_<float> &,cv::Mat const&, cv::Mat const&,int,int,int);
 	float calcDistance(cv::Mat const&, float const&, int);
-	void calcDistanceMap(cv::Mat &, cv::Mat const&, cv::Mat const&, int);
+	void calcDistanceMap(cv::Mat &, cv::Mat const&, cv::Mat const&);
 
 
 }

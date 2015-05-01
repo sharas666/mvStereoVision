@@ -170,7 +170,7 @@ bool Utility::calcCoordinate(cv::Mat_<float> &toReturn,cv::Mat const& Q, cv::Mat
     }
 }
 
-float Utility::calcDistance(cv::Mat const& Q, float const& dispValue, int binning)
+float Utility::calcDistance(cv::Mat const& Q, float const& dispValue)
 {
   float d = dispValue / 16;
   cv::Mat_<float> coordinateQ(1,4);
