@@ -240,7 +240,6 @@ int main(int argc, char* argv[])
           {
             subvec[i].subdivide();
           }
-
           cv::Mat foo = subvec[4].getSubdividedMatrix(0);
           cv::Mat fooNorm;
           cv::normalize(foo,fooNorm,0,255,cv::NORM_MINMAX, CV_8U);
