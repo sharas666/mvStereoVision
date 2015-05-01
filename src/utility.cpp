@@ -146,6 +146,7 @@ bool Utility::checkConfig(std::string const& configfile, std::vector<std::string
 bool Utility::calcCoordinate(cv::Mat_<float> &toReturn,cv::Mat const& Q, cv::Mat const& disparityMap,int x,int y, int binning)
 {
     double d = static_cast<float>(disparityMap.at<short>(y,x));
+
     d/=16.0;
     if(d > 0)
     {
@@ -161,13 +162,36 @@ bool Utility::calcCoordinate(cv::Mat_<float> &toReturn,cv::Mat const& Q, cv::Mat
       {
         toReturn=toReturn/2;
       }
-
       return true;
     }
     else
     {
       return false;
     }
+}
+
+float Utility::calcDistance(cv::Mat const& Q, float const& dispValue, int binning)
+{
+  float d = dispValue / 16;
+  cv::Mat_<float> coordinateQ(1,4);
+  if(d > 0)
+  {
+    coordinateQ(0)=1;
+    coordinateQ(1)=1;
+    coordinateQ(2)=d;
+    coordinateQ(3)=1;
+
+    coordinateQ = Q*coordinateQ.t();
+    coordinateQ/=coordinateQ(3);
+    
+    return coordinateQ(2)/1000;
+  }
+  else
+  {
+    return -1.0;
+  }
+
+  coordinateQ.release();
 }
 
 double Utility::checkSharpness(cv::Mat const& src)
