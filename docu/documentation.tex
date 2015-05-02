@@ -19,8 +19,11 @@
 \section{Introduction}
 \section{Related Work}
 \section{System Description}
-In this section we will describe the developed system in detail. First we are going to give an overview over the dependencies of the system. Next we will explain the developed framework and how the single components work with each other. Although we will outline the pipeline of generating a depth image from a stereo system, we expect the reader to inform oneself about single steps and conventional knowledge in computer vision.
+In this section we will describe the developed system in detail. First we will give an overview of computing disparity maps in general. Furthermore,we will list the dependencies of the system. Next we will explain the developed framework and how the single components work with each other.
 
+Although we will outline the pipeline of generating a depth image from a stereo system, we expect the reader to inform oneself about single steps and conventional knowledge in computer vision.
+
+\subsection{General Computation Of Disparity Maps}
 \subsection{Hardware and Dependencies}  
 The AscTec Pelican is equipped with two  \emph{\href{http://www.matrix-vision.com/USB2.0-single-board-camera-mvbluefox-mlc.html?camera=mvBlueFOX-MLC200wC&selectInterface=Alle&selectMpixels=Alle&selectFps=Alle&selectSensor=Alle&selectColor=Alle&selectSize=Alle&selectShutter=Alle&selectModel=Alle&col=1&row=0}{mvBlueFOX -- MLC 200w}} cameras from \emph{\href{http://www.matrix-vision.com/home-en.html}{Matrix Vision}}. To use the cameras one need to download and install the \href{http://www.matrix-vision.com/programming-interface-mvimpact-acquire.html}{mvIMPACT Acquire SDK}. This SDK comes with the required drivers and a API for several programming languages such as C/C++, C\# etc. 
 
@@ -28,7 +31,9 @@ The system uses the SDK just for image acquisition, either in full resolution (7
 
 After the images are acquired they are transferred to OpenCV matrices. Therefore, \href{http://opencv.org/}{OpenCV} is the second dependency one will need to use the framework. We used version 2.4.9 to develop and test the framework. OpenCV is used for nearly every image processing and computer vision task.
 
-The last dependency is a C++ compiler such as the gcc-4.9.2 with C++11 support.
+The last dependency is a C++ compiler with C++11 support, such as the gcc-4.9.2.
+
+
 \section{Evaluation}
 \section{Discussion}
 \section{Future Work}
