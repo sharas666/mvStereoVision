@@ -62,6 +62,12 @@ std::pair<cv::Scalar, cv::Scalar> Subimage::calcMeanStdDev() const
   return returnValues;
 }
 
+std::pair<float,float> Subimage::calcMinMax() const
+{
+ float min,max;
+ 
+}
+
 void Subimage::subdivide()
 {
   int width = mSubimage.cols;

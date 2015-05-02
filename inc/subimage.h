@@ -30,6 +30,7 @@ class Subimage
     void setId(int const&);
 
     std::pair<cv::Scalar, cv::Scalar> calcMeanStdDev() const;
+    std::pair<float,float> calcMinMax() const;
     void subdivide();
 
   private:
