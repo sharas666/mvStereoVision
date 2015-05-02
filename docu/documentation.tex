@@ -12,13 +12,23 @@
 
 \maketitle
 
-\renewcommand\thesubsection{\alph{subsection}.}
+%\renewcommand\thesubsection{\alph{subsection}.}
 
 \abstract{The major goal of the project \emph{SLAM For UAV's} is to implement a SLAM algorithm on an \emph {\href{http://www.asctec.de/en/uav-uas-drone-products/asctec-pelican/}{AscTec Pelican}}. Since this goal covers several topics, we split the project group and work on different subtopics. In this documentation we describe how a stereo camera system is used to create depth maps, which then can be used for further tasks like obstacle avoidance or 3D reconstruction. We will describe the complete pipe line, from stereo camera images to a depth map and the tools needed.}
 
 \section{Introduction}
 \section{Related Work}
 \section{System Description}
+In this section we will describe the developed system in detail. First we are going to give an overview over the dependencies of the system. Next we will explain the developed framework and how the single components work with each other. Although we will outline the pipeline of generating a depth image from a stereo system, we expect the reader to inform oneself about single steps and conventional knowledge in computer vision.
+
+\subsection{Hardware and Dependencies}  
+The AscTec Pelican is equipped with two  \emph{\href{http://www.matrix-vision.com/USB2.0-single-board-camera-mvbluefox-mlc.html?camera=mvBlueFOX-MLC200wC&selectInterface=Alle&selectMpixels=Alle&selectFps=Alle&selectSensor=Alle&selectColor=Alle&selectSize=Alle&selectShutter=Alle&selectModel=Alle&col=1&row=0}{mvBlueFOX -- MLC 200w}} cameras from \emph{\href{http://www.matrix-vision.com/home-en.html}{Matrix Vision}}. To use the cameras one need to download and install the \href{http://www.matrix-vision.com/programming-interface-mvimpact-acquire.html}{mvIMPACT Acquire SDK}. This SDK comes with the required drivers and a API for several programming languages such as C/C++, C\# etc. 
+
+The system uses the SDK just for image acquisition, either in full resolution (752x480) or in binning mode with half resolution (376x240).
+
+After the images are acquired they are transferred to OpenCV matrices. Therefore, \href{http://opencv.org/}{OpenCV} is the second dependency one will need to use the framework. We used version 2.4.9 to develop and test the framework. OpenCV is used for nearly every image processing and computer vision task.
+
+The last dependency is a C++ compiler such as the gcc-4.9.2 with C++11 support.
 \section{Evaluation}
 \section{Discussion}
 \section{Future Work}
