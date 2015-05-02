@@ -218,3 +218,22 @@ void Utility::calcDistanceMap(cv::Mat &distanceMap, cv::Mat const& dMap, cv::Mat
     }
   } 
 }
+
+float Utility::calcMeanDisparity(cv::Mat const& matrix)
+{
+  int total = 0;
+  int numElements = 0;
+  for(int r = 0; r < matrix.rows; ++r)
+  {
+    for(int c = 0; c < matrix.cols; ++c)
+    {
+      if(matrix.at<float>(r,c) > 0)
+      {
+        total += matrix.at<float>(r,c);
+        ++numElements;
+      }
+    }
+  } 
+  float mean = total / numElements;
+  return mean;
+}
