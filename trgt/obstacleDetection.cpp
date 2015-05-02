@@ -158,8 +158,6 @@ int main(int argc, char* argv[])
   disparitySGBM = cv::StereoSGBM(0,numDispSGBM,windSizeSGBM,8*windSizeSGBM*windSizeSGBM,32*windSizeSGBM*windSizeSGBM);
   std::thread disparity(disparityCalc,std::ref(s),std::ref(disparitySGBM));
 
-  cv::namedWindow("SubMat", cv::WINDOW_AUTOSIZE);
-
   bool running = true;
   int frame = 0;
   while(running)
@@ -186,13 +184,12 @@ int main(int argc, char* argv[])
         subvec[i].subdivide();
       }
 
-      // cv::Mat foo = subvec[4].getSubdividedMatrix(0);
       for (unsigned int i = 0; i < subvec.size(); ++i)
       {
         for (unsigned int j = 0; j < subvec.size(); ++j)
         {
           float mean = subvec[i].getSubdividedImages()[j].calcMeanStdDev().first[0];
-          float distance = Utility::calcDistance(Q_32F, mean, binning);
+          float distance = Utility::calcDistance(Q_32F, mean);
           // std::cout << distance << std::endl;
         }
       }
@@ -236,21 +233,21 @@ int main(int argc, char* argv[])
           Subimage sub = Subimage(dMapRaw, 0);
           sub.subdivide();
           std::vector<Subimage> subvec = sub.getSubdividedImages();
-          for (unsigned int i = 0; i < subvec.size(); ++i)
-          {
-            subvec[i].subdivide();
-          }
-          cv::Mat foo = subvec[4].getSubdividedMatrix(0);
-          cv::Mat fooNorm;
-          cv::normalize(foo,fooNorm,0,255,cv::NORM_MINMAX, CV_8U);
-          cv::imshow("SubImageNorm", fooNorm);
+
+          cv::Mat foo = subvec[4].getSubMat();
+          // for (unsigned int i = 0; i < subvec.size(); ++i)
+          // {
+          //   subvec[i].subdivide();
+          // }
+
+          std::cout << Utility::calcMeanDisparity(foo) << std::endl;
           break;
         }
         case 't':
         {
-          std::cout << Utility::calcDistance(Q_32F, 288, binning) << std::endl;
-          std::cout << Utility::calcDistance(Q_32F, 341, binning) << std::endl;
-          std::cout << Utility::calcDistance(Q_32F, 160, binning) << std::endl;
+          std::cout << Utility::calcDistance(Q_32F, 288) << std::endl;
+          std::cout << Utility::calcDistance(Q_32F, 341) << std::endl;
+          std::cout << Utility::calcDistance(Q_32F, 160) << std::endl;
         }
         case 'e':
           std::cout << left->getExposure() << std::endl;
