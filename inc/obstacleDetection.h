@@ -19,9 +19,15 @@ class obstacleDetection
     obstacleDetection(cv::Mat const&, int const&);
     ~obstacleDetection();
 
+    void buildMeanDistanceMap(cv::Mat const&);
+    void buildMinDistanceMap(cv::Mat const&);
+    void buildStdDevDistanceMap(cv::Mat const&);
+
   private:
-    cv::Mat                 mDispMap;
-    std::vector<cv::Point>  mSamplePoints;
+    cv::Mat                     mDispMap;
+    std::vector<cv::Point>      mSamplepoints;
+    std::vector<Subimage>       mSubimages;
+    cv::Mat                     mDistanceMapMean;
     
 };
 
