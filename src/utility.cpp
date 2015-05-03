@@ -176,3 +176,4 @@ double Utility::checkSharpness(cv::Mat const& src)
   cv::Mat FM = cv::abs(Lx) + cv::abs(Ly);
   return cv::mean(FM).val[0];
 }
+
