@@ -35,8 +35,8 @@ The preprocessing step is done on two levels; one is the single camera and the s
 
 During the process of depth map estimation we are going to take features in the left image and search them in the right image. But since this is a 2D search domain ($x$ and $y$ direction) it would be nice to ensure that the searched feature in the right image is at least in the same row as in the left image. This process is called \emph{rectification}. After the rectification step, we can assume that the cameras have no horizontal shift anymore. This reduces the feature search problem to a one dimensional (vertical) search problem. Furthermore, under the precondition that there is only a vertical shift and both cameras are identical, we can say that a feature from column $x_{Left}$ is at least at the same position in the right image so it holds that $x_{Right}\geq x_{Left}$. This also reduces the search problem, since the closer $x_{Left}$ is to $x_{Max}$ the smaller is the set of elements to search.
 
-\subsubsection{Similarity Measure}
-At this step we assume that we have undistorted and rectified images. Now we compare left and right image. If the horizontal shift of an object from the left to the right image is large, the object is near the cameras. If the horizontal shift moves towards zero, the object is far away from the origin (the cameras). But how can one determine the horizontal shift of an object? There exist plenty possibilities to do this. We tried three different approaches: template matching with different similarity measures, block matching and semi-global block matching. The result of each is a map with integers. The map has the same size as the two images and contains for each pixel $p(x,y)$ a value which expresses the horizontal shift in pixels from the left to the right image. %TODO add example
+\subsubsection{Similarity Measure}%TODO blockmatching /semi global als paper reference
+At this step we assume that we have undistorted and rectified images. Now we compare the left and right images. If the horizontal shift of an object from the left to the right image is large, the object is near the cameras. If the horizontal shift moves towards zero, the object is far away from the origin (the cameras). But how can one determine the horizontal shift of an object? There exist plenty possibilities to do this. We tried three different approaches: template matching with different similarity measures, block matching and semi-global block matching. The result of each is a map with integers. The map has the same size as the two images and contains for each pixel $p(x,y)$ a value (the disparity) which expresses the horizontal shift in pixels from the left to the right image. In our framework we use the semi-global block matching since it has the best tradeoff between time and accuracy. The block matching mechanism is a little bit faster but very noisy and the template matching strategy takes far to long to evaluate a single picture pair. %TODO add example
 
 \subsubsection{3D-Coordinate Calculation}
 The last step is the reprojection from the image plane to the real world. We therefore use the reprojection matrix $Q$, which is constructed as follows:
@@ -57,7 +57,17 @@ Q=&
 &-T_x \textrm{-- translation in x direction from the left camera to the right camera }
 \end{align*}
 
+So to reproject a point to 3D coordinates we need the $x$ and $y$ position in the left image, the disparity value $d(x,y)$ and $Q$. We construct a vector $\vec{o}=(x\;y\;d\;1)^T$ and multiply $Q$ with it so we obtain 3D coordinates $\vec{c}=(X\;Y\;Z\;W)$ which we have to divide by $W$.
 
+\begin{align*}
+	\vec{c}&=Q\cdot \vec{o}\;^T = (X\;Y\;Z\;W)^T\\
+	\frac{\vec{c}}{W}&=\left(\frac{X}{W}\;\frac{Y}{W}\;\frac{Z}{W}\;1\right)^T
+\end{align*}
+
+This can be done with every pixel $(x,y)$ which has a valid disparity value $d$. It is possible to determine the coordinates of single points, e.g. for obstacle avoidance, or to produce point clouds from the images, e.g. for 3D reconstruction tasks.
+
+
+\bigskip This three steps form the rough pipe line to generate depth maps from stereo camera systems. In the further sections we will explain the developed framework.
 
 \subsection{Hardware and Dependencies}  
 The AscTec Pelican is equipped with two  \emph{\href{http://www.matrix-vision.com/USB2.0-single-board-camera-mvbluefox-mlc.html?camera=mvBlueFOX-MLC200wC&selectInterface=Alle&selectMpixels=Alle&selectFps=Alle&selectSensor=Alle&selectColor=Alle&selectSize=Alle&selectShutter=Alle&selectModel=Alle&col=1&row=0}{mvBlueFOX -- MLC 200w}} cameras from \emph{\href{http://www.matrix-vision.com/home-en.html}{Matrix Vision}}. To use the cameras one need to download and install the \href{http://www.matrix-vision.com/programming-interface-mvimpact-acquire.html}{mvIMPACT Acquire SDK}. This SDK comes with the required drivers and a API for several programming languages such as C/C++, C\# etc. 
