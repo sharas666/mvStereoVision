@@ -101,10 +101,16 @@ continousCaptureRectified: directories $(OBJ)
 	@$(CC) $(OBJ) $(TARGETOBJDIR)/continousCaptureRectified.o -o $(BINDIR)/continousCaptureRectified $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
-obstacleDetection: directories $(OBJ)
-	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/obstacleDetection.cpp -o $(TARGETOBJDIR)/obstacleDetection.o
-	@echo Compiled obstacleDetection.cpp successfully!
-	@$(CC) $(OBJ) $(TARGETOBJDIR)/obstacleDetection.o -o $(BINDIR)/obstacleDetection $(LIB_PATH) $(LIBS)
+obstacle: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/obstacle.cpp -o $(TARGETOBJDIR)/obstacle.o
+	@echo Compiled obstacle.cpp successfully!
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/obstacle.o -o $(BINDIR)/obstacle $(LIB_PATH) $(LIBS)
+	@echo Linking complete!
+
+test: directories $(OBJ)
+	@$(CC) $(CFLAGS) $(INC_PATH) $(TARGETDIR)/test.cpp -o $(TARGETOBJDIR)/test.o
+	@echo Compiled test.cpp successfully!
+	@$(CC) $(OBJ) $(TARGETOBJDIR)/test.o -o $(BINDIR)/test $(LIB_PATH) $(LIBS)
 	@echo Linking complete!
 
 directories:
