@@ -13,3 +13,5 @@ obj/
 trgt_obj/
 #fileadding script
 addfiles
+#swap files
+*.swp
