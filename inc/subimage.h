@@ -13,6 +13,8 @@
 #include "opencv2/features2d/features2d.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
+#include "utility.h"
+
 class Subimage
 {
   public:
@@ -20,18 +22,18 @@ class Subimage
     Subimage(cv::Mat const&, int const&);
     ~Subimage();
 
-    cv::Mat getSubMat() const;
-    int getId() const;
-    std::vector<Subimage> getSubdividedImages() const;
-    cv::Mat getSubdividedMatrix(int const&) const;
+    cv::Mat                 getSubMat() const;
+    int                     getId() const;
+    std::vector<Subimage>   getSubdividedImages() const;
+    cv::Mat                 getSubdividedMatrix(int const&) const;
 
-
-    void setSubMat(cv::Mat const&);
-    void setId(int const&);
+    void                    setSubMat(cv::Mat const&);
+    void                    setId(int const&);
 
     std::pair<cv::Scalar, cv::Scalar> calcMeanStdDev() const;
-    std::pair<float,float> calcMinMax() const;
-    void subdivide();
+    float                             calcMean() const;
+    std::pair<float,float>            calcMinMax() const;
+    void                              subdivide();
 
   private:
     int                   mId;

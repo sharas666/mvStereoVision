@@ -62,10 +62,16 @@ std::pair<cv::Scalar, cv::Scalar> Subimage::calcMeanStdDev() const
   return returnValues;
 }
 
+float Subimage::calcMean() const
+{
+  float mean = Utility::calcMeanDisparity(mSubimage);
+  return mean;
+}
+
+
 std::pair<float,float> Subimage::calcMinMax() const
 {
  float min,max;
- 
 }
 
 void Subimage::subdivide()
