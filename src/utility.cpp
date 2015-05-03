@@ -221,19 +221,24 @@ void Utility::calcDistanceMap(cv::Mat &distanceMap, cv::Mat const& dMap, cv::Mat
 
 float Utility::calcMeanDisparity(cv::Mat const& matrix)
 {
+  cv::Mat mat_32F;
+  matrix.convertTo(mat_32F, CV_32F);
+
   int total = 0;
   int numElements = 0;
   for(int r = 0; r < matrix.rows; ++r)
   {
     for(int c = 0; c < matrix.cols; ++c)
     {
-      if(matrix.at<float>(r,c) > 0)
+      if(mat_32F.at<float>(r,c) > 0)
       {
-        total += matrix.at<float>(r,c);
+        total += mat_32F.at<float>(r,c);
         ++numElements;
       }
     }
   } 
+  mat_32F.release();
+
   float mean = total / numElements;
   return mean;
 }
