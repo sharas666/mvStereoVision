@@ -72,15 +72,17 @@ void changeWindSizeSGBM(int, void*)
     disparitySGBM = cv::StereoSGBM(0,numDispSGBM,windSizeSGBM,8*windSizeSGBM*windSizeSGBM,32*windSizeSGBM*windSizeSGBM);
 }
 
-
 void mouseClick(int event, int x, int y,int flags, void* userdata)
 {
-  if  ( event == CV_EVENT_LBUTTONDOWN )
+  if ( event == CV_EVENT_LBUTTONDOWN )
   {
+    std::cout << "fotze" << std::endl;
     std::cout << "x: " << x <<"  y: " << y << std::endl;
+    double d = static_cast<float>(dMapRaw.at<short>(y,x));
+    std::cout << d << std::endl;
+    std::cout << "ficker" << std::endl;
   }
 }
-
 
 void initWindows()
 {
@@ -229,20 +231,12 @@ int main(int argc, char* argv[])
           std::cout<<left->getFramerate()<<" "<<right->getFramerate()<<std::endl;
           break;
         case 'd':
-        {
-          Subimage sub = Subimage(dMapRaw, 0);
-          sub.subdivide();
-          std::vector<Subimage> subvec = sub.getSubdividedImages();
-
-          cv::Mat foo = subvec[4].getSubMat();
-          // for (unsigned int i = 0; i < subvec.size(); ++i)
-          // {
-          //   subvec[i].subdivide();
-          // }
-
-          std::cout << Utility::calcMeanDisparity(foo) << std::endl;
+          obstacleDetection obst(dMapRaw,binning);
+          obst.buildMeanDistanceMap()
+          std::vector<std::vector<float>> distances = obst.getDistanceMapMean();
+          std::cout << distances[4] << std::endl;
+          std::cout << "hure" << std::endl;
           break;
-        }
         case 't':
         {
           std::cout << Utility::calcDistance(Q_32F, 288) << std::endl;
