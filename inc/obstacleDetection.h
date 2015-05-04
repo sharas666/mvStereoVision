@@ -19,11 +19,14 @@ class obstacleDetection
     obstacleDetection(cv::Mat const&, int const&);
     ~obstacleDetection();
 
+    std::vector<std::vector<float>> getMeanMap() const;
     std::vector<std::vector<float>> getDistanceMapMean() const;
     std::vector<Subimage> getSubimages() const;
 
-    void buildMeanDistanceMap(cv::Mat const&);
-    void buildMinDistanceMap(cv::Mat const&);
+    void buildMeanMap(cv::Mat const&);
+
+    void buildMeanDistanceMap(cv::Mat const&, int);
+    void buildMinDistanceMap(cv::Mat const&, int);
     void buildStdDevDistanceMap(cv::Mat const&);
 
   private:
@@ -31,6 +34,7 @@ class obstacleDetection
     std::vector<cv::Point>          mSamplepoints;
     std::vector<Subimage>           mSubimages;
     std::vector<std::vector<float>> mDistanceMapMean;
+    std::vector<std::vector<float>> mMeanMap;
 };
 
 #endif //__OBSTACLE_DETECION__H
