@@ -159,9 +159,8 @@ bool Utility::calcCoordinate(cv::Mat_<float> &toReturn,cv::Mat const& Q, cv::Mat
       toReturn/=toReturn(3);
       
       if(binning == 1)
-      {
         toReturn=toReturn/2;
-      }
+
       return true;
     }
     else
@@ -170,7 +169,7 @@ bool Utility::calcCoordinate(cv::Mat_<float> &toReturn,cv::Mat const& Q, cv::Mat
     }
 }
 
-float Utility::calcDistance(cv::Mat const& Q, float const& dispValue)
+float Utility::calcDistance(cv::Mat const& Q, float const& dispValue, int binning)
 {
   float d = dispValue / 16;
   cv::Mat_<float> coordinateQ(1,4);
@@ -180,12 +179,27 @@ float Utility::calcDistance(cv::Mat const& Q, float const& dispValue)
   coordinateQ(2)=d;
   coordinateQ(3)=1;
 
-  coordinateQ = Q*coordinateQ.t();
-  coordinateQ/=coordinateQ(3);
+  if(binning == 0)
+  {
+    coordinateQ = (Q/2)*coordinateQ.t();
+    coordinateQ/=coordinateQ(3);
   
-  return coordinateQ(2)/1000;
+    float distance = coordinateQ(2)/1000;
+    coordinateQ.release();
 
-  coordinateQ.release();
+    return distance;
+  }
+  else
+  {
+    coordinateQ = Q*coordinateQ.t();
+    coordinateQ/=coordinateQ(3);
+    
+    float distance = coordinateQ(2)/1000;
+    coordinateQ.release();
+
+    return distance;
+  }
+
 }
 
 double Utility::checkSharpness(cv::Mat const& src)
@@ -221,24 +235,19 @@ void Utility::calcDistanceMap(cv::Mat &distanceMap, cv::Mat const& dMap, cv::Mat
 
 float Utility::calcMeanDisparity(cv::Mat const& matrix)
 {
-  cv::Mat mat_32F;
-  matrix.convertTo(mat_32F, CV_32F);
-
   int total = 0;
   int numElements = 0;
   for(int r = 0; r < matrix.rows; ++r)
   {
     for(int c = 0; c < matrix.cols; ++c)
     {
-      if(mat_32F.at<float>(r,c) > 0)
+      if(static_cast<float>(matrix.at<short>(r,c)) > 0)
       {
-        total += mat_32F.at<float>(r,c);
+        total += static_cast<float>(matrix.at<short>(r,c));
         ++numElements;
       }
     }
   } 
-  mat_32F.release();
-
-  float mean = total / numElements;
+  double mean = total / numElements;
   return mean;
 }
