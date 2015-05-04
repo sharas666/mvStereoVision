@@ -8,6 +8,7 @@
 #include "disparity.h"
 #include "easylogging++.h"
 #include "subimage.h"
+#include "obstacleDetection.h"
 
 #include <thread>
 #include <mutex>
@@ -78,6 +79,9 @@ void mouseClick(int event, int x, int y,int flags, void* userdata)
   if  ( event == CV_EVENT_LBUTTONDOWN )
   {
     std::cout << "x: " << x <<"  y: " << y << std::endl;
+    double d = static_cast<float>(dMapRaw.at<short>(y,x));
+    float distance = Utility::calcDistance(Q_32F, d, 1);
+    std::cout << "disparityValue: " << d << "  distance: " << distance << std::endl;
   }
 }
 
@@ -158,7 +162,7 @@ int main(int argc, char* argv[])
   disparitySGBM = cv::StereoSGBM(0,numDispSGBM,windSizeSGBM,8*windSizeSGBM*windSizeSGBM,32*windSizeSGBM*windSizeSGBM);
   std::thread disparity(disparityCalc,std::ref(s),std::ref(disparitySGBM));
 
-  bool running = true;
+  running = true;
   int frame = 0;
   while(running)
   {
@@ -175,6 +179,8 @@ int main(int argc, char* argv[])
       newDisparityMap = false;
     }
 
+    std::vector<std::vector<float>> v;
+    std::vector<std::vector<float>> m;
     if (frame > 2) {
       Subimage sub = Subimage(dMapRaw, 0);
       sub.subdivide();
@@ -184,18 +190,13 @@ int main(int argc, char* argv[])
         subvec[i].subdivide();
       }
 
-      for (unsigned int i = 0; i < subvec.size(); ++i)
-      {
-        for (unsigned int j = 0; j < subvec.size(); ++j)
-        {
-          float mean = subvec[i].getSubdividedImages()[j].calcMeanStdDev().first[0];
-          float distance = Utility::calcDistance(Q_32F, mean);
-          // std::cout << distance << std::endl;
-        }
-      }
+      // float mean = subvec[4].getSubdividedImages()[4].calcMean();
+      // std::cout << Utility::calcDistance(Q_32F, mean) << std::endl;
 
-      // cv::normalize(foo,fooNorm,0,255,cv::NORM_MINMAX, CV_8U);
-      // cv::imshow("SubMat", fooNorm);
+      obstacleDetection obst(dMapRaw, binning);
+      obst.buildMeanDistanceMap(Q_32F, binning);
+      v = obst.getDistanceMapMean();
+      m = obst.getMeanMap();
     }
 
     // notify the thread to start 
@@ -230,28 +231,72 @@ int main(int argc, char* argv[])
           break;
         case 'd':
         {
-          Subimage sub = Subimage(dMapRaw, 0);
-          sub.subdivide();
-          std::vector<Subimage> subvec = sub.getSubdividedImages();
-
-          cv::Mat foo = subvec[4].getSubMat();
-          // for (unsigned int i = 0; i < subvec.size(); ++i)
+          obstacleDetection obst(dMapRaw, binning);
+          obst.buildMeanDistanceMap(Q_32F,binning);
+          std::vector<std::vector<float>> v = obst.getDistanceMapMean();
+          // for (unsigned int i = 0; i < v.size(); ++i)
           // {
-          //   subvec[i].subdivide();
+          //   std::cout << "____" << i << "____" << std::endl;
+          //   for (unsigned int j = 0; j < v.size(); ++j)
+          //   {
+          //     std::cout << j << ": " << v[i][j] << std::endl;
+          //   }
+          //   std::cout << "" << std::endl;
           // }
-
-          std::cout << Utility::calcMeanDisparity(foo) << std::endl;
+        }
+        case '0':
+          for (int i = 0; i < 9; ++i)
+          {
+            std::cout << i << ": " << v[0][i] << std::endl;
+          }
           break;
-        }
-        case 't':
-        {
-          std::cout << Utility::calcDistance(Q_32F, 288) << std::endl;
-          std::cout << Utility::calcDistance(Q_32F, 341) << std::endl;
-          std::cout << Utility::calcDistance(Q_32F, 160) << std::endl;
-        }
-        case 'e':
-          std::cout << left->getExposure() << std::endl;
-          std::cout << left->getExposure() << std::endl;
+        case '1':
+          for (int i = 0; i < 9; ++i)
+          {
+            std::cout << i << ": " << v[1][i] << std::endl;
+          }
+          break;
+        case '2':
+          for (int i = 0; i < 9; ++i)
+          {
+            std::cout << i << ": " << v[2][i] << std::endl;
+          }
+          break;
+        case '3':
+          for (int i = 0; i < 9; ++i)
+          {
+            std::cout << i << ": " << v[3][i] << std::endl;
+          }
+          break;
+        case '4':
+          for (int i = 0; i < 9; ++i)
+          {
+            std::cout << i << ": " << v[4][i] << std::endl;
+          }
+          break;
+        case '5':
+          for (int i = 0; i < 9; ++i)
+          {
+            std::cout << i << ": " << v[5][i] << std::endl;
+          }
+          break;
+        case '6':
+          for (int i = 0; i < 9; ++i)
+          {
+            std::cout << i << ": " << v[6][i] << std::endl;
+          }
+          break;
+        case '7':
+          for (int i = 0; i < 9; ++i)
+          {
+            std::cout << i << ": " << v[7][i] << std::endl;
+          }
+          break;
+        case '8':
+          for (int i = 0; i < 9; ++i)
+          {
+            std::cout << i << ": " << v[8][i] << std::endl;
+          }
           break;
         default:
           std::cout << "Key pressed has no action" <<std::endl;
