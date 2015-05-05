@@ -12,6 +12,11 @@
 
 #include "subimage.h"
 
+#define MEAN_DISPARITY 0
+#define MIN_DISPARITY 1
+#define STDDEV 2
+#define SAMPLE 3
+
 class obstacleDetection
 {
   public:
@@ -30,7 +35,7 @@ class obstacleDetection
     void buildMinDistanceMap(cv::Mat const&);
     void buildStdDevDistanceMap(cv::Mat const&);
 
-    void detectObstacles();
+    void detectObstacles(int const&, std::pair<float,float> const&);
 
   private:
     cv::Mat                         mDispMap;
