@@ -7,6 +7,7 @@ obstacleDetection::obstacleDetection():
   mSamplepoints(),
   mSubimages(),
   mDistanceMapMean(),
+  mDistanceMapMin(),
   mMeanMap()
 {}
 
@@ -16,6 +17,7 @@ obstacleDetection::obstacleDetection(cv::Mat const& disparityMap, int binning):
   mSamplepoints(),
   mSubimages(),
   mDistanceMapMean(),
+  mDistanceMapMin(),
   mMeanMap()
 {
   //built the Subimage 'tree'
@@ -29,7 +31,9 @@ obstacleDetection::obstacleDetection(cv::Mat const& disparityMap, int binning):
 }
 
 obstacleDetection::~obstacleDetection()
-{}
+{
+  mDispMap.release();
+}
 
 
 std::vector<std::vector<float>> obstacleDetection::getMeanMap() const
