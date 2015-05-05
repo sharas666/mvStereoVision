@@ -3,6 +3,7 @@
 
 obstacleDetection::obstacleDetection():
   mDispMap(),
+  mTag("OBSTACLE DETECTION\t"),
   mBinning(0),
   mSamplepoints(),
   mSubimages(),
@@ -13,6 +14,7 @@ obstacleDetection::obstacleDetection():
 
 obstacleDetection::obstacleDetection(cv::Mat const& disparityMap, int binning):
   mDispMap(disparityMap),
+  mTag("OBSTACLE DETECTION\t"),
   mBinning(binning),
   mSamplepoints(),
   mSubimages(),
@@ -28,11 +30,14 @@ obstacleDetection::obstacleDetection(cv::Mat const& disparityMap, int binning):
   {
     mSubimages[i].subdivide();
   }
+
+  // LOG(INFO)<< mTag <<"Obstacle Detection created\n";
 }
 
 obstacleDetection::~obstacleDetection()
 {
   mDispMap.release();
+  // LOG(INFO)<< mTag <<"Obstacle Detection destroyed\n";
 }
 
 
@@ -60,8 +65,12 @@ std::vector<Subimage> obstacleDetection::getSubimages() const
 void obstacleDetection::buildMeanMap(cv::Mat const& Q)
 {
   unsigned int numSubimages = mSubimages.size();
+  if (numSubimages == 0)
+  {
+    LOG(INFO)<< mTag <<"Unable to build Mean-Map. No Subimages provided\n";
+  }
+  
   std::vector<float> meanStorage;
-
   for (unsigned int i = 0; i < numSubimages; ++i)
   {
     for (unsigned int j = 0; j < numSubimages; ++j)
@@ -77,8 +86,12 @@ void obstacleDetection::buildMeanMap(cv::Mat const& Q)
 void obstacleDetection::buildMeanDistanceMap(cv::Mat const& Q)
 {
   unsigned int numSubimages = mSubimages.size();
-  std::vector<float> distanceStorage;
+  if (numSubimages == 0)
+  {
+    LOG(INFO)<< mTag <<"Unable to build Mean-Distance-Map. No Subimages provided\n";
+  }
 
+  std::vector<float> distanceStorage;
   for (unsigned int i = 0; i < numSubimages; ++i)
   {
     for (unsigned int j = 0; j < numSubimages; ++j)
@@ -96,8 +109,12 @@ void obstacleDetection::buildMeanDistanceMap(cv::Mat const& Q)
 void obstacleDetection::buildMinDistanceMap(cv::Mat const& Q)
 {
   unsigned int numSubimages = mSubimages.size();
-  std::vector<float> distanceStorage;
+  if (numSubimages == 0)
+  {
+    LOG(INFO)<< mTag <<"Unable to build Min-Distance-Map. No Subimages provided\n";
+  }
 
+  std::vector<float> distanceStorage;
   for (unsigned int i = 0; i < numSubimages; ++i)
   {
     for (unsigned int j = 0; j < numSubimages; ++j)
@@ -131,7 +148,7 @@ void obstacleDetection::detectObstacles(int const& mode, std::pair<float,float> 
         float value = mDistanceMapMean[i][j];
         if (value > minBorder && value < maxBorder)
         {
-          std::cout << "Obstacle Detected in: " << i << " Subimage:" << j << std::endl;
+          // std::cout << "Obstacle Detected in: " << i << " Subimage:" << j << std::endl;
         }
       }
     }
@@ -147,7 +164,7 @@ void obstacleDetection::detectObstacles(int const& mode, std::pair<float,float> 
         float value = mDistanceMapMin[i][j];
         if (value > minBorder && value < maxBorder)
         {
-          std::cout << "Obstacle Detected in: " << i << " Subimage:" << j << std::endl;
+          // std::cout << "Obstacle Detected in: " << i << " Subimage:" << j << std::endl;
         }
       }
     }

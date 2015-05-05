@@ -39,6 +39,7 @@ class obstacleDetection
 
   private:
     cv::Mat                         mDispMap;
+    std::string                     mTag;
     int                             mBinning;
     std::vector<cv::Point>          mSamplepoints;
     std::vector<Subimage>           mSubimages;
