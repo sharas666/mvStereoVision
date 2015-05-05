@@ -16,24 +16,29 @@ class obstacleDetection
 {
   public:
     obstacleDetection();
-    obstacleDetection(cv::Mat const&, int const&);
+    obstacleDetection(cv::Mat const&, int);
     ~obstacleDetection();
 
     std::vector<std::vector<float>> getMeanMap() const;
     std::vector<std::vector<float>> getDistanceMapMean() const;
+    std::vector<std::vector<float>> getDistanceMapMin() const;
     std::vector<Subimage> getSubimages() const;
 
     void buildMeanMap(cv::Mat const&);
 
-    void buildMeanDistanceMap(cv::Mat const&, int);
-    void buildMinDistanceMap(cv::Mat const&, int);
+    void buildMeanDistanceMap(cv::Mat const&);
+    void buildMinDistanceMap(cv::Mat const&);
     void buildStdDevDistanceMap(cv::Mat const&);
+
+    void detectObstacles();
 
   private:
     cv::Mat                         mDispMap;
+    int                             mBinning;
     std::vector<cv::Point>          mSamplepoints;
     std::vector<Subimage>           mSubimages;
     std::vector<std::vector<float>> mDistanceMapMean;
+    std::vector<std::vector<float>> mDistanceMapMin;
     std::vector<std::vector<float>> mMeanMap;
 };
 

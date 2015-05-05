@@ -3,14 +3,16 @@
 
 obstacleDetection::obstacleDetection():
   mDispMap(),
+  mBinning(0),
   mSamplepoints(),
   mSubimages(),
   mDistanceMapMean(),
   mMeanMap()
 {}
 
-obstacleDetection::obstacleDetection(cv::Mat const& disparityMap, int const& binning):
+obstacleDetection::obstacleDetection(cv::Mat const& disparityMap, int binning):
   mDispMap(disparityMap),
+  mBinning(binning),
   mSamplepoints(),
   mSubimages(),
   mDistanceMapMean(),
@@ -40,6 +42,11 @@ std::vector<std::vector<float>> obstacleDetection::getDistanceMapMean() const
   return mDistanceMapMean;
 }
 
+std::vector<std::vector<float>> obstacleDetection::getDistanceMapMin() const
+{
+  return mDistanceMapMin;
+}
+
 std::vector<Subimage> obstacleDetection::getSubimages() const
 {
   return mSubimages;
@@ -58,22 +65,12 @@ void obstacleDetection::buildMeanMap(cv::Mat const& Q)
       float mean = mSubimages[i].getSubdividedImages()[j].calcMean();
       meanStorage.push_back(mean);
     }
-  }
-  std::vector<float> temp;
-  for (unsigned int i = 0; i < meanStorage.size(); ++i)
-  {
-    temp.push_back(meanStorage[i]);
-    if (i % 9 == 0)
-    {
-      mMeanMap.push_back(temp);
-      temp.clear();
-    }
+    mMeanMap.push_back(meanStorage);
+    meanStorage.clear();
   }
 }
- 
 
-
-void obstacleDetection::buildMeanDistanceMap(cv::Mat const& Q,int binning)
+void obstacleDetection::buildMeanDistanceMap(cv::Mat const& Q)
 {
   unsigned int numSubimages = mSubimages.size();
   std::vector<float> distanceStorage;
@@ -83,7 +80,7 @@ void obstacleDetection::buildMeanDistanceMap(cv::Mat const& Q,int binning)
     for (unsigned int j = 0; j < numSubimages; ++j)
     {
       float mean = mSubimages[i].getSubdividedImages()[j].calcMean();
-      float distance = Utility::calcDistance(Q, mean,binning);
+      float distance = Utility::calcDistance(Q, mean,mBinning);
       distanceStorage.push_back(distance);
     }
     mDistanceMapMean.push_back(distanceStorage);
@@ -92,7 +89,7 @@ void obstacleDetection::buildMeanDistanceMap(cv::Mat const& Q,int binning)
 }
 
 
-void obstacleDetection::buildMinDistanceMap(cv::Mat const& Q, int binning)
+void obstacleDetection::buildMinDistanceMap(cv::Mat const& Q)
 {
   unsigned int numSubimages = mSubimages.size();
   std::vector<float> distanceStorage;
@@ -101,14 +98,22 @@ void obstacleDetection::buildMinDistanceMap(cv::Mat const& Q, int binning)
   {
     for (unsigned int j = 0; j < numSubimages; ++j)
     {
-      float mean = mSubimages[i].getSubdividedImages()[j].calcMeanStdDev().first[0];
-      float distance = Utility::calcDistance(Q, mean, binning);
+      //have to use the max value because of distance calculation
+      float min = mSubimages[i].getSubdividedImages()[j].calcMinMax().second;
+      float distance = Utility::calcDistance(Q, min, mBinning);
       distanceStorage.push_back(distance);
     }
+    mDistanceMapMin.push_back(distanceStorage);
+    distanceStorage.clear();
   }
 }
 
 void obstacleDetection::buildStdDevDistanceMap(cv::Mat const& Q)
+{
+
+}
+
+void detectObstacles()
 {
 
 }
