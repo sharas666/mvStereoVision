@@ -154,45 +154,34 @@ int main(int argc, char* argv[])
     cv::imshow("Left", s.mLeft);
     cv::imshow("Right", s.mRight);
 
+    // mean map storage
+    std::vector<std::vector<float>> v;
+
     if(newDisparityMap)
     {
+      obstacleDetection obst(dMapRaw, binning);
+      obst.buildMeanDistanceMap(Q_32F);
+      obst.buildMinDistanceMap(Q_32F);
+      v = obst.getDistanceMapMean();
+      // v = obst.getDistanceMapMin();
+      if (binning == 0)
+      {
+        obst.detectObstacles(MEAN_DISTANCE, std::make_pair(1.2,2.0));
+        // obst.detectObstacles(MIN_DISTANCE, std::make_pair(1.2,2.0));
+      }
+      else
+      {
+        obst.detectObstacles(MEAN_DISTANCE, std::make_pair(0.8,1.2));
+        // obst.detectObstacles(MIN_DISTANCE, std::make_pair(0.8,1.2));
+      }
+
+      // display stuff
       cv::normalize(dMapRaw,dMapNorm,0,255,cv::NORM_MINMAX, CV_8U);
       cv::cvtColor(dMapNorm,dMapNorm,CV_GRAY2BGR);
       View::drawObstacleGrid(dMapNorm, binning);
       View::drawSubimageGrid(dMapNorm, binning);
       cv::imshow("SGBM",dMapNorm);
       newDisparityMap = false;
-    }
-
-    std::vector<std::vector<float>> v;
-    std::vector<std::vector<float>> m;
-    if (frame > 2) {
-      Subimage sub = Subimage(dMapRaw, 0);
-      sub.subdivide();
-      std::vector<Subimage> subvec = sub.getSubdividedImages();
-      for (unsigned int i = 0; i < subvec.size(); ++i)
-      {
-        subvec[i].subdivide();
-      }
-
-      //float mean = subvec[4].getSubdividedImages()[4].calcMean();
-      //std::cout << Utility::calcDistance(Q_32F, mean, binning) << std::endl;
-
-      obstacleDetection obst(dMapRaw, binning);
-      obst.buildMeanDistanceMap(Q_32F);
-      obst.buildMinDistanceMap(Q_32F);
-      // v = obst.getDistanceMapMean();
-      v = obst.getDistanceMapMin();
-      if (binning == 0)
-      {
-        // obst.detectObstacles(MEAN_DISTANCE, std::make_pair(1.2,2.0));
-        obst.detectObstacles(MIN_DISTANCE, std::make_pair(1.2,2.0));
-      }
-      else
-      {
-        // obst.detectObstacles(MEAN_DISTANCE, std::make_pair(0.8,1.2));
-        obst.detectObstacles(MIN_DISTANCE, std::make_pair(0.8,1.2));
-      }
     }
 
     // notify the thread to start 
@@ -217,7 +206,7 @@ int main(int argc, char* argv[])
           if (binning == 0)
             binning = 1;
           else
-            binning =0;
+            binning = 0;
           left->setBinning(binning);
           right->setBinning(binning);
           stereo.resetRectification();
@@ -225,17 +214,6 @@ int main(int argc, char* argv[])
         case 'f':
           std::cout<<left->getFramerate()<<" "<<right->getFramerate()<<std::endl;
           break;
-        case 'd':
-        {
-          obstacleDetection obst(dMapRaw, binning);
-          obst.buildMeanDistanceMap(Q_32F);
-          std::vector<std::vector<float>> v = obst.getDistanceMapMean();
-        }
-        case 'a':
-        {
-          Subimage sub(dMapRaw, 0);
-          break;
-        }
         case '0':
           for (int i = 0; i < 9; ++i)
           {
