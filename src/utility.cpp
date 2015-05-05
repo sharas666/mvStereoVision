@@ -197,7 +197,13 @@ float Utility::calcDistance(cv::Mat const& Q, float const& dispValue, int binnin
     coordinateQ.release();
 
     // because binning is half of the image
-    return distance/2;
+
+    if(cvIsInf(distance))
+    {
+      return distance;
+    }
+    else
+      return distance/2;
   }
 }
 
@@ -275,7 +281,6 @@ std::pair<float,float> Utility::calcMinMaxDisparity(cv::Mat const& matrix)
   } 
   auto min = std::min_element(std::begin(elements), std::end(elements));
   auto max = std::max_element(std::begin(elements), std::end(elements));
-  auto returnValues = std::make_pair(*min,*max);
-  return returnValues;
+  return std::make_pair(*min,*max);
 }
 
