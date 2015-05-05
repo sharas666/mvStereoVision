@@ -259,3 +259,23 @@ float Utility::calcMeanDisparity(cv::Mat const& matrix)
   }
 }
 
+std::pair<float,float> Utility::calcMinMaxDisparity(cv::Mat const& matrix)
+{
+  std::vector<float> elements;
+  for(int r = 0; r < matrix.rows; ++r)
+  {
+    for(int c = 0; c < matrix.cols; ++c)
+    {
+      if(static_cast<float>(matrix.at<short>(r,c)) > 0)
+      {
+        float current = static_cast<float>(matrix.at<short>(r,c));
+        elements.push_back(current);
+      }
+    }
+  } 
+  auto min = std::min_element(std::begin(elements), std::end(elements));
+  auto max = std::max_element(std::begin(elements), std::end(elements));
+  auto returnValues = std::make_pair(*min,*max);
+  return returnValues;
+}
+

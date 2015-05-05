@@ -65,6 +65,8 @@ namespace Utility
 	void calcDistanceMap(cv::Mat &, cv::Mat const&, cv::Mat const&,int);
 
   float calcMeanDisparity(cv::Mat const&);
+  std::pair<float,float> calcMinMaxDisparity(cv::Mat const&);
+
 }
 
 #endif //__UTILITY__H__
