@@ -71,22 +71,8 @@ float Subimage::calcMean() const
 
 std::pair<float,float> Subimage::calcMinMax() const
 {
-  std::vector<float> elements;
-  for(int r = 0; r < mSubimage.rows; ++r)
-  {
-    for(int c = 0; c < mSubimage.cols; ++c)
-    {
-      if(static_cast<float>(mSubimage.at<short>(r,c)) > 0)
-      {
-        float current = static_cast<float>(mSubimage.at<short>(r,c));
-        elements.push_back(current);
-      }
-    }
-  } 
-  auto min = std::min_element(std::begin(elements), std::end(elements));
-  auto max = std::max_element(std::begin(elements), std::end(elements));
-  auto returnValues = std::make_pair(*min,*max);
-  return returnValues;
+  auto minMax = Utility::calcMinMaxDisparity(mSubimage);
+  return minMax;
 }
 
 void Subimage::subdivide()
