@@ -9,6 +9,7 @@
 #include "easylogging++.h"
 #include "subimage.h"
 #include "obstacleDetection.h"
+#include "view.h"
 
 #include <thread>
 #include <mutex>
@@ -94,29 +95,6 @@ void initWindows()
   cv::setMouseCallback("SGBM", mouseClick, NULL);
 }
 
-void drawObstacleGrid(cv::Mat &stream, int binning)
-{
-  cv::cvtColor(stream,stream,CV_GRAY2BGR);
-  if(binning == 0) 
-  {
-    //vertical lines
-    cv::line(stream, cv::Point(250,0), cv::Point(250,stream.rows), cv::Scalar(0,0,255), 1);
-    cv::line(stream, cv::Point(502,0), cv::Point(502,stream.rows), cv::Scalar(0,0,255), 1);
-    //horizontal lines
-    cv::line(stream, cv::Point(0,160), cv::Point(stream.cols, 160), cv::Scalar(0,0,255), 1);
-    cv::line(stream, cv::Point(0,320), cv::Point(stream.cols, 320), cv::Scalar(0,0,255), 1);
-  }
-  else
-  {
-    //vertical lines
-    cv::line(stream, cv::Point(250/2,0), cv::Point(250/2,stream.rows), cv::Scalar(0,0,255), 1);
-    cv::line(stream, cv::Point(502/2,0), cv::Point(502/2,stream.rows), cv::Scalar(0,0,255), 1);
-    //horizontal lines
-    cv::line(stream, cv::Point(0,160/2), cv::Point(stream.cols, 160/2), cv::Scalar(0,0,255), 1);
-    cv::line(stream, cv::Point(0,320/2), cv::Point(stream.cols, 320/2), cv::Scalar(0,0,255), 1);
-  }
-}
-
 
 int main(int argc, char* argv[])
 {
@@ -174,7 +152,9 @@ int main(int argc, char* argv[])
     if(newDisparityMap)
     {
       cv::normalize(dMapRaw,dMapNorm,0,255,cv::NORM_MINMAX, CV_8U);
-      drawObstacleGrid(dMapNorm, binning);
+      cv::cvtColor(dMapNorm,dMapNorm,CV_GRAY2BGR);
+      View::drawObstacleGrid(dMapNorm, binning);
+      View::drawSubimageGrid(dMapNorm, binning);
       cv::imshow("SGBM",dMapNorm);
       newDisparityMap = false;
     }
@@ -190,13 +170,12 @@ int main(int argc, char* argv[])
         subvec[i].subdivide();
       }
 
-      // float mean = subvec[4].getSubdividedImages()[4].calcMean();
-      // std::cout << Utility::calcDistance(Q_32F, mean) << std::endl;
+      float mean = subvec[4].getSubdividedImages()[4].calcMean();
+      //std::cout << Utility::calcDistance(Q_32F, mean, binning) << std::endl;
 
       obstacleDetection obst(dMapRaw, binning);
       obst.buildMeanDistanceMap(Q_32F, binning);
       v = obst.getDistanceMapMean();
-      m = obst.getMeanMap();
     }
 
     // notify the thread to start 
@@ -234,15 +213,11 @@ int main(int argc, char* argv[])
           obstacleDetection obst(dMapRaw, binning);
           obst.buildMeanDistanceMap(Q_32F,binning);
           std::vector<std::vector<float>> v = obst.getDistanceMapMean();
-          // for (unsigned int i = 0; i < v.size(); ++i)
-          // {
-          //   std::cout << "____" << i << "____" << std::endl;
-          //   for (unsigned int j = 0; j < v.size(); ++j)
-          //   {
-          //     std::cout << j << ": " << v[i][j] << std::endl;
-          //   }
-          //   std::cout << "" << std::endl;
-          // }
+        }
+        case 'a':
+        {
+          Subimage sub(dMapRaw, 0);
+          break;
         }
         case '0':
           for (int i = 0; i < 9; ++i)
