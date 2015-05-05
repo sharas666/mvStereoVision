@@ -2,6 +2,7 @@
 
 Subimage::Subimage():
   mId(0),
+  mTag("SUBIMAGE\t"),
   mSubimage(),
   mSubdividedImages()
 {}
@@ -11,6 +12,7 @@ Subimage::Subimage():
 // without binn: 376x240 --> final subimage sizes: 125x80   100 pts per mSubMatrix  13x8sp
 Subimage::Subimage(cv::Mat const& mat, int const& id):
   mId(id),
+  mTag("SUBIMAGE\t"),
   mSubimage(mat),
   mSubdividedImages()
 {}
@@ -18,6 +20,7 @@ Subimage::Subimage(cv::Mat const& mat, int const& id):
 
 Subimage::~Subimage()
 {
+
   mSubimage.release();
 }
 
@@ -79,6 +82,11 @@ void Subimage::subdivide()
 {
   int width = mSubimage.cols;
   int height = mSubimage.rows;
+
+  if (width == 0 || height == 0)
+  {
+    LOG(INFO)<< mTag <<"Unable to subdivide Subimage. Input Mat Dimensions zero!\n";
+  }
 
   cv::Rect tmpRect;
   cv::Mat tmpMat;

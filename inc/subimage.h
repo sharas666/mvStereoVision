@@ -37,6 +37,7 @@ class Subimage
 
   private:
     int                   mId;
+    std::string           mTag;
     cv::Mat               mSubimage;
     std::vector<Subimage> mSubdividedImages;
 };
