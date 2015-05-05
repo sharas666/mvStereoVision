@@ -120,7 +120,7 @@ void obstacleDetection::buildStdDevDistanceMap(cv::Mat const& Q)
 void obstacleDetection::detectObstacles(int const& mode, std::pair<float,float> const& threshold)
 {
 
-  if (mode == MEAN)
+  if (mode == MEAN_DISTANCE)
   {
     for (unsigned int i = 0; i < mDistanceMapMean.size(); ++i)
     {
@@ -135,5 +135,9 @@ void obstacleDetection::detectObstacles(int const& mode, std::pair<float,float> 
         }
       }
     }
+  }
+  else if (mode == MIN_DISTANCE)
+  {
+    /* code */
   }
 }

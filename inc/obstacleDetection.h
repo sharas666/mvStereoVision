@@ -12,8 +12,8 @@
 
 #include "subimage.h"
 
-#define MEAN_DISPARITY 0
-#define MIN_DISPARITY 1
+#define MEAN_DISTANCE 0
+#define MIN_DISTANCE 1
 #define STDDEV 2
 #define SAMPLE 3
 
