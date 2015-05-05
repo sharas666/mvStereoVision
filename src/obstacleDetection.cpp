@@ -138,6 +138,18 @@ void obstacleDetection::detectObstacles(int const& mode, std::pair<float,float> 
   }
   else if (mode == MIN_DISTANCE)
   {
-    /* code */
+   for (unsigned int i = 0; i < mDistanceMapMean.size(); ++i)
+    {
+      for (unsigned int j = 0; j < mDistanceMapMean[i].size(); ++j)
+      {
+        float minBorder = threshold.first;
+        float maxBorder = threshold.second;
+        float value = mDistanceMapMin[i][j];
+        if (value > minBorder && value < maxBorder)
+        {
+          std::cout << "Obstacle Detected in: " << i << " Subimage:" << j << std::endl;
+        }
+      }
+    }
   }
 }
