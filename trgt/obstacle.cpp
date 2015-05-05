@@ -170,12 +170,13 @@ int main(int argc, char* argv[])
         subvec[i].subdivide();
       }
 
-      float mean = subvec[4].getSubdividedImages()[4].calcMean();
+      //float mean = subvec[4].getSubdividedImages()[4].calcMean();
       //std::cout << Utility::calcDistance(Q_32F, mean, binning) << std::endl;
 
       obstacleDetection obst(dMapRaw, binning);
-      obst.buildMeanDistanceMap(Q_32F, binning);
+      obst.buildMeanDistanceMap(Q_32F);
       v = obst.getDistanceMapMean();
+      m = obst.getDistanceMapMin();
     }
 
     // notify the thread to start 
@@ -211,7 +212,7 @@ int main(int argc, char* argv[])
         case 'd':
         {
           obstacleDetection obst(dMapRaw, binning);
-          obst.buildMeanDistanceMap(Q_32F,binning);
+          obst.buildMeanDistanceMap(Q_32F);
           std::vector<std::vector<float>> v = obst.getDistanceMapMean();
         }
         case 'a':
@@ -224,54 +225,63 @@ int main(int argc, char* argv[])
           {
             std::cout << i << ": " << v[0][i] << std::endl;
           }
+          std::cout << "" << std::endl;
           break;
         case '1':
           for (int i = 0; i < 9; ++i)
           {
             std::cout << i << ": " << v[1][i] << std::endl;
           }
+          std::cout << "" << std::endl;
           break;
         case '2':
           for (int i = 0; i < 9; ++i)
           {
             std::cout << i << ": " << v[2][i] << std::endl;
           }
+          std::cout << "" << std::endl;
           break;
         case '3':
           for (int i = 0; i < 9; ++i)
           {
             std::cout << i << ": " << v[3][i] << std::endl;
           }
+          std::cout << "" << std::endl;
           break;
         case '4':
           for (int i = 0; i < 9; ++i)
           {
             std::cout << i << ": " << v[4][i] << std::endl;
           }
+          std::cout << "" << std::endl;
           break;
         case '5':
           for (int i = 0; i < 9; ++i)
           {
             std::cout << i << ": " << v[5][i] << std::endl;
           }
+          std::cout << "" << std::endl;
           break;
         case '6':
           for (int i = 0; i < 9; ++i)
           {
             std::cout << i << ": " << v[6][i] << std::endl;
           }
+          std::cout << "" << std::endl;
           break;
         case '7':
           for (int i = 0; i < 9; ++i)
           {
             std::cout << i << ": " << v[7][i] << std::endl;
           }
+          std::cout << "" << std::endl;
           break;
         case '8':
           for (int i = 0; i < 9; ++i)
           {
             std::cout << i << ": " << v[8][i] << std::endl;
           }
+          std::cout << "" << std::endl;
           break;
         default:
           std::cout << "Key pressed has no action" <<std::endl;
