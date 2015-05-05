@@ -70,6 +70,7 @@ void obstacleDetection::buildMeanMap(cv::Mat const& Q)
     }
   }
 }
+ 
 
 
 void obstacleDetection::buildMeanDistanceMap(cv::Mat const& Q,int binning)
@@ -85,16 +86,8 @@ void obstacleDetection::buildMeanDistanceMap(cv::Mat const& Q,int binning)
       float distance = Utility::calcDistance(Q, mean,binning);
       distanceStorage.push_back(distance);
     }
-  }
-  std::vector<float> temp;
-  for (unsigned int i = 0; i < distanceStorage.size(); ++i)
-  {
-    temp.push_back(distanceStorage[i]);
-    if (i % 9 == 0)
-    {
-      mDistanceMapMean.push_back(temp);
-      temp.clear();
-    }
+    mDistanceMapMean.push_back(distanceStorage);
+    distanceStorage.clear();
   }
 }
 
