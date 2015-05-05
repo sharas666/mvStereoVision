@@ -82,7 +82,6 @@ bool Utility::initCameras(mvIMPACT::acquire::DeviceManager &devMgr, Camera *&lef
     return false;
   }
 
-
   if(devMgr[0]->serial.read() == "26803878")
   {
     if(devMgr[1]->serial.read() == "26803881")
@@ -219,7 +218,7 @@ void Utility::calcDistanceMap(cv::Mat &distanceMap, cv::Mat const& dMap, cv::Mat
 {
   //TODO:
   // although it is inefficient and slow as ...
-  // fix crash when copying the distances into the mat
+  // TODO: fix crash when copying the distances into the mat
   distanceMap = cv::Mat(dMap.rows, dMap.cols, CV_32F);
   for(int r = 0; r < dMap.rows; ++r)
   {
@@ -248,6 +247,14 @@ float Utility::calcMeanDisparity(cv::Mat const& matrix)
       }
     }
   } 
-  double mean = total / numElements;
-  return mean;
+  // if the matrix appears to be empty because of any reason
+  // return disparity of 1.0 do indicate no value
+  if(total == 0 || numElements == 0){
+    return 1.0;
+  }
+  else
+  {
+    float mean = total / abs(numElements);
+    return mean;
+  }
 }

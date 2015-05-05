@@ -64,9 +64,7 @@ namespace Utility
 	float calcDistance(cv::Mat const&, float const&,int);
 	void calcDistanceMap(cv::Mat &, cv::Mat const&, cv::Mat const&,int);
 
-	float calcMeanDisparity(cv::Mat const&);
-
-
+  float calcMeanDisparity(cv::Mat const&);
 }
 
 #endif //__UTILITY__H__
