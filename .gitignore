@@ -15,3 +15,6 @@ trgt_obj/
 addfiles
 #swap files
 *.swp
+*.aux
+*.log
+*.out
