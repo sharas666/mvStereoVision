@@ -180,7 +180,7 @@ float Utility::calcDistance(cv::Mat const& Q, float const& dispValue, int binnin
 
   if(binning == 0)
   {
-    coordinateQ = (Q/2)*coordinateQ.t();
+    coordinateQ = (Q)*coordinateQ.t();
     coordinateQ/=coordinateQ(3);
   
     float distance = coordinateQ(2)/1000;
@@ -190,15 +190,15 @@ float Utility::calcDistance(cv::Mat const& Q, float const& dispValue, int binnin
   }
   else
   {
-    coordinateQ = Q*coordinateQ.t();
+    coordinateQ = (Q/2)*coordinateQ.t();
     coordinateQ/=coordinateQ(3);
     
     float distance = coordinateQ(2)/1000;
     coordinateQ.release();
 
-    return distance;
+    // because binning is half of the image
+    return distance/2;
   }
-
 }
 
 double Utility::checkSharpness(cv::Mat const& src)
@@ -248,9 +248,9 @@ float Utility::calcMeanDisparity(cv::Mat const& matrix)
     }
   } 
   // if the matrix appears to be empty because of any reason
-  // return disparity of 1.0 do indicate no value
+  // return disparity of 1.0 do indicate infinity
   if(total == 0 || numElements == 0){
-    return 1.0;
+    return 0.0;
   }
   else
   {
@@ -258,3 +258,4 @@ float Utility::calcMeanDisparity(cv::Mat const& matrix)
     return mean;
   }
 }
+
