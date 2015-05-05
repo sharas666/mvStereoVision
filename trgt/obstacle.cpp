@@ -180,15 +180,18 @@ int main(int argc, char* argv[])
 
       obstacleDetection obst(dMapRaw, binning);
       obst.buildMeanDistanceMap(Q_32F);
-      v = obst.getDistanceMapMean();
-      m = obst.getDistanceMapMin();
+      obst.buildMinDistanceMap(Q_32F);
+      // v = obst.getDistanceMapMean();
+      v = obst.getDistanceMapMin();
       if (binning == 0)
       {
-        obst.detectObstacles(MEAN_DISTANCE, std::make_pair(1.2,2.0));
+        // obst.detectObstacles(MEAN_DISTANCE, std::make_pair(1.2,2.0));
+        obst.detectObstacles(MIN_DISTANCE, std::make_pair(1.2,2.0));
       }
       else
       {
-        obst.detectObstacles(MEAN_DISTANCE, std::make_pair(0.8,1.2));
+        // obst.detectObstacles(MEAN_DISTANCE, std::make_pair(0.8,1.2));
+        obst.detectObstacles(MIN_DISTANCE, std::make_pair(0.8,1.2));
       }
     }
 
