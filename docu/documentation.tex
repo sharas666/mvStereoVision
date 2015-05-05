@@ -132,6 +132,27 @@ The images from the left and right cameras are then passed into the \texttt{Ster
 
 The \texttt{Stereosystem} class offers functions to calibrate the cameras with a given set of calibration images, save and load former calibration parameter and return different types of image pairs, namely distorted, undistorted and rectified image pairs.
 
+We use the OpenCV function \texttt{calibrateCamera} to get the so called  \emph{intrinsic paramters}, which are the \emph{camera matrix} and the \emph{distortion coefficients}. The camera matrix $A$ contains the focal length and the principal point. The framework searches for points on a checkerboard grid in some calibration images which contain a calibration object. The calibration object is a checkerboard with known dimensions. The algorithm then calculates the camera matrix and the distortion coefficients such that the object points (the checkerboard intersections)  are collinear and hence, the checkerboard edges are straight.%TODO example undistorted
+
+We made the experience that 10 to 15 images are sufficient for a good calibration. Fewer or more images could downgrade the calibration result. The calibration function returns the root mean square reprojection error (RMS). For a good calibration it should be between 0.1 and 1 pixel. With the Matrix Vision cameras and the wooden calibration object we expect the RMS to be less then 0.2.
+
+\begin{align*}
+A=
+\begin{pmatrix}
+f_x & 0 & c_x\\
+0 & f_y & c_y\\
+0 & 0 & 1
+\end{pmatrix}
+\end{align*}
+
+For the stereo setup the intrinsic parameters are not enough. We need further information about placement and orientation of the cameras to each other for correct rectification. This information is called \emph{extrinsic parameters}. The extrinsic parameters describe the translation and rotation of the right camera to the left camera. We always assume the left camera to be the reference system. With the help of the OpenCV function \texttt{stereoCalibrate} we can determine the extrinsic parameters, the fundamental and essential matrix.
+
+Both together, the intrinsic and extrinsic parameters, are then passed to the \texttt{stereoRectify} function to get the rectified images.%TODO rectified image (with uncropped border)
+
+\bigskip
+For a detailed description of the math implemented in OpenCV please have a look at the \href{http://docs.opencv.org/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html}{3D reconstruction reference from OpenCV}.
+\bigskip
+
 After the \texttt{Stereosystem} class returns the rectified image pairs, they are passed to disparity calculations. At the moment the \texttt{disparity} namespace offers semi-global block matching, block matching and template matching for disparity calculation.
 
 The generated disparity maps can then be used to calculate 3D coordinates. SInce this is just a single function (which is in fact just a single multiplication) we decided to put it into the \texttt{utility} namespace.
