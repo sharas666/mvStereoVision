@@ -15,6 +15,11 @@
 #include <mutex>
 #include <condition_variable>
 
+#define MEAN_DISPARITY 0
+#define MIN_DISPARITY 1
+#define STDDEV 2
+#define SAMPLE 3
+
 INITIALIZE_EASYLOGGINGPP
 bool running = true;
 
@@ -177,6 +182,7 @@ int main(int argc, char* argv[])
       obst.buildMeanDistanceMap(Q_32F);
       v = obst.getDistanceMapMean();
       m = obst.getDistanceMapMin();
+      obst.detectObstacles(MEAN_DISPARITY, std::make_pair(0.8,1.2));
     }
 
     // notify the thread to start 
