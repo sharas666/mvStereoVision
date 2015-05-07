@@ -22,7 +22,7 @@
 \abstract{The major goal of the project \emph{SLAM For UAV's} is to implement a SLAM algorithm on an \emph {\href{http://www.asctec.de/en/uav-uas-drone-products/asctec-pelican/}{AscTec Pelican}}. Since this goal covers several topics, we split the project group and work on different subtopics. In this documentation we describe how a stereo camera system is used to create depth maps, which then can be used for further tasks like obstacle avoidance or 3D reconstruction. We will describe the complete pipe line, from stereo camera images to a depth map and the tools needed.}
 
 \section{Introduction}
-\section{Related Work}
+%\section{Related Work} deleted!
 \section{System Description}
 In this section we will describe the developed system in detail. First we will give an overview of computing depth maps in general. Furthermore,we will list the dependencies of the system. Next we will explain the developed framework and how the single components work with each other.
 
@@ -36,18 +36,85 @@ In this section we will give a rough introduction on how one can generate depth 
 	\item 3D-coordinate calculation
 \end{itemize}
 \subsubsection{Image Preprocessing} %TODO un/distortete/rectified Bilder aufnehmen
-The preprocessing step is done on two levels; one is the single camera and the second is the stereo system. Each image has some distortions due to the camera's lens. This distortions need to be corrected for the further steps. With the help of a calibration pattern we can calibrate the cameras. This will detect and correct distortions. The process is called \emph{undistortion}
+The preprocessing step is done on two levels; one is the single camera and the second is the stereo system. Each image has some distortions due to the camera's lens. This distortions need to be corrected for the further steps. With the help of a calibration pattern we can calibrate the cameras. This will detect and correct distortions. The process is called \emph{undistortion}. 
 
-During the process of depth map estimation we are going to take features in the left image and search them in the right image. But since this is a 2D search domain ($x$ and $y$ direction) it would be nice to ensure that the searched feature in the right image is at least in the same row as in the left image. This process is called \emph{rectification}. After the rectification step, we can assume that the cameras have no horizontal shift anymore. This reduces the feature search problem to a one dimensional (vertical) search problem. Furthermore, under the precondition that there is only a vertical shift and both cameras are identical, we can say that a feature from column $x_{Left}$ is at least at the same position in the right image so it holds that $x_{Right}\geq x_{Left}$. This also reduces the search problem, since the closer $x_{Left}$ is to $x_{Max}$ the smaller is the set of elements to search.
+\begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.45\textwidth}
+                \includegraphics[width=\textwidth]{images/Left_Distorted_calib}
+                \caption{The distorted left image}
+                \label{fig:ex1_left}
+        \end{subfigure}\hfill  
+        \begin{subfigure}[b]{0.45\textwidth}
+                \includegraphics[width=\textwidth]{images/Right_Distorted_calib}
+                \caption{The distorted right Image}
+                \label{fig:ex1_right}
+        \end{subfigure}
+
+       \begin{subfigure}[b]{0.45\textwidth}
+                \includegraphics[width=\textwidth]{images/Left_Undistorted_calib}
+                \caption{The undistorted left image}
+                \label{fig:ex1_left}
+        \end{subfigure}\hfill  
+        \begin{subfigure}[b]{0.45\textwidth}
+                \includegraphics[width=\textwidth]{images/Right_Undistorted_calib}
+                \caption{The undistorted right Image}
+                \label{fig:ex1_right}
+        \end{subfigure}
+        \caption{Camera calibration corrects distortions}\label{fig:undistortion}
+\end{figure}
+
+In Figure \ref{fig:undistortion} the result of the camera calibration is illustrated. It is obvious that the checkerboard edges are curved and the junctions do not have right angles. After the calibration the everything is straight and correct. At the same time it is visible that some information is lost during the calibration, which is due to "unwarping" the image.
+
+\bigskip
+
+During the process of depth map estimation we are going to take features in the left image and search them in the right image. But since this is a 2D search domain ($x$ and $y$ direction) it would be nice to ensure that the searched feature in the right image is at least in the same row as in the left image. This process is called \emph{rectification}. After the rectification step, we can assume that the camera images have no horizontal shift anymore. This reduces the feature search problem to a one dimensional (vertical) search problem. Furthermore, under the precondition that there is only a vertical shift and both cameras are identical, we can say that a feature from column $x_{Left}$ is at least at the same position in the right image so it holds that $x_{Right}\geq x_{Left}$. This also reduces the search problem, since the closer $x_{Left}$ is to $x_{Max}$ the smaller is the set of elements to search in.
+
+\paragraph{Epipolar geometry} We will explain the outcome of the rectification with the help of the epipolar geometry. Each 3D object point is mapped into the 2D image of both cameras. The object point $O$ defines an image point $P(x_l,y_l)$ in the left image. The question is now, where is the corresponding point in the right image? To find the corresponding point one would have to search the epipolar line of that image point in the right image. This line is determined by the projection of the line $O$--$P(x_l,y_l)$ on the image plane of the right image. But this would mean that we would have to calculate the epipolar line for each pixel and search along this line for the corresponding point. The rectification simplifies the search such that the image planes are "corrected" in such a way that all epipolar lines are parallel and horizontal. This ensures that the corresponding point is on the same row as the source point. The process is illustrated in figure \ref{fig:epipolar}
+ 
+ \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{images/epipolar}
+        \caption{Epipolar geometry and image rectification\protect\footnotemark}
+        \label{fig:epipolar}
+\end{figure}
+\footnotetext{Image courtesy \href{http://www.intechopen.com/source/html/16684/media/image4.jpg}{http://www.intechopen.com/source/html/16684/media/image4.jpg}}
+
+The search problem is shown in figure \ref{fig:rectification}. The red lines connect related features in the left and right image. The yellow line shows the medial pixel row; therefore, it is perfectly vertically. One can see that the red lines and the yellow line in Figure \ref{fig:rect_1} are not parallel. This indicates that the related features are not in the same row. Thus, several rows has to be searched for corresponding features; a 2D search problem. Figure \ref{fig:rect_2} shows the rectified images. During the rectification the image is stretched, warped etc. to parallelize and horizontalize the epipolar lines. The blue rectangle indicates the \emph{valid} area of the rectified images. This is the area where no black pixels, which are introduced during rectification, are part of the image. Figure \ref{fig:rect_3} shows the cropped and scaled rectified image. All corresponding points are now on the same row.
+
+After the rectification process the 
+
+
+
+\begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.9\textwidth}
+                \includegraphics[width=\textwidth]{images/undistort}
+                \caption{Corresponding points in the undistorted image}
+                \label{fig:rect_1}
+        \end{subfigure}\\
+        \begin{subfigure}[b]{0.9\textwidth}
+                \includegraphics[width=\textwidth]{images/rect_uncropped}
+                \caption{The corresponding points in the rectified images}
+                \label{fig:rect_2}
+        \end{subfigure}
+
+       \begin{subfigure}[b]{0.9\textwidth}
+                \includegraphics[width=\textwidth]{images/rect_cropped}
+                \caption{The corresponding points in the cropped and scaled rectified images}
+                \label{fig:rect_3}
+        \end{subfigure}
+         \caption{Image rectification result }\label{fig:rectification}
+\end{figure}
 
 \subsubsection{Similarity Measure}
 At this step we assume that we have undistorted and rectified images. Now we compare the left and right images. If the horizontal shift of an object from the left to the right image is large, the object is near the cameras. If the horizontal shift moves towards zero, the object is far away from the origin (the cameras).
 
-But how can one determine the horizontal shift of an object? There exist plenty possibilities to do this. We tried three different approaches: template matching with different similarity measures, block matching and semi-global block matching. The result of each is a map with integers. The map has the same size as the two images and contains for each pixel $p(x,y)$ a value (the disparity) which expresses the horizontal shift in pixels from the left to the right image. In our framework we use the semi-global block matching (SGBM) since it has the best tradeoff between time and accuracy. The block matching mechanism is a little bit faster but very noisy at the moment. The template matching strategy takes far to long to evaluate a single picture pair. 
+But how can one determine the horizontal shift of an object? There exist plenty possibilities to do this. We tried three different approaches: template matching with different similarity measures, block matching and semi-global block matching. The result of each is a map with integer values. The map has the same size as the two images and contains for each pixel $p(x,y)$ a value (the disparity) which expresses the horizontal shift in pixels from the left to the right image. In our framework we use the semi-global block matching (SGBM) since it has the best tradeoff between time and accuracy. The block matching mechanism is a little bit faster but very noisy at the moment. The template matching strategy takes far to long to evaluate a single picture pair. 
 
-The SGBM tries to minimize a global energy function through different paths to the current pixel. Please have a look on \cite{hirschmuller2005accurate} and \cite{hirschmuller2008stereo} for further reading on the semi global matching. The SGBM extends the explained semi-global matching to a faster semi-global block matching.
+The SGBM tries to minimize a global energy function through different paths to the current pixel/block. Therefore different parameters has to be passed to the algorithm. Please have a look on \cite{hirschmuller2005accurate} and \cite{hirschmuller2008stereo} for further reading on the semi global matching. The SGBM extends the explained semi-global matching to a faster semi-global block matching. The SGBM is implemented in the OpenCV framework.
 
-Furthermore the SGBM guarantees smooth disparity maps with closed shapes. Figure \ref{fig:ex1_sgbm} shows the input and the result of the SGBM disparity calculation.
+Furthermore the SGBM guarantees smooth disparity maps with closed shapes (depending on the parameters passed). Figure \ref{fig:ex1_sgbm} shows the input and the result of the SGBM disparity calculation.
 
 \begin{figure}[H]
         \centering
@@ -162,7 +229,7 @@ After the \texttt{Stereosystem} class returns the rectified image pairs, they ar
 The generated disparity maps can then be used to calculate 3D coordinates. Since this is just a single function (which is in fact just a single multiplication) we decided to put it into the \texttt{utility} namespace.
 
 \bigskip
-For several examples please have a look into the \texttt{example} directory or at the appendix. %TODO create examples
+For some examples how the framework us used for image acquisition and disparity calculation please have a look into the \texttt{example/} directory. %TODO comment examples
 
 
 \section{Evaluation}
