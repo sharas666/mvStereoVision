@@ -40,6 +40,12 @@ images: directories $(OBJ)
 	$(CC) $(OBJ) $(TARGETOBJDIR)/images.o -o $(BINDIR)/images $(LIB_PATH) $(LIBS)
 	echo Linking complete!
 
+disparity: directories $(OBJ)
+	$(CC) $(CFLAGS) $(INC_PATH) ./disparity.cpp -o $(TARGETOBJDIR)/disparity.o
+	echo Compiled disparity.cpp successfully!
+	$(CC) $(OBJ) $(TARGETOBJDIR)/disparity.o -o $(BINDIR)/disparity $(LIB_PATH) $(LIBS)
+	echo Linking complete!
+
 directories:
 	${MKDIR_P} ${OBJDIR}
 	${MKDIR_P} ${BINDIR}
