@@ -233,6 +233,37 @@ For some examples how the framework us used for image acquisition and disparity 
 
 
 \section{Evaluation}
+In order to evaluate our system we used the tools described before in Hardware and Dependencies. The Disto was aligned beyond the left camera sensor. Using this setup we could measure our distances using the written Framework and check the values using the laser measurement. Basically we tested our Setup in three different ways:
+
+\begin{enumerate}
+  \item Absolute measurements from the Disto to an object placed in the room
+  \item Relative measurements between two objects placed in the room
+  \item Obstacle size measurements to determine the minimum reckognizable size of an object
+\end{enumerate}
+
+These tests will be explained and evaluated in the following sections.
+
+\subsection{Absolute measurements}
+For the absolute measurements we placed obstacles in the room starting from 8.4 meters in 0.6m steps. The results are visualized in the following figures:
+
+BAR CHART
+
+TABLE 
+
++When taking a look at the outcomes of the absolute test it is clear to see that the drift is quiet large. The maximum difference between camera and laser data is just about $0,172$ m in just one case the minimum value was about $-0,0058$ cm. Although the maximum drivt seems quiet high, the final mean of $-0,03$ m shows that the accuracy of our system is quiet good.
+
+\subsection{Relative measurements}
+For the relative test we measured the distance from our system to two different obstacles in different distances to each other. The difference of the two measured distances is our final value:
+
+BARCHART
+
+TABLE
+
+\subsection{Obstacle size measurements}
+In order to measure the size of a reckognizable object we used cardboard circles attached to a translucent plastic rod.
+
+die tests muessen wir nochmal machen, sone tabelle dafuer waere schon echt nice.
+
 \section{Discussion}
 \section{Future Work}
 
