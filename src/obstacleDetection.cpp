@@ -148,7 +148,7 @@ void obstacleDetection::detectObstacles(int const& mode, std::pair<float,float> 
         float value = mDistanceMapMean[i][j];
         if (value > minBorder && value < maxBorder)
         {
-          // std::cout << "Obstacle Detected in: " << i << " Subimage:" << j << std::endl;
+          std::cout << "Obstacle Detected in: " << i << " Subimage:" << j << std::endl;
         }
       }
     }
@@ -164,7 +164,7 @@ void obstacleDetection::detectObstacles(int const& mode, std::pair<float,float> 
         float value = mDistanceMapMin[i][j];
         if (value > minBorder && value < maxBorder)
         {
-          // std::cout << "Obstacle Detected in: " << i << " Subimage:" << j << std::endl;
+          std::cout << "Obstacle Detected in: " << i << " Subimage:" << j << std::endl;
         }
       }
     }

@@ -161,7 +161,7 @@ int main(int argc, char* argv[])
     {
       obstacleDetection obst(dMapRaw, binning);
       obst.buildMeanDistanceMap(Q_32F);
-      obst.buildMinDistanceMap(Q_32F);
+      //obst.buildMinDistanceMap(Q_32F);
       v = obst.getDistanceMapMean();
       // v = obst.getDistanceMapMin();
       if (binning == 0)

@@ -283,4 +283,3 @@ std::pair<float,float> Utility::calcMinMaxDisparity(cv::Mat const& matrix)
   auto max = std::max_element(std::begin(elements), std::end(elements));
   return std::make_pair(*min,*max);
 }
-
