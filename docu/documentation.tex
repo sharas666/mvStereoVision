@@ -22,9 +22,10 @@
 \abstract{The major goal of the project \emph{SLAM For UAV's} is to implement a SLAM algorithm on an \emph {\href{http://www.asctec.de/en/uav-uas-drone-products/asctec-pelican/}{AscTec Pelican}}. Since this goal covers several topics, we split the project group and work on different subtopics. In this documentation we describe how a stereo camera system is used to create depth maps, which then can be used for further tasks like obstacle avoidance or 3D reconstruction. We will describe the complete pipe line, from stereo camera images to a depth map and the tools needed.}
 
 \section{Introduction}
+In the project SLAM 4 UAV's the main goal is to realize a SLAM implementation on a UAV. But before we can start with the actual SLAM task we needed some modules in advance. One of the needed modules is an obstacle avoidance. The UAV shall autonomous fly around in an unknown environment; therefore the need of obstacle detection, avoidance and tracking is obvious. We decided to use information of a stereo camera setup attached to the UAV to compute disparity maps, which then are utilized to calculate distances. It is convincing to use the camera information, since this information is also useful for feature detection, optical flow tracking, 3D reconstruction and monitoring by the flight operator. During the project, we developed an easy to use and easy to further improve framework which uses the state of the art semi-global matching algorithm which is in the top ten of the \href{http://vision.middlebury.edu/stereo/eval3/}{Middlebury Stereo Evaluation}. At the moment the system runs in real time when using half the camera resolution of 376x240. Using the full resolution 752x480 approximately 10-15 fps were reached on a Intel® Core™ i5-4200U CPU @ 1.60GHz.
 %\section{Related Work} deleted!
 \section{System Description}
-In this section we will describe the developed system in detail. First we will give an overview of computing depth maps in general. Furthermore,we will list the dependencies of the system. Next we will explain the developed framework and how the single components work with each other.
+In this section we will describe the developed system. First we will give an overview of computing depth maps in general. Furthermore,we will list the dependencies of the system. Next we will explain the developed framework and how the single components work with each other.
 
 Although we will outline the pipeline of generating a depth image from a stereo system, we expect the reader to inform oneself about single steps and conventional knowledge in computer vision.
 
@@ -174,7 +175,7 @@ This can be done with every pixel $(x,y)$ which has a valid disparity value $d$.
 
 \bigskip This three steps form the rough pipe line to generate depth maps from stereo camera systems. In the further sections we will explain the developed framework.
 
-\subsection{Hardware and Dependencies}  
+\subsection{Hardware and Dependencies}\label{sec:hardware}
 The AscTec Pelican is equipped with two  \emph{\href{http://www.matrix-vision.com/USB2.0-single-board-camera-mvbluefox-mlc.html?camera=mvBlueFOX-MLC200wC&selectInterface=Alle&selectMpixels=Alle&selectFps=Alle&selectSensor=Alle&selectColor=Alle&selectSize=Alle&selectShutter=Alle&selectModel=Alle&col=1&row=0}{mvBlueFOX -- MLC 200w}} cameras from \emph{\href{http://www.matrix-vision.com/home-en.html}{Matrix Vision}}. To use the cameras one need to download and install the \href{http://www.matrix-vision.com/programming-interface-mvimpact-acquire.html}{mvIMPACT Acquire SDK}. This SDK comes with the required drivers and a API for several programming languages such as C/C++, C\# etc. 
 
 The system uses the SDK just for image acquisition, either in full resolution (752x480) or in binning mode with half resolution (376x240).
@@ -233,15 +234,17 @@ For some examples how the framework us used for image acquisition and disparity 
 
 
 \section{Evaluation}
-In order to evaluate our system we used the tools described before in Hardware and Dependencies. The Disto was aligned beyond the left camera sensor. Using this setup we could measure our distances using the written Framework and check the values using the laser measurement. Basically we tested our Setup in three different ways:
+In order to evaluate our system we used the tools described in section \ref{sec:hardware}. We used a laser distance meter (LDM) as reference. 
+
+The laser distance meter was aligned beyond the left camera sensor. Using this setup we could measure our distances using the developed framework and check the values using the output of the LDM as reference measurement. Basically we tested our Setup in three different ways:
 
 \begin{enumerate}
-  \item Absolute measurements from the Disto to an object placed in the room
+  \item Absolute measurements to an object placed in the room
   \item Relative measurements between two objects placed in the room
-  \item Obstacle size measurements to determine the minimum reckognizable size of an object
+  \item Obstacle size measurements to determine the minimum recognizable size of an object
 \end{enumerate}
 
-These tests will be explained and evaluated in the following sections.
+These tests will be explained and evaluated in the following sections. During the tests we saw the camera images, the disparity map an the calculated distance for a point inside the disparity map. We were able to adjust the exposure time and the number of disparity parameter to match the given environmental characteristics.
 
 \subsection{Absolute measurements}
 For the absolute measurements we placed obstacles in the room starting from 8.4 meters in 0.6m steps. The results are visualized in the following figures:
@@ -250,7 +253,7 @@ BAR CHART
 
 TABLE 
 
-+When taking a look at the outcomes of the absolute test it is clear to see that the drift is quiet large. The maximum difference between camera and laser data is just about $0,172$ m in just one case the minimum value was about $-0,0058$ cm. Although the maximum drivt seems quiet high, the final mean of $-0,03$ m shows that the accuracy of our system is quiet good.
++When taking a look at the outcomes of the absolute test it is clear to see that the drift is quiet large. The maximum difference between camera and laser data is just about $0,172$ m in just one case the minimum value was about $-0,0058$ cm. Although the maximum drift seems quiet high, the final mean of $-0,03$ m shows that the accuracy of our system is quiet good.
 
 \subsection{Relative measurements}
 For the relative test we measured the distance from our system to two different obstacles in different distances to each other. The difference of the two measured distances is our final value:
@@ -264,8 +267,11 @@ In order to measure the size of a reckognizable object we used cardboard circles
 
 die tests muessen wir nochmal machen, sone tabelle dafuer waere schon echt nice.
 
-\section{Discussion}
+%\section{Discussion}
 \section{Future Work}
+%integrate in ROS/UAV
+%obstacle detection,tracking avoidance
+%...?
 
 \nocite{*}
 \bibliographystyle{acm}
