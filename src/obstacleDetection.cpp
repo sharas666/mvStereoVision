@@ -9,6 +9,7 @@ obstacleDetection::obstacleDetection():
   mSubimages(),
   mDistanceMapMean(),
   mDistanceMapMin(),
+  mDistanceMapStdDev(),
   mMeanMap()
 {}
 
@@ -20,6 +21,7 @@ obstacleDetection::obstacleDetection(cv::Mat const& disparityMap, int binning):
   mSubimages(),
   mDistanceMapMean(),
   mDistanceMapMin(),
+  mDistanceMapStdDev(),
   mMeanMap()
 {
   //built the Subimage 'tree'
@@ -54,6 +56,11 @@ std::vector<std::vector<float>> obstacleDetection::getDistanceMapMean() const
 std::vector<std::vector<float>> obstacleDetection::getDistanceMapMin() const
 {
   return mDistanceMapMin;
+}
+
+std::vector<std::vector<float>> obstacleDetection::getDistanceMapStdDev() const
+{
+  return mDistanceMapStdDev;
 }
 
 std::vector<Subimage> obstacleDetection::getSubimages() const
@@ -131,7 +138,25 @@ void obstacleDetection::buildMinDistanceMap(cv::Mat const& Q)
 
 void obstacleDetection::buildStdDevDistanceMap(cv::Mat const& Q)
 {
+  unsigned int numSubimages = mSubimages.size();
+  if (numSubimages == 0)
+  {
+    LOG(INFO)<< mTag <<"Unable to build Min-Distance-Map. No Subimages provided\n";
+  }
 
+  std::vector<float> distanceStorage;
+  for (unsigned int i = 0; i < numSubimages; ++i)
+  {
+    for (unsigned int j = 0; j < numSubimages; ++j)
+    {
+      //have to use the max value because of distance calculation
+      float stddev = mSubimages[i].getSubdividedImages()[j].calcMeanStdDev().first[0];
+      //float distance = Utility::calcDistance(Q, min, mBinning);
+      distanceStorage.push_back(stddev);
+    }
+    mDistanceMapStdDev.push_back(distanceStorage);
+    distanceStorage.clear();
+  }
 }
 
 void obstacleDetection::detectObstacles(int const& mode, std::pair<float,float> const& threshold)
@@ -154,6 +179,22 @@ void obstacleDetection::detectObstacles(int const& mode, std::pair<float,float> 
     }
   }
   else if (mode == MIN_DISTANCE)
+  {
+   for (unsigned int i = 0; i < mDistanceMapMean.size(); ++i)
+    {
+      for (unsigned int j = 0; j < mDistanceMapMean[i].size(); ++j)
+      {
+        float minBorder = threshold.first;
+        float maxBorder = threshold.second;
+        float value = mDistanceMapMin[i][j];
+        if (value > minBorder && value < maxBorder)
+        {
+          std::cout << "Obstacle Detected in: " << i << " Subimage:" << j << std::endl;
+        }
+      }
+    }
+  }
+  else if (mode == STDDEV)
   {
    for (unsigned int i = 0; i < mDistanceMapMean.size(); ++i)
     {

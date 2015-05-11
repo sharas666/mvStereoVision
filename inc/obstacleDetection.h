@@ -27,6 +27,7 @@ class obstacleDetection
     std::vector<std::vector<float>> getMeanMap() const;
     std::vector<std::vector<float>> getDistanceMapMean() const;
     std::vector<std::vector<float>> getDistanceMapMin() const;
+    std::vector<std::vector<float>> getDistanceMapStdDev() const;
     std::vector<Subimage> getSubimages() const;
 
     void buildMeanMap(cv::Mat const&);
@@ -45,6 +46,7 @@ class obstacleDetection
     std::vector<Subimage>           mSubimages;
     std::vector<std::vector<float>> mDistanceMapMean;
     std::vector<std::vector<float>> mDistanceMapMin;
+    std::vector<std::vector<float>> mDistanceMapStdDev;
     std::vector<std::vector<float>> mMeanMap;
 };
 
