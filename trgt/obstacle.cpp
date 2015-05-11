@@ -160,10 +160,12 @@ int main(int argc, char* argv[])
     if(newDisparityMap)
     {
       obstacleDetection obst(dMapRaw, binning);
-      obst.buildMeanDistanceMap(Q_32F);
+      //obst.buildMeanDistanceMap(Q_32F);
       //obst.buildMinDistanceMap(Q_32F);
-      v = obst.getDistanceMapMean();
+      obst.buildStdDevDistanceMap(Q_32F);
+      // v = obst.getDistanceMapMean();
       // v = obst.getDistanceMapMin();
+      v = obst.getDistanceMapStdDev();
       if (binning == 0)
       {
         obst.detectObstacles(MEAN_DISTANCE, std::make_pair(1.2,2.0));

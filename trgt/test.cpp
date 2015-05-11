@@ -9,6 +9,7 @@
 #include "easylogging++.h"
 #include "subimage.h"
 #include "obstacleDetection.h"
+#include "view.h"
 
 #include <thread>
 #include <mutex>
@@ -18,29 +19,6 @@ INITIALIZE_EASYLOGGINGPP
 
 cv::Mat Q, Q_32F;
 cv::Mat dMapRaw, dMapNorm;
-
-void drawObstacleGrid(cv::Mat &stream, int binning)
-{
-  cv::cvtColor(stream,stream,CV_GRAY2BGR);
-  if(binning == 0) 
-  {
-    //vertical lines
-    cv::line(stream, cv::Point(250,0), cv::Point(250,stream.rows), cv::Scalar(0,0,255), 1);
-    cv::line(stream, cv::Point(502,0), cv::Point(502,stream.rows), cv::Scalar(0,0,255), 1);
-    //horizontal lines
-    cv::line(stream, cv::Point(0,160), cv::Point(stream.cols, 160), cv::Scalar(0,0,255), 1);
-    cv::line(stream, cv::Point(0,320), cv::Point(stream.cols, 320), cv::Scalar(0,0,255), 1);
-  }
-  else
-  {
-    //vertical lines
-    cv::line(stream, cv::Point(250/2,0), cv::Point(250/2,stream.rows), cv::Scalar(0,0,255), 1);
-    cv::line(stream, cv::Point(502/2,0), cv::Point(502/2,stream.rows), cv::Scalar(0,0,255), 1);
-    //horizontal lines
-    cv::line(stream, cv::Point(0,160/2), cv::Point(stream.cols, 160/2), cv::Scalar(0,0,255), 1);
-    cv::line(stream, cv::Point(0,320/2), cv::Point(stream.cols, 320/2), cv::Scalar(0,0,255), 1);
-  }
-}
 
 void mouseClick(int event, int x, int y,int flags, void* userdata)
 {
@@ -82,7 +60,7 @@ int main(int argc, char const *argv[])
 
   cv::normalize(dMapRaw,dMapNorm,0,255,cv::NORM_MINMAX, CV_8U);
   initWindows();
-  drawObstacleGrid(dMapNorm,0);
+  View::drawObstacleGrid(dMapNorm,0);
   cv::imshow("dMap", dMapNorm);
   cv::waitKey(0);
 
