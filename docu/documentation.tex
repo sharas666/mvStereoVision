@@ -1,5 +1,7 @@
 \documentclass[11pt]{article}
 
+%\input{assignment.sty}
+
 \usepackage{microtype}
 \usepackage{amsmath}
 \usepackage{float}
@@ -247,29 +249,108 @@ The laser distance meter was aligned beyond the left camera sensor. Using this s
 These tests will be explained and evaluated in the following sections. During the tests we saw the camera images, the disparity map an the calculated distance for a point inside the disparity map. We were able to adjust the exposure time and the number of disparity parameter to match the given environmental characteristics.
 
 \subsection{Absolute measurements}
-For the absolute measurements we placed obstacles in the room starting from 8.4 meters in 0.6m steps. The results are visualized in the following figures:
+For the absolute measurements we placed obstacles in the room starting from 8.4 meters in 0.6m steps. The results are visualized in the following figures \ref{fig:absolute-chart}:
 
-BAR CHART
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=10cm]{images/absolute-measurements.pdf}
+        \caption{Barchart showing absolute differences in measurements using Disparity Map and Disto}
+        \label{fig:absolute-chart}
+\end{figure}
 
-TABLE 
+\begin{table}[htbp]
 
-+When taking a look at the outcomes of the absolute test it is clear to see that the drift is quiet large. The maximum difference between camera and laser data is just about $0,172$ m in just one case the minimum value was about $-0,0058$ cm. Although the maximum drift seems quiet high, the final mean of $-0,03$ m shows that the accuracy of our system is quiet good.
+	\begin{center}
+	\begin{tabular}{|r|r|r|}
+	\hline
+	\multicolumn{1}{|l|}{Disparity} & \multicolumn{1}{l|}{Laser} & \multicolumn{1}{l|}{$Laser - Disparity$} \\ \hline
+	8.57 & 8.40 & -0.17 \\ \hline
+	7.86 & 7.79 & -0.07 \\ \hline
+	7.07 & 7.19 & 0.12 \\ \hline
+	6.47 & 6.60 & 0.13 \\ \hline
+	5.89 & 5.99 & 0.10 \\ \hline
+	5.36 & 5.39 & 0.03 \\ \hline
+	4.71 & 4.79 & 0.08 \\ \hline
+	4.14 & 4.19 & 0.05 \\ \hline
+	3.54 & 3.59 & 0.05 \\ \hline
+	2.95 & 2.99 & 0.04 \\ \hline
+	2.36 & 2.39 & 0.03 \\ \hline
+	1.77 & 1.79 & 0.02 \\ \hline
+	1.18 & 1.19 & 0.01 \\ \hline
+	0.58 & 0.59 & 0.01 \\ \hline
+	\end{tabular}
+	\end{center}
+	\caption{Measurement Values for absolute tests.}
+	\label{table:absolute-table}
+\end{table}
+
+The final Outcomes are displayed in the following table \ref{table:absolute-results}:
+
+\begin{table}[htbp]
+	\begin{center}
+	\begin{tabular}{|l|r|}
+	\hline
+	Minimum Value & -0.17 \\ \hline
+	Maximum Value & 0.13 \\ \hline
+	Mean Difference & 0.0307142857 \\ \hline
+	\end{tabular}
+	\end{center}
+	\caption{Min, Max and Mean Values from the table}
+	\label{table:absolute-results}
+\end{table}
+
 
 \subsection{Relative measurements}
-For the relative test we measured the distance from our system to two different obstacles in different distances to each other. The difference of the two measured distances is our final value:
+For the relative test we measured the distance from our system to two different obstacles in different distances to each other. The difference of the two measured distances is our final value. The following chart shows the measurement differences between the disparity values and ones from the Disto \ref{fig:relative-chart}.
 
-BARCHART
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=10cm]{images/relative-measurements.pdf}
+        \caption{Barchart showing absolute differences in measurements using Disparity Map and Disto}
+        \label{fig:relative-chart}
+\end{figure}
 
-TABLE
+\begin{table}[htbp]
+	\begin{center}
+	\begin{tabular}{|r|r|c|}
+	\hline
+	\multicolumn{1}{|l|}{Disparity} & \multicolumn{1}{l|}{Laser} & \multicolumn{1}{l|}{$Laser - Disparity$} \\ \hline
+	0.58 & 0.59 & 0.006 \\ \hline
+	1.19 & 1.20 & 0.009 \\ \hline
+	1.77 & 1.80 & 0.029 \\ \hline
+	2.36 & 2.39 & 0.033 \\ \hline
+	2.93 & 3.00 & 0.069 \\ \hline
+	3.57 & 3.61 & 0.041 \\ \hline
+	4.19 & 4.21 & 0.019 \\ \hline
+	4.71 & 4.80 & 0.086 \\ \hline
+	\end{tabular}
+	\end{center}
+	\caption{foo}
+	\label{table:relative-table}
+\end{table}
+
+\begin{table}[htbp]
+	\begin{center}
+	\begin{tabular}{|l|r|}
+	\hline
+	Minimum Value & 0.006179 \\ \hline
+	Maximum Value & 0.085643 \\ \hline
+	Mean Difference & 0.036503 \\ \hline
+	\end{tabular}
+	\end{center}
+	\caption{Min, Max and Mean Values from the table}
+	\label{table:relative-results}
+\end{table}
+
 
 \subsection{Obstacle size measurements}
-In order to measure the size of a reckognizable object we used cardboard circles attached to a translucent plastic rod.
+In order to measure the size of a recognizable object we used cardboard circles attached to a translucent plastic rod.
 
 die tests muessen wir nochmal machen, sone tabelle dafuer waere schon echt nice.
 
 %\section{Discussion}
 \section{Future Work}
-%integrate in ROS/UAV
+%integrate\CYRSCHWA in ROS/UAV
 %obstacle detection,tracking avoidance
 %...?
 

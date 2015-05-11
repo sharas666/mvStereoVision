@@ -1,0 +1,61 @@
+%!TEX encoding = UTF-8 Unicode
+
+\documentclass[a4paper,parskip,DIV15]{scrartcl}
+\usepackage[utf8]{inputenc}
+% \usepackage[utf8x]{inputenc}
+\usepackage[ngerman]{babel}
+
+% pretty fonts
+\usepackage[T1]{fontenc}
+
+% hyperrefs
+\usepackage[colorlinks=false, pdfborder={0 0 0}]{hyperref}
+
+\usepackage{enumerate}
+
+% listings
+\usepackage{color}
+\usepackage{listings}
+\definecolor{keyword}      {rgb}{0.7, 0.3, 0.2}
+\definecolor{comment}      {rgb}{0.4, 0.7, 0.7}
+\definecolor{string}       {rgb}{0.0, 0.7, 0.3}
+\definecolor{line_numbers} {rgb}{0.9, 0.9, 0.9}
+\definecolor{identifier}   {rgb}{0.1, 0.1, 0.5}
+\lstset{
+    showspaces=false, 
+    showstringspaces=false,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{keyword}, 
+    commentstyle=\itshape\color{comment}, 
+    stringstyle=\color{string},
+	identifierstyle=\color{identifier},
+    numbers=left, 
+    numberstyle=\color{line_numbers}, 
+    stepnumber=1, 
+    numbersep=10pt,
+    breaklines=true,
+	literate={ö}{{\"o}}1
+	           {ä}{{\"a}}1
+	           {ü}{{\"u}}1
+	           {ß}{{\ss}}1
+}
+
+% math packages
+\usepackage[fleqn]{mathtools}
+\usepackage{xfrac}
+
+% math shortcuts
+
+\usepackage{fancyvrb}
+\newenvironment{preformatted}{
+	\begin{Verbatim}
+}{
+	\end{Verbatim}
+	% \normalsize
+}
+
+% set width for every column type
+\usepackage{tabularx}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}} % linksbündig mit Breitenangabe
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}} % zentriert mit Breitenangabe
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}} % rechtsbündig mit Breitenangabe
