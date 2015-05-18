@@ -19,4 +19,9 @@
 \newblock
   \url{http://docs.opencv.org/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html}.
 
+\bibitem{ROSFRAMEWORK}
+{\sc ROS}.
+\newblock Robot operating system.
+\newblock \url{http://www.ros.org}.
+
 \end{thebibliography}

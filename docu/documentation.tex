@@ -186,6 +186,8 @@ After the images are acquired they are transferred to OpenCV matrices. Therefore
 
 The last dependency is a C++ compiler with C++11 support, such as the gcc-4.9.2.
 
+For our testing setup we attached the cameras to a magnetic stand which cn be moved onto a steel plate. In order to get exact real world measurements we also used a laser operated distance measurement device (Leica Disto $pro^4\ a$).
+
 \subsection{Framework Components}
 The three steps which we described earlier in section \ref{sec:101} are reflected in the framework composition. The framework consists of the two classes \texttt{Camera} and \texttt{Stereosystem} and the namespaces \texttt{disparity} and \texttt{utility}. In Figure \ref{fig:framework} the data flow between the components is shown.
 
@@ -202,7 +204,7 @@ The images from the left and right cameras are then passed into the \texttt{Ster
 
 The \texttt{Stereosystem} class offers functions to calibrate the cameras with a given set of calibration images, save and load former calibration parameter and return different types of image pairs, namely distorted, undistorted and rectified image pairs.
 
-We use the OpenCV function \texttt{calibrateCamera} to get the so called  \emph{intrinsic paramters}, which are the \emph{camera matrix} and the \emph{distortion coefficients}. The camera matrix $A$ contains the focal length and the principal point. 
+We use the OpenCV function \texttt{calibrateCamera} to get the so called  \emph{intrinsic parameters}, which are the \emph{camera matrix} and the \emph{distortion coefficients}. The camera matrix $A$ contains the focal length and the principal point. 
 
 \begin{align*}
 A=
@@ -216,7 +218,7 @@ f_x & 0 & c_x\\
 
 The framework searches for some object points  in some calibration images which contain a calibration object. The calibration object is a checkerboard with known dimensions and known number of rows and columns. The algorithm then calculates the camera matrix and the distortion coefficients such that the object points (the checkerboard intersections)  are collinear and hence, the checkerboard edges are straight.%TODO example undistorted, checkerboard find
 
-The calibration function returns the root mean square reprojection error (RMS). For a good calibration it should be between 0.1 and 1 pixel. With the Matrix Vision cameras and the wooden calibration object we expect the RMS to be less then 0.2. We made the experience that 10 to 15 images are sufficient for a good calibration. Fewer or more images could downgrade the calibration result. 
+The calibration function returns the root mean square re-projection error (RMS). For a good calibration it should be between 0.1 and 1 pixel. With the Matrix Vision cameras and the wooden calibration object we expect the RMS to be less then 0.2. We made the experience that 10 to 15 images are sufficient for a good calibration. Fewer or more images could downgrade the calibration result. 
 
 
 For the stereo setup the intrinsic parameters are not enough. We need further information about placement and orientation of the cameras to each other for correct rectification. This information is called \emph{extrinsic parameters}. The extrinsic parameters describe the translation and rotation of the right camera to the left camera. By the way, we always assume the left camera to be the reference system. With the help of the OpenCV function \texttt{stereoCalibrate} we can determine the extrinsic parameters ([R]otation matrix and [T]ranslation matrix), the [F]undamental and [E]ssential matrix.
@@ -249,19 +251,11 @@ The laser distance meter was aligned beyond the left camera sensor. Using this s
 These tests will be explained and evaluated in the following sections. During the tests we saw the camera images, the disparity map an the calculated distance for a point inside the disparity map. We were able to adjust the exposure time and the number of disparity parameter to match the given environmental characteristics.
 
 \subsection{Absolute measurements}
-For the absolute measurements we placed obstacles in the room starting from 8.4 meters in 0.6m steps. The results are visualized in the following figures \ref{fig:absolute-chart}:
-
-\begin{figure}[H]
-        \centering
-        \includegraphics[width=10cm]{images/absolute-measurements.pdf}
-        \caption{Barchart showing absolute differences in measurements using Disparity Map and Disto}
-        \label{fig:absolute-chart}
-\end{figure}
+For the absolute measurements we placed obstacles in the room starting from 8.4 meters in 0.6m steps. The values can be seen within the following Table [Table \ref{table:absolute-table}] as well as in the resulting bar chart [Figure \ref{fig:absolute-chart}]:
 
 \begin{table}[htbp]
-
 	\begin{center}
-	\begin{tabular}{|r|r|r|}
+	\begin{tabular}{|r|r|c|}
 	\hline
 	\multicolumn{1}{|l|}{Disparity} & \multicolumn{1}{l|}{Laser} & \multicolumn{1}{l|}{$Laser - Disparity$} \\ \hline
 	8.57 & 8.40 & -0.17 \\ \hline
@@ -284,31 +278,30 @@ For the absolute measurements we placed obstacles in the room starting from 8.4 
 	\label{table:absolute-table}
 \end{table}
 
-The final Outcomes are displayed in the following table \ref{table:absolute-results}:
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=10cm]{images/absolute-measurements.pdf}
+       	\caption{Bar chart showing absolute differences in measurements using Disparity Map and Disto.}
+        \label{fig:absolute-chart}
+\end{figure}
+
+At a first glance some of the differences seem to be very high and completely in contrast to a good measurement. Luckily these are just outliers and the mean difference as well as the minimum and maximum values can be observed in Table 4 [Table \ref{table:absolute-results}].
 
 \begin{table}[htbp]
 	\begin{center}
 	\begin{tabular}{|l|r|}
 	\hline
-	Minimum Value & -0.17 \\ \hline
-	Maximum Value & 0.13 \\ \hline
-	Mean Difference & 0.0307142857 \\ \hline
+	Minimum & 0.01 \\ \hline
+	Maximum & 0.13 \\ \hline
+	Mean & 0.0307142857 \\ \hline
 	\end{tabular}
 	\end{center}
-	\caption{Min, Max and Mean Values from the table}
+	\caption{Min, max and mean differences of the dataset.}
 	\label{table:absolute-results}
 \end{table}
 
-
 \subsection{Relative measurements}
-For the relative test we measured the distance from our system to two different obstacles in different distances to each other. The difference of the two measured distances is our final value. The following chart shows the measurement differences between the disparity values and ones from the Disto \ref{fig:relative-chart}.
-
-\begin{figure}[H]
-        \centering
-        \includegraphics[width=10cm]{images/relative-measurements.pdf}
-        \caption{Barchart showing absolute differences in measurements using Disparity Map and Disto}
-        \label{fig:relative-chart}
-\end{figure}
+For the relative test we measured the distance from our system to two different obstacles in different distances to each other. The difference of the two measured distances is our final value. The following chart shows the measurement differences between the disparity values and ones from the Disto [Table \ref{fig:relative-chart}].
 
 \begin{table}[htbp]
 	\begin{center}
@@ -329,30 +322,69 @@ For the relative test we measured the distance from our system to two different 
 	\label{table:relative-table}
 \end{table}
 
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=10cm]{images/relative-measurements.pdf}
+        \caption{Bar chart showing absolute differences in measurements using Disparity Map and Disto}
+        \label{fig:relative-chart}
+\end{figure}
+
+The following Table [Table \ref{table:relative-results}] shows the outcomes of the relative measurement:
+
 \begin{table}[htbp]
 	\begin{center}
 	\begin{tabular}{|l|r|}
 	\hline
-	Minimum Value & 0.006179 \\ \hline
-	Maximum Value & 0.085643 \\ \hline
-	Mean Difference & 0.036503 \\ \hline
+	Minimum & 0.006 \\ \hline
+	Maximum & 0.086 \\ \hline
+	Mean & 0.0367 \\ \hline
 	\end{tabular}
 	\end{center}
-	\caption{Min, Max and Mean Values from the table}
+	\caption{Min, max and mean differences from the table}
 	\label{table:relative-results}
 \end{table}
+
+Taking a look onto the result values it is quiet clear to see that the disparity map calculated by our system behaves very good in the relative measurements.
 
 
 \subsection{Obstacle size measurements}
 In order to measure the size of a recognizable object we used cardboard circles attached to a translucent plastic rod.
 
-die tests muessen wir nochmal machen, sone tabelle dafuer waere schon echt nice.
+\subsection{Evaluation discussion}
+While taking a look onto the results of our tests it is quiet clear to see, that the accuracy of our system is fairy high. There are some outliers in the absolute measurement data as well as in the obstacle size data. These can refer to different reasons. One of them is a still known problem when trying to calculate a disparity on homogeneous areas. Because of a lack of texture it is hard to estimate whether the pixels belon to each other in the reference image. This could be a reason for high value drifts. Another problem was the missing exposure control (which was implemented after performing the tests). If the exposure is either too high or too low the pixel value is changing. This change could lead to homogeneous areas (where there are no) or an overly sensitive detection of disparity. Also the position of other objects throwing shadows on the main measurement object could be a reason. \\\\
+That was the main reason of doing relative tests. They basically proof the good quality of the calculated disparity maps and the connected estimated distance. Also there was nearly no difference between binned and unbinned mode of image capturing. The estimated Distance was nearly the same, only accuracy when pointing at different areas was lower because of the bisected resolution from $752\times480$ down to $376\times240$.
 
-%\section{Discussion}
+\section{Discussion}
+While writing the framework we focused on building an easy to understand and to use system to wrap the complex functionality of the main camera framework to our basic needs. In conclusion we can say that we reached our goal. The framework is very easy to use and within a small number of lines of code it is possible to write a program which can continuously capture images (distorted, undistorted and rectified) and furthermore process these images. Building the framework on top of OpenCV was also a good step because of the wide usage of this framework and its Matlab-like syntax. Another main point was focusing on an efficient way of capturing the images, that is why the capturing process is threaded using C++ builtin threads.
+
+Declaring the good quality of a disparity map is a really hard task. There is a lot of testing required to get the perfect parameters for the current situation. Nevertheless the quality of our disparity maps can be, according to the test results, signed as good. The vision based distances do not vary much from the ones the Disto provided. In future work the visualization of disparity maps will not be needed anymore. So the visual aspect and whether it is easy to extract valuable information out of the normalized disparity maps is a minor priority challenge.
+
+Another point to calculate more exact maps would be the usage of high bitrate cameras. The current system captures in 8 bit of color depth. It would be good to have a comparison between the accuracy of different image depth modes using mono color images [Table \ref{table:colormodes}].
+\begin{table}[htbp]
+	\begin{center}
+	\begin{tabular}{|l|r|}
+	\hline
+	color depth  & \multicolumn{1}{l|}{shades of gray} \\ \hline
+	8 bit & 256 \\ \hline
+	10 bit & 1024 \\ \hline
+	12 bit & 4096 \\ \hline
+	16 bit & 65536 \\ \hline
+	\end{tabular}
+	\end{center}
+	\caption{Color depth modes and their shades of gray}
+	\label{table:colormodes}
+\end{table}
+
+Also a comparison concerning the performance between the different color-modes would be interesting regarding the minimum system requirements.
+
 \section{Future Work}
-%integrate\CYRSCHWA in ROS/UAV
-%obstacle detection,tracking avoidance
-%...?
+Looking forward to the usage of our system, it is quiet logic that the main focus lays on the usage in connection with the AscTec Pelican. Therefor the system will be used to build a real time obstacle avoidance based on stereo images and the resulting disparity map. Simultaneous to this task there are some other approaches for motion and flight-path estimation using this system and framework. The main task, these approaches and ideas should be used for, is building an autonomous UAV system using all the sensors and devices attached to the UAV in connection with a SLAM algorithm.
+
+Other interesting themes would be either using a self-implemented algorithm for calculating disparity maps or optimizing a currently good one for the system.
+
+Regarding the use of real-time disparity map calculation, it is very important to have a robust and stable solution for homogeneous areas. At the moment these areas are computed with no disparity and they occur like that in the matrix and the normalized image. While these areas can be an source of error when trying to detect and avoid obstacles it need to be fixed. Therefor it would be an approach using laser grids projected onto the area and in this way create a texture which can be determined by the stereo image matching algorithm.
+
+Finally the system has to be tested on the UAV and build as a node for ROS \cite{ROSFRAMEWORK} in order combine the future functionality with a SLAM algorithm.
 
 \nocite{*}
 \bibliographystyle{acm}
