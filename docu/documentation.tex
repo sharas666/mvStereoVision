@@ -10,6 +10,8 @@
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{pstricks}
+
 
 \title{\textbf{Fast Depth Map Estimation from Stereo Camera Systems}\\Project Documentation SLAM For UAV's}
 \author{Malik Al-hallak 90020\\
@@ -102,7 +104,7 @@ After the rectification process the
                 \label{fig:rect_2}
         \end{subfigure}
 
-       \begin{subfigure}[b]{0.9\textwidth}
+        \begin{subfigure}[b]{0.9\textwidth}
                 \includegraphics[width=\textwidth]{images/rect_cropped}
                 \caption{The corresponding points in the cropped and scaled rectified images}
                 \label{fig:rect_3}
@@ -249,6 +251,27 @@ The laser distance meter was aligned beyond the left camera sensor. Using this s
 \end{enumerate}
 
 These tests will be explained and evaluated in the following sections. During the tests we saw the camera images, the disparity map an the calculated distance for a point inside the disparity map. We were able to adjust the exposure time and the number of disparity parameter to match the given environmental characteristics.
+
+The testing contains out of two steel plates where each one holds either the cameras or the Disto. They are conntected to the plates using switchable magnets and laboratory stands. The following figures will show a front [Figure \ref{fig:setup-front}] and a side [Figure \ref{fig:setup-side}] view.
+
+\begin{figure}[p]
+	\begin{subfigure}[h]{\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/camera-setup.pdf}
+		\caption{Front view of the testing setup}
+		\label{fig:setup-front}
+	\end{subfigure}
+	
+	\begin{subfigure}[h]{\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/camera-setup-side.pdf}
+		\caption{Side view of the testing setup}
+		\label{fig:setup-side}
+	\end{subfigure}
+\end{figure}
+
+
+\pagebreak
 
 \subsection{Absolute measurements}
 For the absolute measurements we placed obstacles in the room starting from 8.4 meters in 0.6m steps. The values can be seen within the following Table [Table \ref{table:absolute-table}] as well as in the resulting bar chart [Figure \ref{fig:absolute-chart}]:
