@@ -8,4 +8,4 @@ capturedImagesRectified: ./images/rotation_test
 capturedDisparities: ./images/disparityMaps
 
 outputParameter: ./newCalibration
-inputParameter: ./newCalibration
+inputParameter: /home/josh/uni/project/bluefox_cam_node/catkin_ws/src/bluefox_cam_node/src/mvStereoVision/newCalibration

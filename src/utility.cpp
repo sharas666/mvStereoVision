@@ -10,11 +10,17 @@ Stereopair::Stereopair():
 {}
 
 Stereopair::Stereopair(cv::Mat &l , cv::Mat &r):
+  mLeft(l),
+  mRight(r),
+  mTag("STEREOPAIR\t")
+{}
+
+Stereopair::Stereopair(cv::Mat &&l , cv::Mat &&r):
 	mLeft(l),
 	mRight(r),
   mTag("STEREOPAIR\t")
-
 {}
+
 Stereopair::~Stereopair()
 {
   mLeft.release();
@@ -168,7 +174,7 @@ double Utility::checkSharpness(cv::Mat const& src)
 {
   cv::Mat M = (cv::Mat_<double>(3, 1) << -1, 2, -1);
   cv::Mat G = cv::getGaussianKernel(3, -1, CV_64F);
- 
+
   cv::Mat Lx, Ly;
   cv::sepFilter2D(src, Lx, CV_64F, M, G);
   cv::sepFilter2D(src, Ly, CV_64F, G, M);

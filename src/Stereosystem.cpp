@@ -241,20 +241,14 @@ bool Stereosystem::saveIntrinsic(std::string const& file)
 
 bool Stereosystem::getImagepair(Stereopair& stereoimagepair)
 {
-  std::vector<char> leftImage;
-  //mLeft->getImage(leftImage);
-  std::vector<char> rightImage;
-  //mRight->getImage(rightImage);
-  //std::future<bool> l = std::async(std::launch::async,&Camera::getImage,mLeft,std::ref(leftImage));
-  //std::future<bool> r = std::async(std::launch::async,&Camera::getImage,mRight,std::ref(rightImage));
-
-  std::thread t1(&Camera::getImage,mLeft,std::ref(leftImage));
-  std::thread t2(&Camera::getImage,mRight,std::ref(rightImage));
-
+  // using memfunc_type = bool (Camera::*)(cv::Mat&);
+  // memfunc_type memfunc = &Camera::getImage;
+  // std::thread t1(memfunc,mLeft,std::ref(stereoimagepair.mLeft));
+  // std::thread t2(memfunc,mRight,std::ref(stereoimagepair.mRight));
+  std::thread t1(&Camera::getImage,mLeft,std::ref(stereoimagepair.mLeft));
+  std::thread t2(&Camera::getImage,mRight,std::ref(stereoimagepair.mRight));
   t1.join();
   t2.join();
-  cv::Mat(mLeft->getImageHeight(),mLeft->getImageWidth(), CV_8UC1, &leftImage[0]).copyTo(stereoimagepair.mLeft);
-  cv::Mat(mRight->getImageHeight(),mRight->getImageWidth(), CV_8UC1, &rightImage[0]).copyTo(stereoimagepair.mRight);
   return true;
 }
 

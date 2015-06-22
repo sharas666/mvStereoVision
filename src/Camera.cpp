@@ -36,8 +36,7 @@ Camera::Camera(mvIMPACT::acquire::Device* dev):
 	this->setPixelFormat(MONO8);
 	this->setExposure(12000);
 	this->setGain(0);
-	std::vector<char> v;
-	this->getImage(v);
+    set_size();
 }
 
 Camera::~Camera()
@@ -45,51 +44,59 @@ Camera::~Camera()
 	LOG(INFO)<< mTag <<"Camera destroyed." << std::endl;
 }
 
+bool Camera::getRequest(){
+    int result = DMR_NO_ERROR;
+    //request an image
+    result = mFunctionInterface.imageRequestSingle();
 
-bool Camera::getImage(std::vector<char> &imageToReturn)
+    if(result != DMR_NO_ERROR)
+    {
+        std::cerr << "Error while requesting for image: "<<\
+        mvIMPACT::acquire::ImpactAcquireException::getErrorCodeAsString(result)<<\
+        std::endl;
+        LOG(ERROR)<< mTag << "Error while requesting for image: "<<\
+        mvIMPACT::acquire::ImpactAcquireException::getErrorCodeAsString(result)<<\
+        std::endl;
+        return false;
+    }
+
+    int requestNr = mFunctionInterface.imageRequestWaitFor(mTimeout);
+    if(mFunctionInterface.isRequestNrValid(requestNr))
+    {
+        mRequest = mFunctionInterface.getRequest(requestNr);
+        mFunctionInterface.imageRequestUnlock(requestNr);
+        return true;
+    }
+    LOG(ERROR) << mTag << "Error, invalid requestnumber!" << std::endl;
+    mFunctionInterface.imageRequestUnlock(requestNr);
+    return false;
+}
+
+void Camera::set_size(){
+    getRequest();
+    if(mRequest->isOK()){
+        mWidth = mRequest->imageWidth.read();
+        mHeight = mRequest->imageHeight.read();
+    }
+}
+
+bool Camera::getImage(cv::Mat& mat)
 {
-	int result = DMR_NO_ERROR;
-	//request an image
-	result = mFunctionInterface.imageRequestSingle();
 
-	if(result != DMR_NO_ERROR)
-	{
-		std::cerr << "Error while requesting for image: "<<\
-		mvIMPACT::acquire::ImpactAcquireException::getErrorCodeAsString(result)<<\
-		std::endl;
-		LOG(ERROR)<< mTag << "Error while requesting for image: "<<\
-		mvIMPACT::acquire::ImpactAcquireException::getErrorCodeAsString(result)<<\
-		std::endl;
-		return false;
-	}
-
-	int requestNr = mFunctionInterface.imageRequestWaitFor(mTimeout);
-	if(mFunctionInterface.isRequestNrValid(requestNr))
-	{
-		mRequest = mFunctionInterface.getRequest(requestNr);
-
-		if(mRequest->isOK())
-		{
-			//create vector with image data from request
-			imageToReturn= std::vector<char>(static_cast<char*>(mRequest->imageData.read()),
-									                     static_cast<char*>(mRequest->imageData.read()) +\
-															         mRequest->imageSize.read());
-			mWidth = mRequest->imageWidth.read();
-			mHeight = mRequest->imageHeight.read();
-			mFunctionInterface.imageRequestUnlock(requestNr);
-			return true;
-		}
-		else
-		{
-			std::cerr << "Error, request not OK!" <<std::endl;
-			LOG(ERROR) << mTag << "Error, request not OK!" <<std::endl;
-			return false;
-		}
-	}
-	LOG(ERROR) << mTag << "Error, invalid requestnumber!" << std::endl;
-	mFunctionInterface.imageRequestUnlock(requestNr);
-
-	return false;
+        getRequest();
+        if(mRequest->isOK())
+        {
+            //create vector with image data from request
+            std::memcpy(mat.ptr(),static_cast<char*>(mRequest->imageData.read()),
+                                                                     mRequest->imageSize.read());
+            return true;
+        }
+        else
+        {
+            std::cerr << "Error, request not OK!" <<std::endl;
+            LOG(ERROR) << mTag << "Error, request not OK!" <<std::endl;
+            return false;
+        }
 }
 
 double Camera::calibrate(std::vector<cv::Mat> const& images, double patternsize, cv::Size chessboardSize)
