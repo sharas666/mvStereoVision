@@ -252,15 +252,31 @@ bool Stereosystem::getImagepair(Stereopair& stereoimagepair)
   return true;
 }
 
+void Stereosystem::undistort_left(cv::Mat& mat){
+  cv::Mat tmpMat;
+  cv::undistort(mat, tmpMat, mIntrinsicLeft, mDistCoeffsLeft);
+  tmpMat.copyTo(mat);
+}
+
+void Stereosystem::undistort_right(cv::Mat& mat){
+  cv::Mat tmpMat;
+  cv::undistort(mat, tmpMat, mIntrinsicRight, mDistCoeffsRight);
+  tmpMat.copyTo(mat);
+}
+
+void Stereosystem::undistort_images(Stereopair& sip){
+  cv::Mat tmpLeft, tmpRight;
+  cv::undistort(sip.mLeft, tmpLeft, mIntrinsicLeft, mDistCoeffsLeft);
+  cv::undistort(sip.mRight, tmpRight, mIntrinsicRight, mDistCoeffsRight);
+  tmpLeft.copyTo(sip.mLeft);
+  tmpRight.copyTo(sip.mRight);
+}
+
 bool Stereosystem::getUndistortedImagepair(Stereopair& sip)
 {
-  cv::Mat tmpLeft, tmpRight;
   if(this->getImagepair(sip))
   {
-    cv::undistort(sip.mLeft, tmpLeft, mIntrinsicLeft, mDistCoeffsLeft);
-    cv::undistort(sip.mRight, tmpRight, mIntrinsicRight, mDistCoeffsRight);
-    tmpLeft.copyTo(sip.mLeft);
-    tmpRight.copyTo(sip.mRight);
+    undistort_images(sip);
     return true;
   }
   return false;
