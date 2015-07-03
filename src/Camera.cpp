@@ -181,6 +181,14 @@ void Camera::setPixelFormat(int option)
 	}
 }
 
+void Camera::setHighPixelClock(){
+  mCameraSettingsBlueFOX.pixelClock_KHz.write(cpc40000KHz);
+}
+
+void Camera::setNormalPixelClock(){
+  mCameraSettingsBlueFOX.pixelClock_KHz.write(cpc27000KHz);
+}
+
 void Camera::setBinning(unsigned int option)
 {
 	switch(option)
