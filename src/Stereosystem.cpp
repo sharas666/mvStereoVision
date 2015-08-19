@@ -243,10 +243,6 @@ bool Stereosystem::saveIntrinsic(std::string const& file)
 
 bool Stereosystem::getImagepair(Stereopair& stereoimagepair)
 {
-  // using memfunc_type = bool (Camera::*)(cv::Mat&);
-  // memfunc_type memfunc = &Camera::getImage;
-  // std::thread t1(memfunc,mLeft,std::ref(stereoimagepair.mLeft));
-  // std::thread t2(memfunc,mRight,std::ref(stereoimagepair.mRight));
   std::thread t1(&Camera::getImage,mLeft,std::ref(stereoimagepair.mLeft));
   std::thread t2(&Camera::getImage,mRight,std::ref(stereoimagepair.mRight));
   t1.join();
@@ -254,34 +250,13 @@ bool Stereosystem::getImagepair(Stereopair& stereoimagepair)
   return true;
 }
 
-void Stereosystem::undistort_left(cv::Mat& mat){
-  cv::Mat tmpMat;
-  cv::undistort(mat, tmpMat, mIntrinsicLeft, mDistCoeffsLeft);
-  tmpMat.copyTo(mat);
-}
-
-void Stereosystem::undistort_right(cv::Mat& mat){
-  cv::Mat tmpMat;
-  cv::undistort(mat, tmpMat, mIntrinsicRight, mDistCoeffsRight);
-  tmpMat.copyTo(mat);
-}
-
-void Stereosystem::undistort_images(Stereopair& sip){
+bool Stereosystem::undistort_images(Stereopair& sip) const {
   cv::Mat tmpLeft, tmpRight;
   cv::undistort(sip.mLeft, tmpLeft, mIntrinsicLeft, mDistCoeffsLeft);
   cv::undistort(sip.mRight, tmpRight, mIntrinsicRight, mDistCoeffsRight);
   tmpLeft.copyTo(sip.mLeft);
   tmpRight.copyTo(sip.mRight);
-}
-
-bool Stereosystem::getUndistortedImagepair(Stereopair& sip)
-{
-  if(this->getImagepair(sip))
-  {
-    undistort_images(sip);
-    return true;
-  }
-  return false;
+  return true;
 }
 
 bool Stereosystem::initRectification()
@@ -335,20 +310,19 @@ bool Stereosystem::initRectification()
   return false;
 }
 
-bool Stereosystem::getRectifiedImagepair(Stereopair& sip)
-{
-
-  if(!this->getImagepair(sip))
-  {
-    return false;
-  }
-  if(mIsInit)
-  {
+void Stereosystem::rectify(Stereopair& sip) const{
     cv::remap(sip.mLeft, sip.mLeft, mMap1[0], mMap2[0], cv::INTER_LINEAR);
     cv::remap(sip.mRight, sip.mRight, mMap1[1], mMap2[1], cv::INTER_LINEAR);
 
     sip.mLeft = sip.mLeft(mDisplayROI);
     sip.mRight = sip.mRight(mDisplayROI);
+}
+
+bool Stereosystem::rectify_images(Stereopair& sip)
+{
+  if(mIsInit)
+  {
+    rectify(sip);
     return true;
   }
   else
@@ -359,11 +333,7 @@ bool Stereosystem::getRectifiedImagepair(Stereopair& sip)
     }
     else
     {
-      cv::remap(sip.mLeft, sip.mLeft, mMap1[0], mMap2[0], cv::INTER_LINEAR);
-      cv::remap(sip.mRight, sip.mRight, mMap1[1], mMap2[1], cv::INTER_LINEAR);
-
-      sip.mLeft = sip.mLeft(mDisplayROI);
-      sip.mRight = sip.mRight(mDisplayROI);
+      rectify(sip);
       return true;
     }
     return false;

@@ -28,11 +28,12 @@ class Stereosystem
 		bool saveIntrinsic(std::string const&);
 
 		bool getImagepair(Stereopair&);
-		bool getUndistortedImagepair(Stereopair&);
+
+		bool undistort_images(Stereopair&) const;
 
 		bool initRectification();
-		bool getRectifiedImagepair(Stereopair&);
-
+		void rectify(Stereopair&) const;
+		bool rectify_images(Stereopair&);
 		void resetRectification();
 
 		void getFundamentalMatrix(cv::Mat &) const;
