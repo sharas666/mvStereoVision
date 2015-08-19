@@ -215,6 +215,11 @@ void Camera::setIntrinsic(cv::Mat intrinsic)
     intrinsic.copyTo(mIntrinsic);
 }
 
+void Camera::setDistCoeffs(cv::Mat dc)
+{
+    dc.copyTo(mDistCoeffs);
+}
+
 float Camera::getFramerate() const
 {
 	return mStatistics.framesPerSecond.read();

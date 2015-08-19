@@ -168,6 +168,8 @@ bool Stereosystem::loadIntrinsic(std::string const& file)
       fs["distCoeffsRight"] >> mDistCoeffsRight;
       mLeft->setIntrinsic(mIntrinsicLeft);
       mRight->setIntrinsic(mIntrinsicRight);
+      mLeft->setDistCoeffs(mDistCoeffsLeft);
+      mRight->setDistCoeffs(mDistCoeffsRight);
       LOG(INFO) << mTag <<"Successfully loaded Intrinsics." << std::endl;;
       fs.release();
       return true;
